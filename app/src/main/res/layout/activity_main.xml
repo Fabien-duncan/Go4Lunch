@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_Go4Lunch"
+    android:background="@drawable/background_go4lunch"
     tools:context=".MainActivity">
 
 
@@ -17,7 +17,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/LogoGo4Lunch" />
+        app:srcCompat="@drawable/logo_go4lunch" />
 
     <TextView
         android:id="@+id/go4Lunch_title_tv"
@@ -46,38 +46,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/go4Lunch_title_tv" />
 
-    <Button
-        android:id="@+id/facebook_signin_btn"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_btn_facebook"
-        android:drawableStart="@drawable/facebookLogo_48"
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingHorizontal="16dp"
-        android:text="@string/sign_in_facebook_en"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/go4Lunch_moto_tv" />
-    <Button
-        android:id="@+id/gmail_signin_btn"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_btn_gmail"
-        android:drawableStart="@drawable/gmail_logo"
-        android:paddingHorizontal="26dp"
-        android:text="@string/sign_in_gmail_en"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/facebook_signin_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/go4Lunch_title_tv">
+
+        <Button
+            android:id="@+id/facebook_signin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_btn_facebook"
+            android:drawableStart="@drawable/facebook_logo_48"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/sign_in_facebook_en"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/gmail_signin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_btn_gmail"
+            android:drawableStart="@drawable/gmail_logo"
+            android:paddingHorizontal="26dp"
+            android:text="@string/sign_in_gmail_en"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
