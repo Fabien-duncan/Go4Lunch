@@ -3,4 +3,6 @@
     <string name="moto_En">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="sign_in_facebook_en">Sign in with Facebook</string>
     <string name="sign_in_gmail_en">Sign in with Google</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
