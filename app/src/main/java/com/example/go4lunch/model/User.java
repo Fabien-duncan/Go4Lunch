@@ -1,9 +1,14 @@
 package com.example.go4lunch.model;
 
+import java.time.LocalDateTime;
+
 public class User {
     private String firstName;
     private String lastName;
     private String email;
+    private double lunchChoiceId;
+    private LocalDateTime choiceTimeStamp;
+
 
     public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
@@ -33,5 +38,21 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public double getLunchChoiceId() {
+        return lunchChoiceId;
+    }
+
+    public void setLunchChoiceId(double lunchChoiceId) {
+        this.lunchChoiceId = lunchChoiceId;
+    }
+
+    public LocalDateTime getChoiceTimeStamp() {
+        return choiceTimeStamp;
+    }
+
+    public void setChoiceTimeStamp(LocalDateTime choiceTimeStamp) {
+        this.choiceTimeStamp = choiceTimeStamp;
     }
 }
