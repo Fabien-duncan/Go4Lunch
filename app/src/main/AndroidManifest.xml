@@ -12,7 +12,7 @@
         android:theme="@style/Theme.Go4Lunch"
         tools:targetApi="31">
         <activity
-            android:name=".MapsActivity"
+            android:name=".views.MapsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -31,6 +31,7 @@ public class MainActivityViewModel extends ViewModel {
     public void handleSignInResult(Intent data){
         mAuthenticationRepository.handleSignInResult(data);
     }
-
-
+    public int getGOOGLE_SIGN_IN(){
+        return mAuthenticationRepository.getGOOGLE_SIGN_IN();
+    }
 }

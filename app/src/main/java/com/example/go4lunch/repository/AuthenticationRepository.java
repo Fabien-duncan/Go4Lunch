@@ -33,7 +33,7 @@ public class AuthenticationRepository {
 
     public AuthenticationRepository(Context context){
         this.mContext = context;
-        this.mActivity = (Activity) context;
+        this.mActivity = (Activity)context;
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
@@ -99,5 +99,8 @@ public class AuthenticationRepository {
                         }
                     }
                 });
+    }
+    public int getGOOGLE_SIGN_IN(){
+        return GOOGLE_SIGN_IN;
     }
 }
