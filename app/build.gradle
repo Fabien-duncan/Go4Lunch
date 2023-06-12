@@ -55,4 +55,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:22.0.0'
     implementation 'com.google.firebase:firebase-database:20.2.2'
 
+    implementation 'com.facebook.android:facebook-android-sdk:12.1.0'
+
 }
