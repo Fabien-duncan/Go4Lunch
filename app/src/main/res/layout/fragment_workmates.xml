@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.WorkmatesFragment">
+    tools:context=".views.WorkmatesFragment"
+    android:background="@color/com_facebook_messenger_blue">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="workmates"
+        />
 
 </FrameLayout>

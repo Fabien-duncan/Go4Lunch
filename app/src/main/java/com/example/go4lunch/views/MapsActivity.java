@@ -16,9 +16,9 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MapsActivity extends AppCompatActivity {
     private TextView name;
     private BottomNavigationView menu;
-    private MapViewFragment mMapViewFragment = new MapViewFragment();
-    private ListViewFragment mListViewFragment = new ListViewFragment();
-    private WorkmatesFragment mWorkmatesFragment = new WorkmatesFragment();
+    private MapViewFragment mMapViewFragment;
+    private ListViewFragment mListViewFragment;
+    private WorkmatesFragment mWorkmatesFragment;
 
 
     @Override
@@ -28,23 +28,36 @@ public class MapsActivity extends AppCompatActivity {
         name = findViewById(R.id.outputName_tv);
         menu = findViewById(R.id.bottomNavigationView);
 
+        mMapViewFragment = new MapViewFragment();
+        mListViewFragment = new ListViewFragment();
+        mWorkmatesFragment = new WorkmatesFragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+
         String userName = getIntent().getExtras().getString("name");
 
         name.setText(userName);
+
+
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.mapView:
-                        return true;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                        System.out.println("Maps");
+                        break;
                     case R.id.listView:
-                        return true;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
+                        System.out.println("List");
+                        break;
                     case R.id.workmates:
-                        return true;
-
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
+                        System.out.println("Workmates");
+                        break;
                 }
-                return false;
+                return true;
             }
         });
     }
