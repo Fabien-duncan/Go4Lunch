@@ -10,4 +10,7 @@
     <item android:title="Workmates"
         android:icon="@drawable/baseline_people_24"
         android:id="@+id/workmates"/>
+    <item android:title="Logout"
+        android:icon="@drawable/baseline_power_settings_new_24"
+        android:id="@+id/signOut"/>
 </menu>

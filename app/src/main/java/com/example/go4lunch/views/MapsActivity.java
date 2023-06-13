@@ -2,12 +2,18 @@ package com.example.go4lunch.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
+import com.example.go4lunch.injection.ViewModelFactory;
+import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,6 +25,7 @@ public class MapsActivity extends AppCompatActivity {
     private MapViewFragment mMapViewFragment;
     private ListViewFragment mListViewFragment;
     private WorkmatesFragment mWorkmatesFragment;
+    private MainActivityViewModel mMainActivityViewModel;
 
 
     @Override
@@ -34,11 +41,18 @@ public class MapsActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
 
+        mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+
         String userName = getIntent().getExtras().getString("name");
 
         name.setText(userName);
 
-
+        /*mMainActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean)showMainActivity();
+            }
+        });*/
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -56,9 +70,22 @@ public class MapsActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
                         System.out.println("Workmates");
                         break;
+                    case R.id.signOut:
+                        //mMainActivityViewModel.signOut();
+                        System.out.println("singOut");
+                        showMainActivity();
+                        break;
                 }
                 return true;
             }
         });
+    }
+    private void showMainActivity() {
+        Intent intent = new Intent(this,MainActivity.class);
+        //intent.putExtra("signout", "true");
+        mMainActivityViewModel.signOut();
+        startActivity(intent);
+
+        finish();
     }
 }

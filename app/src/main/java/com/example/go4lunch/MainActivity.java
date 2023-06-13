@@ -1,6 +1,7 @@
 package com.example.go4lunch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -28,15 +29,26 @@ public class MainActivity extends AppCompatActivity {
         mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
         mMainActivityViewModel.setupGoogleSignInOptions();
 
+       /*try {
+            String signoutStatus = getIntent().getExtras().getString("signout");
+
+            if (signoutStatus.equals("true")) mMainActivityViewModel.signOut();
+        }catch (Exception e){}*/
+        System.out.println("in Main Activity");
+        mMainActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser firebaseUser) {
+                if(firebaseUser != null) {
+                    System.out.println("Name: " + firebaseUser.getDisplayName());
+                    showMapsActivity(firebaseUser);
+                }
+            }
+        });
+
         signInWithGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mMainActivityViewModel.signIn();
-                FirebaseUser account = mMainActivityViewModel.getProfileInfo();
-                if(account != null) {
-                    System.out.println("Name: " + account.getDisplayName());
-                    showMapsActivity(account);
-                }
             }
         });
     }
@@ -50,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode,data);
 
+        System.out.println("an activity result");
         if(requestCode == mMainActivityViewModel.getGOOGLE_SIGN_IN()){
             mMainActivityViewModel.handleSignInResult(data);
         }
