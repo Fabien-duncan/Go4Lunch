@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.go4lunch.MainActivity;
@@ -17,6 +19,7 @@ import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MapsActivity extends AppCompatActivity {
@@ -26,6 +29,7 @@ public class MapsActivity extends AppCompatActivity {
     private ListViewFragment mListViewFragment;
     private WorkmatesFragment mWorkmatesFragment;
     private MainActivityViewModel mMainActivityViewModel;
+    private FloatingActionButton signOutbtn;
 
 
     @Override
@@ -34,6 +38,7 @@ public class MapsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_maps);
         name = findViewById(R.id.outputName_tv);
         menu = findViewById(R.id.bottomNavigationView);
+        signOutbtn = findViewById(R.id.signOut_fb);
 
         mMapViewFragment = new MapViewFragment();
         mListViewFragment = new ListViewFragment();
@@ -47,12 +52,19 @@ public class MapsActivity extends AppCompatActivity {
 
         name.setText(userName);
 
-        /*mMainActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
+        mMainActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(!aBoolean)showMainActivity();
             }
-        });*/
+        });
+        signOutbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMainActivityViewModel.signOut();
+                System.out.println("singOut");
+            }
+        });
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -70,11 +82,6 @@ public class MapsActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
                         System.out.println("Workmates");
                         break;
-                    case R.id.signOut:
-                        //mMainActivityViewModel.signOut();
-                        System.out.println("singOut");
-                        showMainActivity();
-                        break;
                 }
                 return true;
             }
@@ -83,7 +90,7 @@ public class MapsActivity extends AppCompatActivity {
     private void showMainActivity() {
         Intent intent = new Intent(this,MainActivity.class);
         //intent.putExtra("signout", "true");
-        mMainActivityViewModel.signOut();
+        //mMainActivityViewModel.signOut();
         startActivity(intent);
 
         finish();
