@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Go4Lunch" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="Theme.Go4Lunch" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#F44336</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
