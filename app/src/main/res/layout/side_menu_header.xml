@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:background="@drawable/background_go4lunch"
+    android:background="@drawable/header_image_go4lunch"
     android:gravity="bottom"
     android:paddingBottom="8dp">
 
@@ -34,7 +34,7 @@
             android:gravity="center"
             android:layout_marginLeft="4dp">
             <TextView
-                android:id="@+id/sid_menu_display_name"
+                android:id="@+id/side_menu_display_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="John SMITH"
