@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.ViewModelFactory;
+import com.example.go4lunch.model.User;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
@@ -27,9 +28,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MapsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private TextView name;
+    private TextView email;
     private BottomNavigationView menu;
     private MapViewFragment mMapViewFragment;
     private ListViewFragment mListViewFragment;
@@ -38,6 +41,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private Toolbar mToolbar;
+    private User currentUser;
 
 
     @Override
@@ -52,6 +56,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
         mToolbar = findViewById(R.id.toolbar);
         View sideBarView = mNavigationView.getHeaderView(0);
         name = sideBarView.findViewById(R.id.side_menu_display_name);
+        email = sideBarView.findViewById(R.id.side_menu_email);
 
 
         mMapViewFragment = new MapViewFragment();
@@ -66,7 +71,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
 
         String userName = getIntent().getExtras().getString("name");
 
-        name.setText(userName);
+        //name.setText(userName);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
@@ -80,6 +85,21 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
                 if(!aBoolean)showMainActivity();
             }
         });
+        mMainActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser firebaseUser) {
+                name.setText(firebaseUser.getDisplayName());
+                email.setText(firebaseUser.getEmail());
+            }
+        });
+
+        /*mMainActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                name.setText(user.getDisplayName());
+
+            }
+        });*/
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

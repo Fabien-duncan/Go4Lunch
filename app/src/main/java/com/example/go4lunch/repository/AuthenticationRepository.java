@@ -38,6 +38,8 @@ public class AuthenticationRepository {
     private final int GOOGLE_SIGN_IN = 100;
     private MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
     private MutableLiveData<Boolean> isUserSignedIn;
+
+    private MutableLiveData<User> currentUserMutableLiveData;
     private FirebaseAuth mAuth;
 
     private FirebaseFirestore db;
@@ -47,6 +49,7 @@ public class AuthenticationRepository {
         this.mActivity = (Activity)context;
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
+        mFirebaseUserMutableLiveData = new MutableLiveData<>();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         if(mAuth.getCurrentUser() != null){
@@ -119,6 +122,7 @@ public class AuthenticationRepository {
                             String userId = user.getUid();
                             DocumentReference documentReference = db.collection("users").document(userId);
                             User newUser = new User(user.getDisplayName(),user.getEmail());
+                            //currentUserMutableLiveData.postValue(newUser);
                             /*Map<String, Object> newUser = new HashMap<>();
                             newUser.put("displayName", user.getDisplayName());
                             newUser.put("email", user.getEmail());*/
@@ -149,4 +153,18 @@ public class AuthenticationRepository {
     public MutableLiveData<Boolean> getIsUserSignedIn() {
         return isUserSignedIn;
     }
+    public MutableLiveData<User> getCurrentUserMutableLiveData() {
+        return currentUserMutableLiveData;
+    }
+
+    public void setCurrentUserMutableLiveData(MutableLiveData<User> currentUserMutableLiveData) {
+        this.currentUserMutableLiveData = currentUserMutableLiveData;
+    }
+    /*public User getCurrentUser(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userId = user.getUid();
+        DocumentReference documentReference = db.collection("users").document(userId);
+        User currentUser = documentReference.get().getResult().toObject(User.class);
+        return currentUser;
+    }*/
 }
