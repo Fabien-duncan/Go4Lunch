@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.ViewModelFactory;
@@ -42,6 +44,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView mNavigationView;
     private Toolbar mToolbar;
     private User currentUser;
+    private ImageView profilePic;
 
 
     @Override
@@ -57,6 +60,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
         View sideBarView = mNavigationView.getHeaderView(0);
         name = sideBarView.findViewById(R.id.side_menu_display_name);
         email = sideBarView.findViewById(R.id.side_menu_email);
+        profilePic = sideBarView.findViewById(R.id.side_bar_profile_img);
 
 
         mMapViewFragment = new MapViewFragment();
@@ -90,6 +94,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
             public void onChanged(FirebaseUser firebaseUser) {
                 name.setText(firebaseUser.getDisplayName());
                 email.setText(firebaseUser.getEmail());
+                Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
             }
         });
 
