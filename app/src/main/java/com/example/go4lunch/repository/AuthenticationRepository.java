@@ -27,7 +27,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -40,6 +42,7 @@ public class AuthenticationRepository {
     private MutableLiveData<Boolean> isUserSignedIn;
 
     private MutableLiveData<User> currentUserMutableLiveData;
+    private MutableLiveData<List<User>> allUsersMutableLiveData;
     private FirebaseAuth mAuth;
 
     private FirebaseFirestore db;
@@ -50,6 +53,8 @@ public class AuthenticationRepository {
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
+        allUsersMutableLiveData = new MutableLiveData<>(new ArrayList<>());
+        initAllUsers();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         if(mAuth.getCurrentUser() != null){
@@ -57,6 +62,14 @@ public class AuthenticationRepository {
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
         }
     }
+
+    private void initAllUsers() {
+        List<User> tempUsers = new ArrayList<>();
+        tempUsers.add(new User("Marion Chenus", "chenus.marion@gmail.com"));
+        tempUsers.add(new User("Hugh Duncan", "hugh.duncan@gmail.com"));
+        allUsersMutableLiveData.postValue(tempUsers);
+    }
+
     public void setupGoogleSignInOptions(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(mContext.getResources().getString(R.string.default_web_client_id))
@@ -160,7 +173,12 @@ public class AuthenticationRepository {
     public void setCurrentUserMutableLiveData(MutableLiveData<User> currentUserMutableLiveData) {
         this.currentUserMutableLiveData = currentUserMutableLiveData;
     }
-    /*public User getCurrentUser(){
+
+    public MutableLiveData<List<User>> getAllUsersMutableLiveData() {
+        return allUsersMutableLiveData;
+    }
+
+/*public User getCurrentUser(){
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
         DocumentReference documentReference = db.collection("users").document(userId);

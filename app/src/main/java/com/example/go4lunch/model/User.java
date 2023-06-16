@@ -3,14 +3,6 @@ package com.example.go4lunch.model;
 import java.time.LocalDateTime;
 
 public class User {
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     private String displayName;
     private String firstName;
     private String lastName;
@@ -68,5 +60,12 @@ public class User {
 
     public void setChoiceTimeStamp(LocalDateTime choiceTimeStamp) {
         this.choiceTimeStamp = choiceTimeStamp;
+    }
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

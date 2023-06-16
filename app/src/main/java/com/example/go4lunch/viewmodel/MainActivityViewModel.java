@@ -9,17 +9,22 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 public class MainActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private MutableLiveData<FirebaseUser> userData;
     private MutableLiveData<Boolean> isUserSignedIn;
     private MutableLiveData<User> currentUserMutableLiveData;
 
+    private MutableLiveData<List<User>> allUsersMutableLiveData;
+
     public MainActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
+        allUsersMutableLiveData = authenticationRepository.getAllUsersMutableLiveData();
     }
     public void setupGoogleSignInOptions(){
         mAuthenticationRepository.setupGoogleSignInOptions();
@@ -53,6 +58,10 @@ public class MainActivityViewModel extends ViewModel {
 
     public MutableLiveData<User> getCurrentUserMutableLiveData() {
         return currentUserMutableLiveData;
+    }
+
+    public MutableLiveData<List<User>> getAllUsersMutableLiveData() {
+        return allUsersMutableLiveData;
     }
     /*public User getCurrentUser(){
         return mAuthenticationRepository.getCurrentUser();
