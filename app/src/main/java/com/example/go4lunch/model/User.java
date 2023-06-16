@@ -21,6 +21,9 @@ public class User {
         this.displayName = displayName;
         this.email = email;
     }
+    public User(){
+
+    }
 
     public String getFirstName() {
         return firstName;

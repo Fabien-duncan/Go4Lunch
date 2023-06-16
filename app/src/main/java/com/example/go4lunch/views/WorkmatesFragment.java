@@ -19,12 +19,11 @@ import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
     private RecyclerView workmatesRecyclerView;
-    private List<User> workmatesArrayList;
+    private List<User> workmatesList;
     private MyWorkmatesAdapter mMyWorkmatesAdapter;
     private MainActivityViewModel mMainActivityViewModel;
     @Override
@@ -43,8 +42,8 @@ public class WorkmatesFragment extends Fragment {
         mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(MainActivityViewModel.class);
         workmatesRecyclerView.setHasFixedSize(true);
         workmatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        workmatesArrayList = mMainActivityViewModel.getAllUsersMutableLiveData().getValue();
-        mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesArrayList);
+        workmatesList = mMainActivityViewModel.getWorkmatesMutableLiveData().getValue();
+        mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesList);
         workmatesRecyclerView.setAdapter(mMyWorkmatesAdapter);
         mMyWorkmatesAdapter.notifyDataSetChanged();
 

@@ -24,14 +24,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
 
 public class AuthenticationRepository {
     private Context mContext;
@@ -42,7 +42,7 @@ public class AuthenticationRepository {
     private MutableLiveData<Boolean> isUserSignedIn;
 
     private MutableLiveData<User> currentUserMutableLiveData;
-    private MutableLiveData<List<User>> allUsersMutableLiveData;
+    private MutableLiveData<List<User>> workmatesMutableLiveData;
     private FirebaseAuth mAuth;
 
     private FirebaseFirestore db;
@@ -53,7 +53,7 @@ public class AuthenticationRepository {
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
-        allUsersMutableLiveData = new MutableLiveData<>(new ArrayList<>());
+        workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         initAllUsers();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -67,7 +67,7 @@ public class AuthenticationRepository {
         List<User> tempUsers = new ArrayList<>();
         tempUsers.add(new User("Marion Chenus", "chenus.marion@gmail.com"));
         tempUsers.add(new User("Hugh Duncan", "hugh.duncan@gmail.com"));
-        allUsersMutableLiveData.postValue(tempUsers);
+        workmatesMutableLiveData.postValue(tempUsers);
     }
 
     public void setupGoogleSignInOptions(){
@@ -135,6 +135,7 @@ public class AuthenticationRepository {
                             String userId = user.getUid();
                             DocumentReference documentReference = db.collection("users").document(userId);
                             User newUser = new User(user.getDisplayName(),user.getEmail());
+                            retrieveAllWorkmates();
                             //currentUserMutableLiveData.postValue(newUser);
                             /*Map<String, Object> newUser = new HashMap<>();
                             newUser.put("displayName", user.getDisplayName());
@@ -174,8 +175,27 @@ public class AuthenticationRepository {
         this.currentUserMutableLiveData = currentUserMutableLiveData;
     }
 
-    public MutableLiveData<List<User>> getAllUsersMutableLiveData() {
-        return allUsersMutableLiveData;
+    public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
+        return workmatesMutableLiveData;
+    }
+    public void retrieveAllWorkmates(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        CollectionReference collectionReference = db.collection("users");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<User> list = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        list.add(document.toObject(User.class));
+                    }
+                    workmatesMutableLiveData.postValue(list);
+                    Log.d("TAG", list.toString());
+                } else {
+                    Log.d("TAG", "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 
 /*public User getCurrentUser(){

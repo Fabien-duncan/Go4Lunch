@@ -41,7 +41,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         User user = workmatesArrayList.get(position);
 
         holder.name.setText(user.getDisplayName());
-        holder.extraInfo.setText(" no extra info");
+        holder.extraInfo.setText(" " + user.getEmail());
         //Glide.with(holder).load(user.).circleCrop().into(holder.profilePic);
 
 

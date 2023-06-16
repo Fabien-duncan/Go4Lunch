@@ -17,14 +17,14 @@ public class MainActivityViewModel extends ViewModel {
     private MutableLiveData<Boolean> isUserSignedIn;
     private MutableLiveData<User> currentUserMutableLiveData;
 
-    private MutableLiveData<List<User>> allUsersMutableLiveData;
+    private MutableLiveData<List<User>> workmatesMutableLiveData;
 
     public MainActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
-        allUsersMutableLiveData = authenticationRepository.getAllUsersMutableLiveData();
+        workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
     }
     public void setupGoogleSignInOptions(){
         mAuthenticationRepository.setupGoogleSignInOptions();
@@ -60,8 +60,8 @@ public class MainActivityViewModel extends ViewModel {
         return currentUserMutableLiveData;
     }
 
-    public MutableLiveData<List<User>> getAllUsersMutableLiveData() {
-        return allUsersMutableLiveData;
+    public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
+        return workmatesMutableLiveData;
     }
     /*public User getCurrentUser(){
         return mAuthenticationRepository.getCurrentUser();
