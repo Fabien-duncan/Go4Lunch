@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.go4lunch.injection.ViewModelFactory;
+import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.MapsActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -17,6 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel mMainActivityViewModel;
+    private AuthenticationRepository mAuthenticationRepository;
     private Button signInWithGoogle;
 
     @Override
@@ -26,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
         signInWithGoogle = findViewById(R.id.gmail_signin_btn);
 
-        mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+        mAuthenticationRepository = new AuthenticationRepository(this);
+        mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
+        //mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
         mMainActivityViewModel.setupGoogleSignInOptions();
 
        /*try {

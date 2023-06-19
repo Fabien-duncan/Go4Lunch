@@ -17,6 +17,7 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.MyWorkmatesAdapter;
 import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.User;
+import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class WorkmatesFragment extends Fragment {
     private List<User> workmatesList;
     private MyWorkmatesAdapter mMyWorkmatesAdapter;
     private MainActivityViewModel mMainActivityViewModel;
+    private AuthenticationRepository mAuthenticationRepository;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,10 +41,16 @@ public class WorkmatesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         workmatesRecyclerView = view.findViewById(R.id.workmates_rv);
+
+        /*mAuthenticationRepository = new AuthenticationRepository(getContext());
+        mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
+        mMainActivityViewModel.setCurrentWorkmates();*/
         mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(MainActivityViewModel.class);
         workmatesRecyclerView.setHasFixedSize(true);
         workmatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        workmatesList = mMainActivityViewModel.getWorkmatesMutableLiveData().getValue();
+        //workmatesList = mMainActivityViewModel.getWorkmatesMutableLiveData().getValue();
+        workmatesList = mMainActivityViewModel.getAllWorkmates().getValue();
+        //System.out.println("workmate 1: " + workmatesList.get(0).getDisplayName());
         mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesList);
         workmatesRecyclerView.setAdapter(mMyWorkmatesAdapter);
         mMyWorkmatesAdapter.notifyDataSetChanged();

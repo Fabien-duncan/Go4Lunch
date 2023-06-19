@@ -59,9 +59,15 @@ public class MainActivityViewModel extends ViewModel {
     public MutableLiveData<User> getCurrentUserMutableLiveData() {
         return currentUserMutableLiveData;
     }
-
+    public void setCurrentWorkmates(){
+        mAuthenticationRepository.retrieveAllWorkmates();
+    }
     public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
-        return workmatesMutableLiveData;
+        return mAuthenticationRepository.getWorkmatesMutableLiveData();
+        //return workmatesMutableLiveData;
+    }
+    public MutableLiveData<List<User>> getAllWorkmates(){
+        return mAuthenticationRepository.getAllWorkmates();
     }
     /*public User getCurrentUser(){
         return mAuthenticationRepository.getCurrentUser();

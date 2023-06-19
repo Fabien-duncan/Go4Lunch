@@ -23,6 +23,7 @@ import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.User;
+import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
@@ -40,6 +41,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     private ListViewFragment mListViewFragment;
     private WorkmatesFragment mWorkmatesFragment;
     private MainActivityViewModel mMainActivityViewModel;
+    private AuthenticationRepository mAuthenticationRepository;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private Toolbar mToolbar;
@@ -71,7 +73,10 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
 
-        mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+        mAuthenticationRepository = new AuthenticationRepository(this);
+        mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
+        //mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+        mMainActivityViewModel.setupGoogleSignInOptions();
 
         String userName = getIntent().getExtras().getString("name");
 
@@ -157,6 +162,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.side_bar_logout:
                 mMainActivityViewModel.signOut();
+                //showMainActivity();
                 System.out.println("singOut");
                 break;
         }
