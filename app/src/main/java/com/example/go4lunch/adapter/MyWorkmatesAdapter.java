@@ -10,21 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.MyViewHolder> {
 
     Context mContext;
-    List<User> workmatesArrayList;
+    List<User> workmatesList;
 
-    public MyWorkmatesAdapter(Context context, List<User> workmatesArrayList) {
+    public MyWorkmatesAdapter(Context context, List<User> workmatesList) {
         mContext = context;
-        this.workmatesArrayList = workmatesArrayList;
+        this.workmatesList = workmatesList;
     }
 
     @NonNull
@@ -38,7 +36,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MyWorkmatesAdapter.MyViewHolder holder, int position) {
-        User user = workmatesArrayList.get(position);
+        User user = workmatesList.get(position);
 
         holder.name.setText(user.getDisplayName());
         holder.extraInfo.setText(" " + user.getEmail());
@@ -49,7 +47,12 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
 
     @Override
     public int getItemCount() {
-        return workmatesArrayList.size();
+        return workmatesList.size();
+    }
+
+    public void setWorkmatesList(List<User> workmatesList){
+        this.workmatesList = workmatesList;
+        notifyDataSetChanged();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{

@@ -21,6 +21,7 @@ import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -34,7 +35,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private MapViewFragment mMapViewFragment;
     private ListViewFragment mListViewFragment;
     private WorkmatesFragment mWorkmatesFragment;
-    private MainActivityViewModel mMainActivityViewModel;
+    private ConnectedActivityViewModel mConnectedActivityViewModel;
     private AuthenticationRepository mAuthenticationRepository;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -68,9 +69,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
 
         mAuthenticationRepository = new AuthenticationRepository(this);
-        mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
+        mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
         //mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
-        mMainActivityViewModel.setupGoogleSignInOptions();
+        mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         String userName = getIntent().getExtras().getString("name");
 
@@ -82,13 +83,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         mNavigationView.bringToFront();
         mNavigationView.setNavigationItemSelectedListener(this);
-        mMainActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
+        mConnectedActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(!aBoolean)showMainActivity();
             }
         });
-        mMainActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
+        mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 name.setText(firebaseUser.getDisplayName());
@@ -155,7 +156,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.side_bar_logout:
-                mMainActivityViewModel.signOut();
+                mConnectedActivityViewModel.signOut();
                 //showMainActivity();
                 System.out.println("singOut");
                 break;
