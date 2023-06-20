@@ -2,18 +2,15 @@ package com.example.go4lunch;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
-import com.example.go4lunch.views.MapsActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.example.go4lunch.views.ConnectedActivity;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void showMapsActivity(FirebaseUser account) {
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(this, ConnectedActivity.class);
         intent.putExtra("name", account.getDisplayName());
         startActivity(intent);
         finish();

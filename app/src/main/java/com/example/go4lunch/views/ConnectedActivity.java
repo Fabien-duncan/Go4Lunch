@@ -7,13 +7,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,19 +19,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
-import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MapsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private TextView name;
     private TextView email;
     private BottomNavigationView menu;
@@ -52,7 +46,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_connected);
 
         menu = findViewById(R.id.bottomNavigationView);
 
