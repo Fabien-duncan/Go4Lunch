@@ -54,7 +54,7 @@ public class AuthenticationRepository {
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
-        initAllUsers();
+        //initAllUsers();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         if(mAuth.getCurrentUser() != null){
@@ -63,12 +63,12 @@ public class AuthenticationRepository {
         }
     }
 
-    private void initAllUsers() {
+    /*private void initAllUsers() {
         List<User> tempUsers = new ArrayList<>();
         tempUsers.add(new User("Marion Chenus", "chenus.marion@gmail.com"));
         tempUsers.add(new User("Hugh Duncan", "hugh.duncan@gmail.com"));
         workmatesMutableLiveData.postValue(tempUsers);
-    }
+    }*/
 
     public void setupGoogleSignInOptions(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -134,7 +134,7 @@ public class AuthenticationRepository {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String userId = user.getUid();
                             DocumentReference documentReference = db.collection("users").document(userId);
-                            User newUser = new User(user.getDisplayName(),user.getEmail());
+                            User newUser = new User(user.getDisplayName(),user.getEmail(), user.getPhotoUrl());
                             //retrieveAllWorkmates();
                             //currentUserMutableLiveData.postValue(newUser);
                             /*Map<String, Object> newUser = new HashMap<>();

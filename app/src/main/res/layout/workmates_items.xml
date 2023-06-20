@@ -4,33 +4,48 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="0dp"
-    android:layout_margin="16dp">
+    android:layout_margin="4dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="6dp"
+        android:layout_marginVertical="2dp"
         android:gravity="center"
         android:orientation="horizontal">
+
         <ImageView
             android:id="@+id/workmates_profile_picture_img"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_marginRight="8dp"
             android:background="@drawable/baseline_circle_24"/>
-        <TextView
-            android:id="@+id/workmates_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:textSize="16sp"
-            android:layout_marginLeft="8dp"/>
-        <TextView
-            android:id="@+id/workmates_extra_info_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" extra information goes here"
-            android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/workmates_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="Name"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/workmates_extra_info_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text=" extra information goes here and you can put "
+                    android:textSize="16sp" />
 
     </LinearLayout>
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginLeft="80dp"
+        android:background="?android:attr/listDivider" />
+
 
 </androidx.cardview.widget.CardView>

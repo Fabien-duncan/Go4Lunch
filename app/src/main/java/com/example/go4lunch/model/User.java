@@ -1,5 +1,7 @@
 package com.example.go4lunch.model;
 
+import android.net.Uri;
+
 import java.time.LocalDateTime;
 
 public class User {
@@ -9,17 +11,20 @@ public class User {
     private String email;
     private double lunchChoiceId;
     private LocalDateTime choiceTimeStamp;
+    private Uri photoUrl;
 
 
-    public User(String displayName,String firstName, String lastName, String email) {
+    public User(String displayName,String firstName, String lastName, String email, Uri photoUrl) {
         this.displayName = displayName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.photoUrl = photoUrl;
     }
-    public User(String displayName, String email) {
+    public User(String displayName, String email, Uri photoUrl) {
         this.displayName = displayName;
         this.email = email;
+        this.photoUrl = photoUrl;
     }
     public User(){
 
@@ -72,4 +77,14 @@ public class User {
         this.displayName = displayName;
     }
 
+    public Uri getPhotoUrl() {
+        return photoUrl;
+    }
+
+    /*public void setPhotoUrl(Uri photoUrl) {
+        this.photoUrl = photoUrl;
+    }*/
+    public void setPhotoUrl(String photoUrl){
+        this.photoUrl = Uri.parse(photoUrl);
+    }
 }

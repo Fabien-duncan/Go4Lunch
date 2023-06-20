@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
 
@@ -41,6 +42,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         holder.name.setText(user.getDisplayName());
         holder.extraInfo.setText(" " + user.getEmail());
         //Glide.with(holder).load(user.).circleCrop().into(holder.profilePic);
+        Glide.with(holder.itemView).load(user.getPhotoUrl()).circleCrop().into(holder.profilePic);
 
 
     }
