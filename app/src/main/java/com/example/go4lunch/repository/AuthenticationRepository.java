@@ -187,7 +187,13 @@ public class AuthenticationRepository {
                 if (task.isSuccessful()) {
                     List<User> list = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        list.add(document.toObject(User.class));
+                        System.out.println("user email: " + user.getEmail());
+                        System.out.println("user email: " + document.toObject(User.class).getEmail());
+                        System.out.println(!document.toObject(User.class).getEmail().equals(user.getEmail()));
+                        if(!document.toObject(User.class).getEmail().equals(user.getEmail())){
+                            System.out.println("adding a workmate");
+                            list.add(document.toObject(User.class));
+                        }
                     }
                     workmatesMutableLiveData.postValue(list);
                     Log.d("TAG", list.toString());
@@ -198,35 +204,6 @@ public class AuthenticationRepository {
         });
     }
     public MutableLiveData<List<User>> getAllWorkmates(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        CollectionReference collectionReference = db.collection("users");
-        List<User> list = new ArrayList<>();
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        //System.out.println("workmate: " + document.toObject(User.class).getDisplayName());
-                        list.add(document.toObject(User.class));
-                        //System.out.println("workmate: " + list.get(0).getDisplayName());
-                    }
-                    workmatesMutableLiveData.postValue(list);
-                    System.out.println("workmate: " + list.get(0).getDisplayName());
-                    Log.d("TAG", list.toString());
-                } else {
-                    Log.d("TAG", "Error getting documents: ", task.getException());
-                }
-            }
-        });
-        System.out.println("workmate 1: ");
         return workmatesMutableLiveData;
     }
-
-/*public User getCurrentUser(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
-        DocumentReference documentReference = db.collection("users").document(userId);
-        User currentUser = documentReference.get().getResult().toObject(User.class);
-        return currentUser;
-    }*/
 }
