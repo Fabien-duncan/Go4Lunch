@@ -68,4 +68,5 @@ public class MainActivity extends AppCompatActivity {
             mMainActivityViewModel.handleSignInResult(data);
         }
     }
+
 }
