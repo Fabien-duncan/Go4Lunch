@@ -2,24 +2,15 @@ package com.example.go4lunch.views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.go4lunch.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,11 +21,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +30,8 @@ import java.util.List;
 
 public class MapViewFragment extends SupportMapFragment {
 
-    private GoogleMap mapView;
+    private GoogleMap mMap;
+    private View mapView;
 
     private boolean mLocationPermissionGranted = false;
 
@@ -53,12 +42,21 @@ public class MapViewFragment extends SupportMapFragment {
 
     private void initGoogleMap() {
         getMapAsync(new OnMapReadyCallback() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                mapView = googleMap;
+                mMap = googleMap;
                 LatLng myLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-                mapView.addMarker(new MarkerOptions().position(myLocation).title("My location"));
-                mapView.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                mMap.addMarker(new MarkerOptions().position(myLocation).title("My location"));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+
+                mMap.setMyLocationEnabled(true);
+                View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+                RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+                // position on right bottom
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);rlp.setMargins(0,0,30,30);
 
             }
         });
@@ -70,6 +68,7 @@ public class MapViewFragment extends SupportMapFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLocationPermission();
+        mapView = this.getView();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
         /*if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
