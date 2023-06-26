@@ -96,7 +96,7 @@ public class MapViewFragment extends SupportMapFragment {
         super.onActivityCreated(savedInstanceState);
         getLocationPermission();
         mapView = this.getView();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
         /*if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -127,10 +127,24 @@ public class MapViewFragment extends SupportMapFragment {
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         Dexter.withContext(getContext()).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
                     Toast.makeText(getContext(),"permission granted", Toast.LENGTH_SHORT).show();
+                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
+                                currentLocation = location;
+                                initGoogleMap();
+                                // Logic to handle location object
+                            }
+                        }
+                    });
                     mLocationPermissionGranted = true;
                 }
 
