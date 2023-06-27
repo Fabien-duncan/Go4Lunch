@@ -3,6 +3,8 @@ package com.example.go4lunch.views;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -18,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.go4lunch.R;
+import com.example.go4lunch.repository.GooglePlacesReadTask;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,6 +41,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MapViewFragment extends SupportMapFragment {
 
@@ -108,18 +113,6 @@ public class MapViewFragment extends SupportMapFragment {
             return;
         }*/
         if(!mLocationPermissionGranted)return;
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
-                    currentLocation = location;
-                    initGoogleMap();
-                    // Logic to handle location object
-                }
-            }
-        });
 
     }
     private void getLocationPermission(){
@@ -141,6 +134,34 @@ public class MapViewFragment extends SupportMapFragment {
                                 System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
                                 currentLocation = location;
                                 initGoogleMap();
+                                ApplicationInfo applicationInfo = null;
+                                try {
+                                    applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                if(applicationInfo!= null){
+                                    String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
+
+                                    StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+                                    googlePlacesUrl.append("location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
+                                    googlePlacesUrl.append("&radius=" + 10000);
+                                    googlePlacesUrl.append("&types=" + "restaurant");
+                                    googlePlacesUrl.append("&sensor=true");
+                                    googlePlacesUrl.append("&key=" + key);
+
+                                    GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
+
+                                    ExecutorService service = Executors.newSingleThreadExecutor();
+                                    service.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String GooglePlaceData = googlePlacesReadTask.getGooglePlacesData(mMap, googlePlacesUrl.toString());
+                                        }
+                                    });
+
+                                }
+
                                 // Logic to handle location object
                             }
                         }
@@ -160,20 +181,6 @@ public class MapViewFragment extends SupportMapFragment {
                 permissionToken.continuePermissionRequest();
             }
         }).onSameThread().check();
-
-        /*String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if(ContextCompat.checkSelfPermission(getContext().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(getContext().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                mLocationPermissionGranted = true;
-            }
-            else{
-                ActivityCompat.requestPermissions(this.getActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        }
-        else{
-            ActivityCompat.requestPermissions(this.getActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE);
-        }*/
 
     }
 
