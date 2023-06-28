@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.ListViewFragment"
-    android:background="@color/purple_200">
+    android:layout_marginTop="10dp"
+    tools:context=".views.WorkmatesFragment">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restaurant_list_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="List View" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>

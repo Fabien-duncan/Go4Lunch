@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="0dp"
+    android:layout_margin="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginVertical="2dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/restaurant_list_name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Le zinc"
+                android:textStyle="bold"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/restaurant_list_address_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="French-12 rue du Faubourg Poisonnière"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/restaurant_list_open_hours_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="italic"
+                android:text="Open until 7pm"
+                android:layout_weight="1"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/restaurant_list_distance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="120m"
+                android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="bottom|right">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_person_outline_24"/>
+                <TextView
+                    android:id="@+id/restaurant_list_workmates_num_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="1dp"
+                    android:text="(2)" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:paddingTop="6dp"
+                android:gravity="right">
+                <ImageView
+                    android:id="@+id/restaurant_list_star_3_iv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/baseline_star_24"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/restaurant_list_star_2_iv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/baseline_star_24"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:id="@+id/restaurant_list_star_1_iv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/baseline_star_24"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/restaurant_list_picture_img"
+            android:layout_marginLeft="4dp"
+            android:layout_width="0dp"
+            android:background="@color/black"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"/>
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

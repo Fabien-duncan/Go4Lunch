@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;

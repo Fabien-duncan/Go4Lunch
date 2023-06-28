@@ -44,6 +44,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private ImageView profilePic;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
