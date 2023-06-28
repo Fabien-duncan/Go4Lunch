@@ -30,7 +30,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
     @Override
     public MyWorkmatesAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(mContext).inflate(R.layout.workmates_items,parent,false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.workmates_item,parent,false);
 
         return new MyViewHolder(v);
     }
