@@ -27,6 +27,7 @@ public class HttpReader {
             }
             httpData = stringBuffer.toString();
             bufferedReader.close();
+            //System.out.println(httpData);
         } catch (Exception e) {
             Log.d("Exception - reading Http url", e.toString());
         } finally {

@@ -66,6 +66,7 @@ public class CreateNearbyRestaurants {
             lng = Double.parseDouble(longitude);
 
             restaurant = new Restaurant(id,name,address,lat,lng);
+            //System.out.println("restaurant " + restaurant.getName());
         } catch (JSONException e) {
             e.printStackTrace();
         }

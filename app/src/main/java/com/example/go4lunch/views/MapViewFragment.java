@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.go4lunch.R;
+import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.repository.GooglePlacesReadTask;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -48,6 +50,8 @@ public class MapViewFragment extends SupportMapFragment {
 
     private GoogleMap mMap;
     private View mapView;
+    private List<Restaurant> nearbyRestaurants;
+    private GooglePlacesReadTask googlePlacesReadTask;
 
     private boolean mLocationPermissionGranted = false;
 
@@ -63,8 +67,8 @@ public class MapViewFragment extends SupportMapFragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
                 LatLng myLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
 
                 mMap.setMyLocationEnabled(true);
@@ -99,6 +103,7 @@ public class MapViewFragment extends SupportMapFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        googlePlacesReadTask = new GooglePlacesReadTask();
         getLocationPermission();
         mapView = this.getView();
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
@@ -134,6 +139,8 @@ public class MapViewFragment extends SupportMapFragment {
                                 System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
                                 currentLocation = location;
                                 initGoogleMap();
+
+
                                 ApplicationInfo applicationInfo = null;
                                 try {
                                     applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
@@ -143,29 +150,53 @@ public class MapViewFragment extends SupportMapFragment {
                                 if(applicationInfo!= null){
                                     String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
 
+                                    System.out.println("Map api key: " + key);
+
                                     StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                                     googlePlacesUrl.append("location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-                                    googlePlacesUrl.append("&radius=" + 10000);
+                                    googlePlacesUrl.append("&radius=" + 5000);
                                     googlePlacesUrl.append("&types=" + "restaurant");
                                     googlePlacesUrl.append("&sensor=true");
                                     googlePlacesUrl.append("&key=" + key);
 
-                                    GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
+                                    System.out.println(googlePlacesUrl.toString());
 
                                     ExecutorService service = Executors.newSingleThreadExecutor();
                                     service.execute(new Runnable() {
                                         @Override
                                         public void run() {
-                                            String GooglePlaceData = googlePlacesReadTask.getGooglePlacesData(mMap, googlePlacesUrl.toString());
+
+                                            System.out.println("getting google url json");
+                                            String googlePlaceData = googlePlacesReadTask.getGooglePlacesData(mMap, googlePlacesUrl.toString());
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    System.out.println("getting restaurants from json");
+                                                    nearbyRestaurants = googlePlacesReadTask.getGooglePlacesRestaurants(googlePlaceData);
+
+                                                }
+                                            });
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.d("nearby restaurant", "first: " + nearbyRestaurants.get(0).getName());
+                                                    placeNearbyRestaurants();
+                                                }
+                                            });
+
                                         }
                                     });
+
 
                                 }
 
                                 // Logic to handle location object
                             }
                         }
+
                     });
+                    System.out.println("finished getting restaurants from json");
+                    //Log.d("nearby restaurant", "first: " + nearbyRestaurants.get(0).getName());
                     mLocationPermissionGranted = true;
                 }
 
@@ -181,6 +212,13 @@ public class MapViewFragment extends SupportMapFragment {
                 permissionToken.continuePermissionRequest();
             }
         }).onSameThread().check();
+
+    }
+    private void placeNearbyRestaurants(){
+        for(int i = 0; i < nearbyRestaurants.size();i++){
+            LatLng restaurantLocation = new LatLng(nearbyRestaurants.get(i).getLat(),nearbyRestaurants.get(i).getLng());
+            mMap.addMarker(new MarkerOptions().position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange))));
+        }
 
     }
 
