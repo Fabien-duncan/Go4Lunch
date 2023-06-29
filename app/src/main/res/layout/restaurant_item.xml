@@ -62,6 +62,7 @@
                 android:orientation="horizontal"
                 android:gravity="bottom|right">
                 <ImageView
+                    android:id="@+id/restaurant_list_workmates_num_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/baseline_person_outline_24"/>

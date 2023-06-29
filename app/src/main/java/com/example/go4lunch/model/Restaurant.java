@@ -12,9 +12,11 @@ public class Restaurant {
     private double lat;
     private double lng;
     private String id;
+    private String phoneNumber;
 
     public Restaurant(){}
-    public Restaurant(String name, String imageUrl, String type, String address, int attendanceNum, String openingHours, double rating) {
+    public Restaurant(String id, String name, String address, double lat, double lng, int attendanceNum,String imageUrl, String type, String openingHours, double rating, int distance, String number) {
+        this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
         this.type = type;
@@ -22,6 +24,10 @@ public class Restaurant {
         this.attendanceNum = attendanceNum;
         this.openingHours = openingHours;
         this.rating = rating;
+        this.distance = distance;
+        this.phoneNumber = number;
+        this.lat = lat;
+        this.lng = lng;
     }
     public Restaurant(String id, String name, String address, double lat, double lng) {
         this.id = id;
@@ -121,5 +127,13 @@ public class Restaurant {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

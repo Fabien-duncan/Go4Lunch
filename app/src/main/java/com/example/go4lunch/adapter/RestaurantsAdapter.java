@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
 
@@ -34,6 +35,33 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantsAdapter.MyViewHolder holder, int position) {
+        Restaurant restaurant = mRestaurantList.get(position);
+
+        holder.name.setText(restaurant.getName());
+        holder.address.setText(restaurant.getAddress());
+        holder.distance.setText(restaurant.getDistance() + "m");
+        holder.openingHours.setText("Open until " + restaurant.getOpeningHours());
+
+
+        if(restaurant.getRating() == 0){
+            holder.star1_img.setVisibility(View.INVISIBLE);
+            holder.star2_img.setVisibility(View.INVISIBLE);
+            holder.star3_img.setVisibility(View.INVISIBLE);
+        } else if (restaurant.getRating() == 1) {
+            holder.star2_img.setVisibility(View.INVISIBLE);
+            holder.star3_img.setVisibility(View.INVISIBLE);
+        } else if (restaurant.getRating() == 2) {
+            holder.star3_img.setVisibility(View.INVISIBLE);
+        }
+
+        if(restaurant.getAttendanceNum() == 0){
+            holder.workmatesNumber.setText("");
+            holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
+        }else{
+            holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
+        }
+
+        Glide.with(holder.itemView).load(restaurant.getImageUrl()).centerCrop().into(holder.restaurant_img);
 
     }
 
@@ -46,7 +74,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         notifyDataSetChanged();
     }
     public static class MyViewHolder extends RecyclerView.ViewHolder{
-        ImageView restaurant_img, star1_img, star2_img, star3_img;
+        ImageView restaurant_img, star1_img, star2_img, star3_img, workmatesNumber_img;
         TextView name, address, openingHours, distance, workmatesNumber;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,6 +87,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             openingHours = itemView.findViewById(R.id.restaurant_list_open_hours_tv);
             distance = itemView.findViewById(R.id.restaurant_list_distance_tv);
             workmatesNumber = itemView.findViewById(R.id.restaurant_list_workmates_num_tv);
+            workmatesNumber_img = itemView.findViewById(R.id.restaurant_list_workmates_num_iv);
         }
     }
 
