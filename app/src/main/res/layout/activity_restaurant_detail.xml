@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        app:maxImageSize="36dp"
+        app:maxImageSize="32dp"
         android:src="@drawable/baseline_check_circle_24"
         app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/restaurant_detail_restaurant_iv"
@@ -43,14 +43,42 @@
             android:orientation="vertical"
             android:background="@color/orange"
             android:paddingLeft="16dp">
-            <TextView
-                android:id="@+id/restaurant_detail_name_tv"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Le Zinc"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/restaurant_detail_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Le Zinc"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:layout_marginRight="12dp"/>
+
+                <ImageView
+                    android:id="@+id/restaurant_list_star_3_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/restaurant_list_star_2_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_24"/>
+                <ImageView
+                    android:id="@+id/restaurant_list_star_1_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_star_24"/>
+
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/restaurant_detail_address_tv"
                 android:layout_width="match_parent"
@@ -63,36 +91,38 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp">
             <Button
                 android:id="@+id/restaurant_detail_call_btn"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="CALL"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_person_outline_24" />
+                android:drawableTop="@drawable/baseline_phone_24" />
             <Button
-                android:id="@+id/restaurant_detail_call_btn"
+                android:id="@+id/restaurant_detail_like_btn"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="LIKE"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_person_outline_24" />
+                android:drawableTop="@drawable/baseline_like_star_24" />
             <Button
-                android:id="@+id/restaurant_detail_call_btn"
+                android:id="@+id/restaurant_detail_website_btn"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="WEBSITE"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_person_outline_24" />
-
+                android:drawableTop="@drawable/baseline_website_24" />
         </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

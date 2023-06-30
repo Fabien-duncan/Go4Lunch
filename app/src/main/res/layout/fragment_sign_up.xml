@@ -10,5 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/hello_blank_fragment" />
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:progressDrawable="@drawable/rating_bar_bg"
+
+        android:numStars="6"
+        android:rating="3"
+        android:stepSize="0.5"/>
 
 </FrameLayout>
