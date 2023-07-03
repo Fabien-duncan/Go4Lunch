@@ -133,17 +133,6 @@ public class MapViewFragment extends SupportMapFragment {
 
 
         mapView = this.getView();
-        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-        /*if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }*/
         if(!mLocationPermissionGranted)return;
 
     }
@@ -179,44 +168,7 @@ public class MapViewFragment extends SupportMapFragment {
 
                                     System.out.println("Map api key: " + key);
 
-                                    StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-                                    googlePlacesUrl.append("location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-                                    googlePlacesUrl.append("&radius=" + 5000);
-                                    googlePlacesUrl.append("&types=" + "restaurant");
-                                    googlePlacesUrl.append("&sensor=true");
-                                    googlePlacesUrl.append("&key=" + key);
-
-                                    System.out.println(googlePlacesUrl.toString());
-
-                                    mConnectedActivityViewModel.setGooglePlacesData(googlePlacesUrl.toString());
-
-                                    /*ExecutorService service = Executors.newSingleThreadExecutor();
-                                    service.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            System.out.println("getting google url json");
-                                            String googlePlaceData = googlePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString());
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    System.out.println("getting restaurants from json");
-                                                    nearbyRestaurants = googlePlacesReadTask.getGooglePlacesRestaurants(googlePlaceData);
-
-                                                }
-                                            });
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Log.d("nearby restaurant", "first: " + nearbyRestaurants.get(0).getName());
-                                                    placeNearbyRestaurants();
-                                                }
-                                            });
-
-                                        }
-                                    });*/
-
-
+                                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
                                 }
 
                                 // Logic to handle location object

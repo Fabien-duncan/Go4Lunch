@@ -82,8 +82,8 @@ public class ConnectedActivityViewModel {
     public void setRestaurantsMutableLiveData(){
         mConnectedActivityRepository.setGooglePlacesRestaurants();
     }
-    public void setGooglePlacesData(String googlePlacesUrl){
-        mConnectedActivityRepository.setGooglePlacesData(googlePlacesUrl);
+    public void setGooglePlacesData(double lat, double lng, String key){
+        mConnectedActivityRepository.setGooglePlacesData(lat,lng,key);
     }
 
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {

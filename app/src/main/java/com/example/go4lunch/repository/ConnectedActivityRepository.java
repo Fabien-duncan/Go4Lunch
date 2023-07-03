@@ -31,14 +31,23 @@ public class ConnectedActivityRepository {
         mGooglePlacesReadTask = new GooglePlacesReadTask();
     }
 
-    public void setGooglePlacesData(String googlePlacesUrl){
-        Log.d("ConnectedActivity", "placesUrl: " + googlePlacesUrl);
+    public void setGooglePlacesData(double lat, double lng, String key){
         Executor executor = Executors.newSingleThreadExecutor();
 
+        System.out.println("Map api key: " + key);
+
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=" + lat + "," + lng);
+        googlePlacesUrl.append("&radius=" + 5000);
+        googlePlacesUrl.append("&types=" + "restaurant");
+        googlePlacesUrl.append("&sensor=true");
+        googlePlacesUrl.append("&key=" + key);
+
+        Log.d("ConnectedActivity", "placesUrl: " + googlePlacesUrl.toString());
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl));
+                googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
             }
         });
 
