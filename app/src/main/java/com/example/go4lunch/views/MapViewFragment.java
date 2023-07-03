@@ -20,10 +20,13 @@ import android.widget.Toast;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.GooglePlacesReadTask;
+import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,6 +63,8 @@ public class MapViewFragment extends SupportMapFragment {
 
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationClient;
+    private ConnectedActivityViewModel mConnectedActivityViewModel;
+    private AuthenticationRepository mAuthenticationRepository;
 
     private void initGoogleMap() {
         getMapAsync(new OnMapReadyCallback() {
@@ -105,7 +110,28 @@ public class MapViewFragment extends SupportMapFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         googlePlacesReadTask = new GooglePlacesReadTask();
+
+        mAuthenticationRepository = new AuthenticationRepository(getContext());
+        mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
+
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                nearbyRestaurants = restaurants;
+                placeNearbyRestaurants();
+            }
+        });
+        mConnectedActivityViewModel.getGooglePlacesLiveData().observe(getActivity(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                //Log.d("Places live Data", s);
+                mConnectedActivityViewModel.setRestaurantsMutableLiveData();
+            }
+        });
+
         getLocationPermission();
+
+
         mapView = this.getView();
         //fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
         /*if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -162,13 +188,15 @@ public class MapViewFragment extends SupportMapFragment {
 
                                     System.out.println(googlePlacesUrl.toString());
 
-                                    ExecutorService service = Executors.newSingleThreadExecutor();
+                                    mConnectedActivityViewModel.setGooglePlacesData(googlePlacesUrl.toString());
+
+                                    /*ExecutorService service = Executors.newSingleThreadExecutor();
                                     service.execute(new Runnable() {
                                         @Override
                                         public void run() {
 
                                             System.out.println("getting google url json");
-                                            String googlePlaceData = googlePlacesReadTask.getGooglePlacesData(mMap, googlePlacesUrl.toString());
+                                            String googlePlaceData = googlePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString());
                                             getActivity().runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -186,7 +214,7 @@ public class MapViewFragment extends SupportMapFragment {
                                             });
 
                                         }
-                                    });
+                                    });*/
 
 
                                 }
@@ -199,6 +227,7 @@ public class MapViewFragment extends SupportMapFragment {
                     System.out.println("finished getting restaurants from json");
                     //Log.d("nearby restaurant", "first: " + nearbyRestaurants.get(0).getName());
                     mLocationPermissionGranted = true;
+                    //System.out.println("the number is " + ((ConnectedActivity)getActivity()).getnum());
                 }
 
                 // check for permanent decline of any permission
@@ -222,5 +251,6 @@ public class MapViewFragment extends SupportMapFragment {
         }
 
     }
+
 
 }

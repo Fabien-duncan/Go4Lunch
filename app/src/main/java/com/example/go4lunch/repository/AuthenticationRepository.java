@@ -50,7 +50,6 @@ public class AuthenticationRepository {
     public AuthenticationRepository(Context context){
         this.mContext = context;
         this.mActivity = (Activity)context;
-        mFirebaseUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());

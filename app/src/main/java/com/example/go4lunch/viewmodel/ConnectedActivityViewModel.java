@@ -4,8 +4,10 @@ import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.repository.ConnectedActivityRepository;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
@@ -18,12 +20,21 @@ public class ConnectedActivityViewModel {
 
     private MutableLiveData<List<User>> workmatesMutableLiveData;
 
+    private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
+    private ConnectedActivityRepository mConnectedActivityRepository;
+    private MutableLiveData<String> googlePlacesLiveData;
+
     public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
+
+        mConnectedActivityRepository = new ConnectedActivityRepository();
+        restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
+        googlePlacesLiveData = mConnectedActivityRepository.getGooglePlacesLiveData();
+
     }
     public void setupGoogleSignInOptions(){
         mAuthenticationRepository.setupGoogleSignInOptions();
@@ -67,5 +78,19 @@ public class ConnectedActivityViewModel {
     }
     public MutableLiveData<List<User>> getAllWorkmates(){
         return mAuthenticationRepository.getAllWorkmates();
+    }
+    public void setRestaurantsMutableLiveData(){
+        mConnectedActivityRepository.setGooglePlacesRestaurants();
+    }
+    public void setGooglePlacesData(String googlePlacesUrl){
+        mConnectedActivityRepository.setGooglePlacesData(googlePlacesUrl);
+    }
+
+    public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
+        return restaurantsMutableLiveData;
+    }
+
+    public MutableLiveData<String> getGooglePlacesLiveData() {
+        return googlePlacesLiveData;
     }
 }

@@ -18,12 +18,20 @@ public class GooglePlacesReadTask {
     private String googlePlacesData = null;
     private GoogleMap mGoogleMap;
     //private List<Restaurant> nearbyRestaurants;
-    private JSONObject mJSONObject;
+    //private JSONObject mJSONObject;
 
-
-    public String getGooglePlacesData(GoogleMap googleMap, String googlePlacesUrl){
+    /*public String getGooglePlacesData(GoogleMap googleMap, String googlePlacesUrl){
         try {
             mGoogleMap = googleMap;
+            HttpReader http = new HttpReader();
+            googlePlacesData = http.read(googlePlacesUrl);
+        } catch (Exception e) {
+            Log.d("Google Place Read Task", e.toString());
+        }
+        return googlePlacesData;
+    }*/
+    public String getGooglePlacesData( String googlePlacesUrl){
+        try {
             HttpReader http = new HttpReader();
             googlePlacesData = http.read(googlePlacesUrl);
         } catch (Exception e) {

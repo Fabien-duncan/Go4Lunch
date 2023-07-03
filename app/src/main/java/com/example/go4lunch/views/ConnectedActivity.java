@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
+import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
@@ -27,6 +28,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private TextView name;
@@ -163,5 +167,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 break;
         }
         return true;
+    }
+    public List<Restaurant> getRestaurants(){
+        return new ArrayList<>();
     }
 }
