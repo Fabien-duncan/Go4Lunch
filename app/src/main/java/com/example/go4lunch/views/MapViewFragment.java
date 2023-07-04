@@ -129,17 +129,55 @@ public class MapViewFragment extends SupportMapFragment {
             }
         });
 
-        getLocationPermission();
+        //getLocationPermission();
+        getLocation();
 
 
         mapView = this.getView();
         if(!mLocationPermissionGranted)return;
 
     }
+    @SuppressLint("MissingPermission")
+    private void getLocation(){
+
+        Toast.makeText(getContext(),"permission granted", Toast.LENGTH_SHORT).show();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
+                    currentLocation = location;
+                    initGoogleMap();
+
+
+                    ApplicationInfo applicationInfo = null;
+                    try {
+                        applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if(applicationInfo!= null){
+                        String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
+
+                        System.out.println("Map api key: " + key);
+
+                        mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
+                    }
+
+                    // Logic to handle location object
+                }
+            }
+
+        });
+        System.out.println("finished getting restaurants from json");
+    }
+
     private void getLocationPermission(){
-        Collection<String> permissions = new ArrayList<>();
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        //Collection<String> permissions = new ArrayList<>();
+        /*permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);*/
         Dexter.withContext(getContext()).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
             @SuppressLint("MissingPermission")
             @Override

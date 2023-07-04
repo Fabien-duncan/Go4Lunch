@@ -8,7 +8,12 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,10 +29,17 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +58,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private Toolbar mToolbar;
     private User currentUser;
     private ImageView profilePic;
+    private boolean isLocationGranted;
 
 
 
@@ -71,16 +84,16 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         setSupportActionBar(mToolbar);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+        isLocationGranted = false;
+        getLocationPermission();
+
 
         mAuthenticationRepository = new AuthenticationRepository(this);
         mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
-        //mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
         mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         String userName = getIntent().getExtras().getString("name");
 
-        //name.setText(userName);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
@@ -103,24 +116,22 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             }
         });
 
-        /*mMainActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                name.setText(user.getDisplayName());
-
-            }
-        });*/
-
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.mapView:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                        if(isLocationGranted)getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                        else{
+                            Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
+                        }
                         System.out.println("Maps");
                         break;
                     case R.id.listView:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
+                        if(isLocationGranted)getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
+                        else{
+                            Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
+                        }
                         System.out.println("List");
                         break;
                     case R.id.workmates:
@@ -167,6 +178,31 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 break;
         }
         return true;
+    }
+    private void getLocationPermission(){
+        Dexter.withContext(this).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                    Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                    isLocationGranted =true;
+
+                }
+
+                // check for permanent decline of any permission
+                if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
+                    Toast.makeText(ConnectedActivity.this,"permission NOT granted!!!", Toast.LENGTH_SHORT).show();
+                    isLocationGranted = false;
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                permissionToken.continuePermissionRequest();
+            }
+        }).onSameThread().check();
+
     }
     public List<Restaurant> getRestaurants(){
         return new ArrayList<>();
