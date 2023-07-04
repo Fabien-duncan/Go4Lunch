@@ -64,7 +64,7 @@ public class MapViewFragment extends SupportMapFragment {
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationClient;
     private ConnectedActivityViewModel mConnectedActivityViewModel;
-    private AuthenticationRepository mAuthenticationRepository;
+    //private AuthenticationRepository mAuthenticationRepository;
 
     private void initGoogleMap() {
         getMapAsync(new OnMapReadyCallback() {
@@ -114,7 +114,7 @@ public class MapViewFragment extends SupportMapFragment {
         super.onActivityCreated(savedInstanceState);
         googlePlacesReadTask = new GooglePlacesReadTask();
 
-        mAuthenticationRepository = new AuthenticationRepository(getContext());
+        //mAuthenticationRepository = new AuthenticationRepository(getContext());
         //mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
 

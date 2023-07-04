@@ -5,9 +5,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantsAdapter;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ public class ListViewFragment extends Fragment {
     private RecyclerView restaurantsRecyclerView;
     private RestaurantsAdapter mRestaurantsAdapter;
     private List<Restaurant> restaurantsList;
+    private ConnectedActivityViewModel mConnectedActivityViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,13 +41,23 @@ public class ListViewFragment extends Fragment {
 
         restaurantsRecyclerView = view.findViewById(R.id.restaurant_list_rv);
 
+        mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+
         restaurantsRecyclerView.setHasFixedSize(true);
         restaurantsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        initRestaurants();
+        restaurantsList = new ArrayList<>();
+        //initRestaurants();
 
         mRestaurantsAdapter = new RestaurantsAdapter(getContext(), restaurantsList);
         restaurantsRecyclerView.setAdapter(mRestaurantsAdapter);
+
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                mRestaurantsAdapter.setRestaurantList(restaurants);
+            }
+        });
     }
 
     private void initRestaurants() {
