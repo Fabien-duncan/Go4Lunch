@@ -15,6 +15,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -59,6 +61,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private User currentUser;
     private ImageView profilePic;
     private boolean isLocationGranted;
+    private List<Restaurant> nearbyRestaurants;
+    private Location currentLocation;
+    private FusedLocationProviderClient fusedLocationClient;
 
 
 
@@ -115,6 +120,20 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
             }
         });
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                nearbyRestaurants = restaurants;
+                if(nearbyRestaurants.size()>0)Log.d("Connected Activity", nearbyRestaurants.get(0).getName());
+            }
+        });
+        mConnectedActivityViewModel.getGooglePlacesLiveData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                //Log.d("Places live Data", s);
+                mConnectedActivityViewModel.setRestaurantsMutableLiveData();
+            }
+        });
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -145,8 +164,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     private void showMainActivity() {
         Intent intent = new Intent(this,MainActivity.class);
-        //intent.putExtra("signout", "true");
-        //mMainActivityViewModel.signOut();
         startActivity(intent);
 
         finish();
@@ -187,6 +204,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                     isLocationGranted =true;
+                    getLocation();
 
                 }
 
@@ -204,7 +222,45 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         }).onSameThread().check();
 
     }
+    @SuppressLint("MissingPermission")
+    private void getLocation(){
+
+        Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
+                    currentLocation = location;
+
+
+                    ApplicationInfo applicationInfo = null;
+                    try {
+                        applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if(applicationInfo!= null){
+                        String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
+
+                        System.out.println("Map api key: " + key);
+
+                        mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
+                    }
+
+                    // Logic to handle location object
+                }
+            }
+
+        });
+        System.out.println("finished getting restaurants from json");
+    }
     public List<Restaurant> getRestaurants(){
         return new ArrayList<>();
+    }
+    public ConnectedActivityViewModel getConnectedActivityViewModel(){
+        return this.mConnectedActivityViewModel;
     }
 }
