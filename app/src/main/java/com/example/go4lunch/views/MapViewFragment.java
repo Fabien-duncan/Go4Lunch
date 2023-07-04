@@ -72,6 +72,7 @@ public class MapViewFragment extends SupportMapFragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
+
                 LatLng myLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
                 //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
                 mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
@@ -85,6 +86,8 @@ public class MapViewFragment extends SupportMapFragment {
                 rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);rlp.setMargins(0,0,30,30);
 
                 mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
+
+                placeNearbyRestaurants();
 
             }
 
@@ -112,126 +115,34 @@ public class MapViewFragment extends SupportMapFragment {
         googlePlacesReadTask = new GooglePlacesReadTask();
 
         mAuthenticationRepository = new AuthenticationRepository(getContext());
-        mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
+        //mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
+        mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+
+
 
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 nearbyRestaurants = restaurants;
-                placeNearbyRestaurants();
+                if(nearbyRestaurants.size()>0){
+                    Log.d("Map Fragment", nearbyRestaurants.get(0).getName() +  ", Lat: " + nearbyRestaurants.get(0).getLat());
+                    //placeNearbyRestaurants();
+                    currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
+                    initGoogleMap();
+                }
             }
         });
-        mConnectedActivityViewModel.getGooglePlacesLiveData().observe(getActivity(), new Observer<String>() {
+        /*mConnectedActivityViewModel.getGooglePlacesLiveData().observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 //Log.d("Places live Data", s);
                 mConnectedActivityViewModel.setRestaurantsMutableLiveData();
             }
-        });
-
-        //getLocationPermission();
-        getLocation();
+        });*/
 
 
         mapView = this.getView();
         if(!mLocationPermissionGranted)return;
-
-    }
-    @SuppressLint("MissingPermission")
-    private void getLocation(){
-
-        Toast.makeText(getContext(),"permission granted", Toast.LENGTH_SHORT).show();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-        fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
-                    currentLocation = location;
-                    initGoogleMap();
-
-
-                    ApplicationInfo applicationInfo = null;
-                    try {
-                        applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if(applicationInfo!= null){
-                        String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
-
-                        System.out.println("Map api key: " + key);
-
-                        mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
-                    }
-
-                    // Logic to handle location object
-                }
-            }
-
-        });
-        System.out.println("finished getting restaurants from json");
-    }
-
-    private void getLocationPermission(){
-        //Collection<String> permissions = new ArrayList<>();
-        /*permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);*/
-        Dexter.withContext(getContext()).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
-                if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                    Toast.makeText(getContext(),"permission granted", Toast.LENGTH_SHORT).show();
-                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
-                                currentLocation = location;
-                                initGoogleMap();
-
-
-                                ApplicationInfo applicationInfo = null;
-                                try {
-                                    applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
-                                } catch (PackageManager.NameNotFoundException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                if(applicationInfo!= null){
-                                    String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
-
-                                    System.out.println("Map api key: " + key);
-
-                                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
-                                }
-
-                                // Logic to handle location object
-                            }
-                        }
-
-                    });
-                    System.out.println("finished getting restaurants from json");
-                    //Log.d("nearby restaurant", "first: " + nearbyRestaurants.get(0).getName());
-                    mLocationPermissionGranted = true;
-                    //System.out.println("the number is " + ((ConnectedActivity)getActivity()).getnum());
-                }
-
-                // check for permanent decline of any permission
-                if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
-                    Toast.makeText(getContext(),"permission NOT granted", Toast.LENGTH_SHORT).show();
-                    // permission denied permanently, navigate user to app settings for granting permissions
-                }
-            }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
-                permissionToken.continuePermissionRequest();
-            }
-        }).onSameThread().check();
 
     }
     private void placeNearbyRestaurants(){

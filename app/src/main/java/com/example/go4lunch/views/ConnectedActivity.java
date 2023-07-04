@@ -263,4 +263,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     public ConnectedActivityViewModel getConnectedActivityViewModel(){
         return this.mConnectedActivityViewModel;
     }
+    public Location getCurrentLocation(){
+        return currentLocation;
+    }
 }
