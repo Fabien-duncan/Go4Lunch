@@ -38,7 +38,7 @@ public class ConnectedActivityRepository {
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=" + lat + "," + lng);
-        googlePlacesUrl.append("&radius=" + 5000);
+        googlePlacesUrl.append("&radius=" + 360);
         googlePlacesUrl.append("&types=" + "restaurant");
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=" + key);

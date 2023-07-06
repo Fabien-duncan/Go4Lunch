@@ -1,5 +1,8 @@
 package com.example.go4lunch.views;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,13 +16,32 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantsAdapter;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.IsOpenRequest;
+import com.google.android.libraries.places.api.net.IsOpenResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ListViewFragment extends Fragment {
@@ -58,6 +80,88 @@ public class ListViewFragment extends Fragment {
                 mRestaurantsAdapter.setRestaurantList(restaurants);
             }
         });
+        getDetail();
+    }
+    private void getDetail(){
+        ApplicationInfo applicationInfo = null;
+        try {
+            applicationInfo = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(applicationInfo!= null){
+            String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
+
+            // Initialize Places.
+            Places.initialize(getActivity().getApplicationContext(), key);
+
+            // Create a new Places client instance.
+            PlacesClient placesClient = Places.createClient(getContext());
+            // Define a Place ID.
+            final String placeId = "ChIJ_zPKVjUczBIRVYgPE0r41UE";
+
+            // Specify the fields to return.
+            final List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.PHONE_NUMBER,Place.Field.PHOTO_METADATAS);
+
+            // Construct a request object, passing the place ID and fields array.
+            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
+            /*placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                Place place = response.getPlace();
+                Log.i("Places detail", "Place found: " + place.getName() + "Phone Num: " + place.getPhoneNumber() + "Icon: ");
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    final ApiException apiException = (ApiException) exception;
+                    Log.e("Places detail", "Place not found: " + exception.getMessage());
+                    final int statusCode = apiException.getStatusCode();
+                    // TODO: Handle error with given status code.
+                }
+             */
+
+            /*String url = String.format("https://maps.googleapis.com/maps/api/place/photo" +
+                    "?maxwidth=400" +
+                    "&photo_reference=Aaw_FcKi-CVGZR14DFgZChcHB3XchlsspKk4GVhHT2-XQ4ykmQlLRc6PTMTlv_yJa0rVkY_3jpMV6InZUjFGKzFD7Rpcdq7hhiz451WStl5GdMmdIriCbqxzD5viKojY9fGySweOnhTuTggvDn-txsXTjUufMAdZzzxIrkJKqFatXNROCdZ_" +
+                    "&key=" + key);
+            Log.d("Place Photo url", url);
+            ImageView imageView = getView().findViewById(R.id.restauran_pitcture);
+
+            Glide.with(this).load(url).centerCrop().into(imageView);*/
+            /*placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                final Place place = response.getPlace();
+
+                // Get the photo metadata.
+                final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                if (metadata == null || metadata.isEmpty()) {
+                    Log.w("Places Photo", "No photo metadata.");
+                    return;
+                }
+                final PhotoMetadata photoMetadata = metadata.get(0);
+
+                // Get the attribution text.
+                final String attributions = photoMetadata.getAttributions();
+
+                // Create a FetchPhotoRequest.
+                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                        .setMaxWidth(500) // Optional.
+                        .setMaxHeight(300) // Optional.
+                        .build();
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    ImageView imageView = getView().findViewById(R.id.restauran_pitcture);
+                    imageView.setImageBitmap(bitmap);
+
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        final ApiException apiException = (ApiException) exception;
+                        Log.e("Places Photo", "Place not found: " + exception.getMessage());
+                        final int statusCode = apiException.getStatusCode();
+                        // TODO: Handle error with given status code.
+                    }
+                });
+            });*/
+
+        }
+
     }
 
     private void initRestaurants() {

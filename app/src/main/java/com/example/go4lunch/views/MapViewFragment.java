@@ -88,8 +88,8 @@ public class MapViewFragment extends SupportMapFragment {
                 mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
 
                 placeNearbyRestaurants();
-
             }
+
 
         });
 
@@ -125,7 +125,10 @@ public class MapViewFragment extends SupportMapFragment {
             public void onChanged(List<Restaurant> restaurants) {
                 nearbyRestaurants = restaurants;
                 if(nearbyRestaurants.size()>0){
-                    Log.d("Map Fragment", nearbyRestaurants.get(0).getName() +  ", Lat: " + nearbyRestaurants.get(0).getLat());
+                    Log.d("Map Fragment", nearbyRestaurants.get(0).getName()
+                            +  ", Lat: " + nearbyRestaurants.get(0).getLat()
+                            +  ", Long: " + nearbyRestaurants.get(0).getLng()
+                            + ",rating: " + nearbyRestaurants.get(0).getRating());
                     //placeNearbyRestaurants();
                     currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
                     initGoogleMap();
@@ -146,6 +149,7 @@ public class MapViewFragment extends SupportMapFragment {
 
     }
     private void placeNearbyRestaurants(){
+
         for(int i = 0; i < nearbyRestaurants.size();i++){
             LatLng restaurantLocation = new LatLng(nearbyRestaurants.get(i).getLat(),nearbyRestaurants.get(i).getLng());
             mMap.addMarker(new MarkerOptions().position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange))));

@@ -1,6 +1,11 @@
 package com.example.go4lunch.util;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.util.Log;
+
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.views.ConnectedActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +50,9 @@ public class CreateNearbyRestaurants {
         String id;
         double lat;
         double lng;
+        double rating = -1.0;
+        String photo_reference = "";
+        String openNow = "unknown open status";
 
 
         String latitude = "";
@@ -57,15 +65,38 @@ public class CreateNearbyRestaurants {
             if (!googlePlaceJson.isNull("vicinity")) {
                 address = googlePlaceJson.getString("vicinity");
             }
+            if(!googlePlaceJson.isNull("rating")) {
+                rating = Double.parseDouble(googlePlaceJson.getString("rating"));
+            }
+            if(!googlePlaceJson.isNull("photos")) {
+                photo_reference = googlePlaceJson.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+            }
+            if(!googlePlaceJson.isNull("opening_hours")) {
+                openNow = googlePlaceJson.getJSONObject("opening_hours").getString("open_now");
+            }
             latitude = googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude = googlePlaceJson.getJSONObject("geometry").getJSONObject("location").getString("lng");
             id = googlePlaceJson.getString("place_id");
+
+
 
             //convert to Restaurant object
             lat = Double.parseDouble(latitude);
             lng = Double.parseDouble(longitude);
 
-            restaurant = new Restaurant(id,name,address,lat,lng);
+            restaurant = new Restaurant(id,name,address,lat,lng,rating);
+
+            String key = ConnectedActivity.key;//not good!
+            if(photo_reference.isEmpty()){
+                restaurant.setImageUrl("https://t4.ftcdn.net/jpg/04/00/24/31/360_F_400243185_BOxON3h9avMUX10RsDkt3pJ8iQx72kS3.jpg");
+            }else{
+                String photoUrl = String.format("https://maps.googleapis.com/maps/api/place/photo" +
+                        "?maxwidth=400" +
+                        "&photo_reference="+photo_reference +
+                        "&key=" + key);
+                restaurant.setImageUrl(photoUrl);
+            }
+            restaurant.setOpeningHours(openNow);
             //System.out.println("restaurant " + restaurant.getName());
         } catch (JSONException e) {
             e.printStackTrace();

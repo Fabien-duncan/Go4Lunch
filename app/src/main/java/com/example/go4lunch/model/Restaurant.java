@@ -29,17 +29,17 @@ public class Restaurant {
         this.lat = lat;
         this.lng = lng;
     }
-    public Restaurant(String id, String name, String address, double lat, double lng) {
+    public Restaurant(String id, String name, String address, double lat, double lng,double rating) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.lat = lat;
         this.lng = lng;
+        this.rating = rating;
         //temp extra
         this.type = "french";
         this.attendanceNum = 2;
         this.openingHours = "23:00";
-        this.rating = 3.2;
         this.distance = 152;
         this.phoneNumber = "+33 6 58 32 57 01";
         this.imageUrl="https://media.istockphoto.com/id/1446375027/fr/photo/r%C3%A9union-daffaires-dans-le-restaurant.jpg?s=1024x1024&w=is&k=20&c=fypbQnbN5F2zEI81FWLSHSA3EH5cpQXyHZDiSaWEQBY=";

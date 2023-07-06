@@ -64,6 +64,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private List<Restaurant> nearbyRestaurants;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationClient;
+    public static String key;
 
 
 
@@ -124,6 +125,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 nearbyRestaurants = restaurants;
+
                 if(nearbyRestaurants.size()>0)Log.d("Connected Activity", nearbyRestaurants.get(0).getName());
             }
         });
@@ -243,7 +245,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         throw new RuntimeException(e);
                     }
                     if(applicationInfo!= null){
-                        String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
+                        key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
 
                         System.out.println("Map api key: " + key);
 

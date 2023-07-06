@@ -40,10 +40,10 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         holder.name.setText(restaurant.getName());
         holder.address.setText(restaurant.getAddress());
         holder.distance.setText(restaurant.getDistance() + "m");
-        holder.openingHours.setText("Open until " + restaurant.getOpeningHours());
+        holder.openingHours.setText(restaurant.getOpeningHours());
 
 
-        if(restaurant.getRating() == 0){
+        if(restaurant.getRating() <= 0){
             holder.star1_img.setVisibility(View.INVISIBLE);
             holder.star2_img.setVisibility(View.INVISIBLE);
             holder.star3_img.setVisibility(View.INVISIBLE);
@@ -52,6 +52,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             holder.star3_img.setVisibility(View.INVISIBLE);
         } else if (restaurant.getRating() == 2) {
             holder.star3_img.setVisibility(View.INVISIBLE);
+        } else {
+            holder.star1_img.setVisibility(View.VISIBLE);
+            holder.star2_img.setVisibility(View.VISIBLE);
+            holder.star3_img.setVisibility(View.VISIBLE);
+
         }
 
         if(restaurant.getAttendanceNum() == 0){
