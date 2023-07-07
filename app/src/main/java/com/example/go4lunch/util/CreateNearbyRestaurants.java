@@ -4,6 +4,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.views.ConnectedActivity;
 
@@ -52,7 +53,7 @@ public class CreateNearbyRestaurants {
         double lng;
         double rating = -1.0;
         String photo_reference = "";
-        String openNow = "unknown open status";
+        String openNow = "Unknown open status";
 
 
         String latitude = "";
@@ -86,7 +87,8 @@ public class CreateNearbyRestaurants {
 
             restaurant = new Restaurant(id,name,address,lat,lng,rating);
 
-            String key = ConnectedActivity.key;//not good!
+            //String key = ConnectedActivity.key;//not good!
+            String key = BuildConfig.GMP_key;
             if(photo_reference.isEmpty()){
                 restaurant.setImageUrl("https://t4.ftcdn.net/jpg/04/00/24/31/360_F_400243185_BOxON3h9avMUX10RsDkt3pJ8iQx72kS3.jpg");
             }else{
