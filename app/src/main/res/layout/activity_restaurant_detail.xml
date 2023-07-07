@@ -16,6 +16,7 @@
         android:background="@drawable/header_image_go4lunch"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/restaurant_detail_attend_fb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
