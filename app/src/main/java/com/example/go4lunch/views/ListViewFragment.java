@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -221,5 +222,8 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     @Override
     public void onItemClick(int position) {
         Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
+        DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"tag");
+
     }
 }
