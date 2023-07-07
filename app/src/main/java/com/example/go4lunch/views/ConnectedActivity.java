@@ -64,7 +64,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private List<Restaurant> nearbyRestaurants;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationClient;
-    public static String key;
+    private String key;
 
 
 

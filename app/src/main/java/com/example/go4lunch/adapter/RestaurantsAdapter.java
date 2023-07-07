@@ -18,12 +18,14 @@ import com.example.go4lunch.model.Restaurant;
 import java.util.List;
 
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.MyViewHolder> {
+    private final RestaurantRecyclerViewInterface mRestaurantRecyclerViewInterface;
     Context mContext;
     List<Restaurant> mRestaurantList;
 
-    public RestaurantsAdapter(Context context, List<Restaurant> restaurantList) {
+    public RestaurantsAdapter(Context context, List<Restaurant> restaurantList, RestaurantRecyclerViewInterface restaurantRecyclerViewInterface) {
         mContext = context;
         mRestaurantList = restaurantList;
+        this.mRestaurantRecyclerViewInterface = restaurantRecyclerViewInterface;
     }
 
     @NonNull
@@ -31,7 +33,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public RestaurantsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.restaurant_item,parent,false);
 
-        return new RestaurantsAdapter.MyViewHolder(v);
+        return new RestaurantsAdapter.MyViewHolder(v, mRestaurantRecyclerViewInterface);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView restaurant_img, star1_img, star2_img, star3_img, workmatesNumber_img;
         TextView name, address, openingHours, distance, workmatesNumber;
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, RestaurantRecyclerViewInterface restaurantRecyclerViewInterface) {
             super(itemView);
             restaurant_img = itemView.findViewById(R.id.restaurant_list_picture_img);
             star1_img = itemView.findViewById(R.id.restaurant_list_star_1_iv);
@@ -104,6 +106,19 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             distance = itemView.findViewById(R.id.restaurant_list_distance_tv);
             workmatesNumber = itemView.findViewById(R.id.restaurant_list_workmates_num_tv);
             workmatesNumber_img = itemView.findViewById(R.id.restaurant_list_workmates_num_iv);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(restaurantRecyclerViewInterface!=null){
+                        int pos = getAdapterPosition();
+
+                        if(pos != RecyclerView.NO_POSITION){
+                            restaurantRecyclerViewInterface.onItemClick(pos);
+                        }
+                    }
+                }
+            });
         }
     }
 

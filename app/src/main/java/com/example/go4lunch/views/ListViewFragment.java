@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
+import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.adapter.RestaurantsAdapter;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ListViewFragment extends Fragment {
+public class ListViewFragment extends Fragment implements RestaurantRecyclerViewInterface {
     private RecyclerView restaurantsRecyclerView;
     private RestaurantsAdapter mRestaurantsAdapter;
     private List<Restaurant> restaurantsList;
@@ -71,12 +72,13 @@ public class ListViewFragment extends Fragment {
         restaurantsList = new ArrayList<>();
         //initRestaurants();
 
-        mRestaurantsAdapter = new RestaurantsAdapter(getContext(), restaurantsList);
+        mRestaurantsAdapter = new RestaurantsAdapter(getContext(), restaurantsList, this);
         restaurantsRecyclerView.setAdapter(mRestaurantsAdapter);
 
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
+                restaurantsList = restaurants;
                 mRestaurantsAdapter.setRestaurantList(restaurants);
             }
         });
@@ -214,5 +216,10 @@ public class ListViewFragment extends Fragment {
                 "+33 6 58 32 57 01"
         ));
 
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
     }
 }
