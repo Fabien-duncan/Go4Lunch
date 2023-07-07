@@ -2,6 +2,7 @@ package com.example.go4lunch.repository;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -63,6 +64,18 @@ public class ConnectedActivityRepository {
 
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
         return restaurantsMutableLiveData;
+    }
+    public void setRestaurantsDistance(Location currentLocation){
+        List<Restaurant> restaurants = restaurantsMutableLiveData.getValue();
+        Location restaurantLocation = new Location("");
+
+        for(int i = 0; i<restaurants.size();i++){
+            restaurantLocation.setLatitude(restaurants.get(i).getLat());
+            restaurantLocation.setLongitude(restaurants.get(i).getLng());
+
+            restaurants.get(i).setDistance((int)restaurantLocation.distanceTo(currentLocation));
+        }
+        restaurantsMutableLiveData.postValue(restaurants);
     }
 
 }

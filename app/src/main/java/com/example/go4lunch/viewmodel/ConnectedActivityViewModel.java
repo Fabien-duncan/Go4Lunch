@@ -1,6 +1,7 @@
 package com.example.go4lunch.viewmodel;
 
 import android.content.Intent;
+import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -92,5 +93,8 @@ public class ConnectedActivityViewModel {
 
     public MutableLiveData<String> getGooglePlacesLiveData() {
         return googlePlacesLiveData;
+    }
+    public void setRestaurantsDistance(Location currentLocation){
+        mConnectedActivityRepository.setRestaurantsDistance(currentLocation);
     }
 }
