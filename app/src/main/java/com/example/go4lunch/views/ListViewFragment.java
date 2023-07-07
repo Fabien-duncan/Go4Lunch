@@ -223,7 +223,8 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     public void onItemClick(int position) {
         Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
         DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"tag");
+        ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(restaurantsList.get(position));
+        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");
 
     }
 }
