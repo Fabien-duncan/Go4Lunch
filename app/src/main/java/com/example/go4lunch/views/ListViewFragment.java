@@ -83,7 +83,7 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
                 mRestaurantsAdapter.setRestaurantList(restaurants);
             }
         });
-        getDetail();
+        //getDetail();
     }
     private void getDetail(){
         ApplicationInfo applicationInfo = null;
