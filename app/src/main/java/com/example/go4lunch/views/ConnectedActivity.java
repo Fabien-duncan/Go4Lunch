@@ -131,19 +131,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         Log.d("Connected Activity", "distance is empty");
                         mConnectedActivityViewModel.setRestaurantsDistance(currentLocation);
                     }
-                    Location restaurantLocation = new Location("");
+                   /* Location restaurantLocation = new Location("");
                     restaurantLocation.setLatitude(nearbyRestaurants.get(0).getLat());
                     restaurantLocation.setLongitude(nearbyRestaurants.get(0).getLng());
 
-                    Log.d("Connected Activity", nearbyRestaurants.get(0).getName() + " Distance: " + restaurantLocation.distanceTo(currentLocation));
+                    Log.d("Connected Activity", nearbyRestaurants.get(0).getName() + " Distance: " + restaurantLocation.distanceTo(currentLocation));*/
                 }
-            }
-        });
-        mConnectedActivityViewModel.getGooglePlacesLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                //Log.d("Places live Data", s);
-                mConnectedActivityViewModel.setRestaurantsMutableLiveData();
             }
         });
 

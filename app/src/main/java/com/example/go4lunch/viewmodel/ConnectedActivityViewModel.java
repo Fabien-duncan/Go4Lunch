@@ -23,7 +23,6 @@ public class ConnectedActivityViewModel {
 
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private ConnectedActivityRepository mConnectedActivityRepository;
-    private MutableLiveData<String> googlePlacesLiveData;
 
     public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
@@ -34,7 +33,6 @@ public class ConnectedActivityViewModel {
 
         mConnectedActivityRepository = new ConnectedActivityRepository();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
-        googlePlacesLiveData = mConnectedActivityRepository.getGooglePlacesLiveData();
 
     }
     public void setupGoogleSignInOptions(){
@@ -80,9 +78,6 @@ public class ConnectedActivityViewModel {
     public MutableLiveData<List<User>> getAllWorkmates(){
         return mAuthenticationRepository.getAllWorkmates();
     }
-    public void setRestaurantsMutableLiveData(){
-        mConnectedActivityRepository.setGooglePlacesRestaurants();
-    }
     public void setGooglePlacesData(double lat, double lng, String key){
         mConnectedActivityRepository.setGooglePlacesData(lat,lng,key);
     }
@@ -91,9 +86,6 @@ public class ConnectedActivityViewModel {
         return restaurantsMutableLiveData;
     }
 
-    public MutableLiveData<String> getGooglePlacesLiveData() {
-        return googlePlacesLiveData;
-    }
     public void setRestaurantsDistance(Location currentLocation){
         mConnectedActivityRepository.setRestaurantsDistance(currentLocation);
     }

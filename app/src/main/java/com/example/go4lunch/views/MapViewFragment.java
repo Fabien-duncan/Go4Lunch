@@ -1,10 +1,7 @@
 package com.example.go4lunch.views;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -15,20 +12,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.repository.AuthenticationRepository;
-import com.example.go4lunch.repository.GooglePlacesReadTask;
+import com.example.go4lunch.dataSource.ApiService;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,25 +30,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MapViewFragment extends SupportMapFragment {
 
     private GoogleMap mMap;
     private View mapView;
     private List<Restaurant> nearbyRestaurants;
-    private GooglePlacesReadTask googlePlacesReadTask;
+    private ApiService googlePlacesReadTask;
 
     private boolean mLocationPermissionGranted = false;
 
@@ -112,7 +95,7 @@ public class MapViewFragment extends SupportMapFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        googlePlacesReadTask = new GooglePlacesReadTask();
+        googlePlacesReadTask = new ApiService();
 
         //mAuthenticationRepository = new AuthenticationRepository(getContext());
         //mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
