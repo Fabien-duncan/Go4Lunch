@@ -67,6 +67,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +118,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onChanged(FirebaseUser firebaseUser) {
                 name.setText(firebaseUser.getDisplayName());
                 email.setText(firebaseUser.getEmail());
+                Log.d("User data", "id: " + firebaseUser.getUid());
                 Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
             }
         });

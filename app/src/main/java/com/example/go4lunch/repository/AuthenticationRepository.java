@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -50,6 +51,7 @@ public class AuthenticationRepository {
     public AuthenticationRepository(Context context){
         this.mContext = context;
         this.mActivity = (Activity)context;
+        currentUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
@@ -59,6 +61,7 @@ public class AuthenticationRepository {
         if(mAuth.getCurrentUser() != null){
             System.out.println("getCurrentUser() is not null!");
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
+            setCurrentUser();
         }
     }
 
@@ -146,6 +149,7 @@ public class AuthenticationRepository {
                                 }
                             });
                             mFirebaseUserMutableLiveData.postValue(user);
+                            currentUserMutableLiveData.postValue(newUser);
                             Toast.makeText(mContext, "SignIn successfully!", Toast.LENGTH_LONG).show();
                         }else{
                             Toast.makeText(mContext, "SignIn Failed!", Toast.LENGTH_LONG).show();
@@ -204,5 +208,29 @@ public class AuthenticationRepository {
     }
     public MutableLiveData<List<User>> getAllWorkmates(){
         return workmatesMutableLiveData;
+    }
+    public void setCurrentUser(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        DocumentReference documentReference = db.collection("users").document(user.getUid());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<User> list = new ArrayList<>();
+                    DocumentSnapshot document = task.getResult();
+
+                    currentUserMutableLiveData.postValue(document.toObject(User.class));
+
+                    if (document.exists()) {
+                        Log.d("setCurrentUser", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("setCurrentUser", "No such document");
+                    }
+                } else {
+                    Log.d("setCurrentUser", "get failed with ", task.getException());
+                }
+            }
+        });
+
     }
 }

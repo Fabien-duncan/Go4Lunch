@@ -22,17 +22,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.model.User;
+import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +45,7 @@ public class RestaurantDetailDialogue extends DialogFragment {
     private Restaurant currentRestaurant;
     private Uri restaurantUrl;
     private Button websiteLink;
+    private ConnectedActivityViewModel mConnectedActivityViewModel;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -50,6 +55,20 @@ public class RestaurantDetailDialogue extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
+        mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+
+        mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser firebaseUser) {
+                Log.d("User data Rest detail", "id: " + firebaseUser.getUid());
+            }
+        });
+        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                Log.d("User data Rest detail", "id: " + user.getDisplayName());
+            }
+        });
     }
 
     @Nullable
@@ -130,6 +149,7 @@ public class RestaurantDetailDialogue extends DialogFragment {
                 /*Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + number));
                 startActivity(intent);*/
+
             }
         });
         like.setOnClickListener(new View.OnClickListener() {

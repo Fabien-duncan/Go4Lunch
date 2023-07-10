@@ -9,7 +9,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private double lunchChoiceId;
+    private String lunchChoiceId;
     private LocalDateTime choiceTimeStamp;
     private Uri photoUrl;
 
@@ -54,11 +54,11 @@ public class User {
         this.email = email;
     }
 
-    public double getLunchChoiceId() {
+    public String getLunchChoiceId() {
         return lunchChoiceId;
     }
 
-    public void setLunchChoiceId(double lunchChoiceId) {
+    public void setLunchChoiceId(String lunchChoiceId) {
         this.lunchChoiceId = lunchChoiceId;
     }
 
