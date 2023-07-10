@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.dataSource.ApiService;
 import com.example.go4lunch.model.Restaurant;
 
@@ -29,13 +30,14 @@ public class ConnectedActivityRepository {
         mGooglePlacesReadTask = new ApiService();
     }
 
-    public void setGooglePlacesData(double lat, double lng, String key){
+    public void setGooglePlacesData(Location currentLocation){
+        String key = BuildConfig.GMP_key;
         Executor executor = Executors.newSingleThreadExecutor();
 
         System.out.println("Map api key: " + key);
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=" + lat + "," + lng);
+        googlePlacesUrl.append("location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
         googlePlacesUrl.append("&radius=" + 360);
         googlePlacesUrl.append("&types=" + "restaurant");
         googlePlacesUrl.append("&sensor=true");
@@ -46,7 +48,7 @@ public class ConnectedActivityRepository {
             @Override
             public void run() {
                 //googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
-                restaurantsMutableLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
+                restaurantsMutableLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation));
             }
         });
 

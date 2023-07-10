@@ -2,6 +2,7 @@ package com.example.go4lunch.util;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.util.Log;
 
 import com.example.go4lunch.BuildConfig;
@@ -17,24 +18,24 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CreateNearbyRestaurants {
-    public List<Restaurant> parse(JSONObject jsonObject) {
+    public List<Restaurant> parse(JSONObject jsonObject, Location currentLocation) {
         JSONArray jsonArray = null;
         try {
             jsonArray = jsonObject.getJSONArray("results");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return getRestaurants(jsonArray);
+        return getRestaurants(jsonArray, currentLocation);
     }
 
-    private List<Restaurant> getRestaurants(JSONArray jsonArray) {
+    private List<Restaurant> getRestaurants(JSONArray jsonArray, Location currentLocation) {
         int placesCount = jsonArray.length();
         List<Restaurant> restaurantsList = new ArrayList<>();
         Restaurant aRestaurant = null;
 
         for (int i = 0; i < placesCount; i++) {
             try {
-                aRestaurant = getRestaurant((JSONObject) jsonArray.get(i));
+                aRestaurant = getRestaurant((JSONObject) jsonArray.get(i), currentLocation);
                 restaurantsList.add(aRestaurant);
 
             } catch (JSONException e) {
@@ -44,7 +45,7 @@ public class CreateNearbyRestaurants {
         return restaurantsList;
     }
 
-    private Restaurant getRestaurant(JSONObject googlePlaceJson) {
+    private Restaurant getRestaurant(JSONObject googlePlaceJson, Location currentLocation) {
         Restaurant restaurant = null;
         String name = "-NA-";
         String address = "-NA-";
@@ -81,13 +82,19 @@ public class CreateNearbyRestaurants {
 
 
 
-            //convert to Restaurant object
+
             lat = Double.parseDouble(latitude);
             lng = Double.parseDouble(longitude);
 
-            restaurant = new Restaurant(id,name,address,lat,lng,rating);
+            Location restaurantLocation = new Location("");
+            restaurantLocation.setLatitude(lat);
+            restaurantLocation.setLongitude(lng);
 
-            //String key = ConnectedActivity.key;//not good!
+            int distance =(int)restaurantLocation.distanceTo(currentLocation);
+
+            //convert to Restaurant object
+            restaurant = new Restaurant(id,name,address,lat,lng,rating,distance);
+
             String key = BuildConfig.GMP_key;
             if(photo_reference.isEmpty()){
                 restaurant.setImageUrl("https://t4.ftcdn.net/jpg/04/00/24/31/360_F_400243185_BOxON3h9avMUX10RsDkt3pJ8iQx72kS3.jpg");

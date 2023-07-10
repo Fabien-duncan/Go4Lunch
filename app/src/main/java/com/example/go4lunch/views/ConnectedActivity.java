@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
@@ -58,13 +59,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private Toolbar mToolbar;
-    private User currentUser;
     private ImageView profilePic;
     private boolean isLocationGranted;
     private List<Restaurant> nearbyRestaurants;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationClient;
-    private String key;
 
 
 
@@ -119,24 +118,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 name.setText(firebaseUser.getDisplayName());
                 email.setText(firebaseUser.getEmail());
                 Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
-            }
-        });
-        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                nearbyRestaurants = restaurants;
-
-                if(nearbyRestaurants.size()>0){
-                    if(nearbyRestaurants.get(0).getDistance() < 0 ) {
-                        Log.d("Connected Activity", "distance is empty");
-                        mConnectedActivityViewModel.setRestaurantsDistance(currentLocation);
-                    }
-                   /* Location restaurantLocation = new Location("");
-                    restaurantLocation.setLatitude(nearbyRestaurants.get(0).getLat());
-                    restaurantLocation.setLongitude(nearbyRestaurants.get(0).getLng());
-
-                    Log.d("Connected Activity", nearbyRestaurants.get(0).getName() + " Distance: " + restaurantLocation.distanceTo(currentLocation));*/
-                }
             }
         });
 
@@ -240,20 +221,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
                     currentLocation = location;
 
-
-                    ApplicationInfo applicationInfo = null;
-                    try {
-                        applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if(applicationInfo!= null){
-                        key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
-
-                        System.out.println("Map api key: " + key);
-
-                        mConnectedActivityViewModel.setGooglePlacesData(currentLocation.getLatitude(),currentLocation.getLongitude(),key);
-                    }
+                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
 
                     // Logic to handle location object
                 }

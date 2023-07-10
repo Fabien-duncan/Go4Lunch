@@ -78,8 +78,8 @@ public class ConnectedActivityViewModel {
     public MutableLiveData<List<User>> getAllWorkmates(){
         return mAuthenticationRepository.getAllWorkmates();
     }
-    public void setGooglePlacesData(double lat, double lng, String key){
-        mConnectedActivityRepository.setGooglePlacesData(lat,lng,key);
+    public void setGooglePlacesData(Location currentLocation){
+        mConnectedActivityRepository.setGooglePlacesData(currentLocation);
     }
 
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
