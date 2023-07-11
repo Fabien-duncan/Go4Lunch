@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
+import com.example.go4lunch.util.FormatString;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -232,9 +233,9 @@ public class AuthenticationRepository {
             }
         });
     }
-    public void updateUserRestaurantChoice(String newChoice){
+    public void updateUserRestaurantChoice(String newChoicId, String newChoiceName){
         FirebaseUser user = mAuth.getCurrentUser();
-        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoice);
+        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoicId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName));
         setCurrentUser();
     }
 }

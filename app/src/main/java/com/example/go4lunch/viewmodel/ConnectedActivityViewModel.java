@@ -89,7 +89,7 @@ public class ConnectedActivityViewModel {
     public void setRestaurantsDistance(Location currentLocation){
         mConnectedActivityRepository.setRestaurantsDistance(currentLocation);
     }
-    public void updateUserRestaurantChoice(String newChoice){
-        mAuthenticationRepository.updateUserRestaurantChoice(newChoice);
+    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName){
+        mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName);
     }
 }

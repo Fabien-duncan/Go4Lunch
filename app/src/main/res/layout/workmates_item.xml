@@ -20,20 +20,11 @@
             android:layout_marginRight="8dp" />
 
                 <TextView
-                    android:id="@+id/workmates_name_tv"
+                    android:id="@+id/workmates_info_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:text="Name"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/workmates_extra_info_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text=" extra information goes here and you can put "
                     android:textSize="16sp" />
 
     </LinearLayout>

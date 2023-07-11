@@ -10,6 +10,7 @@ public class User {
     private String lastName;
     private String email;
     private String lunchChoiceId;
+    private String lunchChoiceName;
     private LocalDateTime choiceTimeStamp;
     private Uri photoUrl;
 
@@ -87,4 +88,13 @@ public class User {
     public void setPhotoUrl(String photoUrl){
         this.photoUrl = Uri.parse(photoUrl);
     }
+
+    public String getLunchChoiceName() {
+        return lunchChoiceName;
+    }
+
+    public void setLunchChoiceName(String lunchChoiceName) {
+        this.lunchChoiceName = lunchChoiceName;
+    }
+
 }

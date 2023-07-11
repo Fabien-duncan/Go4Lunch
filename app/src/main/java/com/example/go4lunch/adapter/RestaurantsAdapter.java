@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.util.FormatString;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public void onBindViewHolder(@NonNull RestaurantsAdapter.MyViewHolder holder, int position) {
         Restaurant restaurant = mRestaurantList.get(position);
 
-        holder.name.setText(restaurant.getName());
+        holder.name.setText(FormatString.capitalizeEveryWord(restaurant.getName()));
         holder.address.setText(restaurant.getAddress());
         holder.distance.setText(restaurant.getDistance() + "m");
 

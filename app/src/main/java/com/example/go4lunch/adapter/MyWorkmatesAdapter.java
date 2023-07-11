@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
+import com.example.go4lunch.util.FormatString;
 
 import java.util.List;
 
@@ -39,8 +40,12 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
     public void onBindViewHolder(@NonNull MyWorkmatesAdapter.MyViewHolder holder, int position) {
         User user = workmatesList.get(position);
 
-        holder.name.setText(user.getDisplayName());
-        holder.extraInfo.setText(" " + user.getEmail());
+        if(user.getLunchChoiceId().isEmpty()){
+            holder.info.setText(user.getDisplayName() + " hasn't decided yet");
+            holder.info.setAlpha(0.5f);
+        }else{
+            holder.info.setText(user.getDisplayName() + " is eating at " + user.getLunchChoiceName());
+        }
         //Glide.with(holder).load(user.).circleCrop().into(holder.profilePic);
         Glide.with(holder.itemView).load(user.getPhotoUrl()).circleCrop().into(holder.profilePic);
 
@@ -59,12 +64,12 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView profilePic;
-        TextView name, extraInfo;
+        TextView info, extraInfo;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             profilePic = itemView.findViewById(R.id.workmates_profile_picture_img);
-            name = itemView.findViewById(R.id.workmates_name_tv);
-            extraInfo = itemView.findViewById(R.id.workmates_extra_info_tv);
+            info = itemView.findViewById(R.id.workmates_info_tv);
+            //extraInfo = itemView.findViewById(R.id.workmates_extra_info_tv);
 
         }
     }

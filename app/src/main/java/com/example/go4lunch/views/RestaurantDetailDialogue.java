@@ -112,7 +112,7 @@ public class RestaurantDetailDialogue extends DialogFragment {
             public void onChanged(User user) {
                 Log.d("User data Rest detail", "id: " + user.getDisplayName());
                 currentUser = user;
-                if(user.getLunchChoiceId().equals(currentRestaurant.getId())){
+                if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
                     attend.setImageResource(R.drawable.baseline_check_circle_24);
                     isAttending = true;
                 }
@@ -237,16 +237,14 @@ public class RestaurantDetailDialogue extends DialogFragment {
 
     @Override
     public void onDestroy() {
-        Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
+        //Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
         if(isAttending && !currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
-            Log.d("Restaurant details", "updating choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId());
+            //Log.d("Restaurant details", "updating choice...");
+            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName());
         }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
-            Log.d("Restaurant details", "clearing current choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice("");
+            //Log.d("Restaurant details", "clearing current choice...");
+            mConnectedActivityViewModel.updateUserRestaurantChoice("", "");
         }
-
-
         super.onDestroy();
     }
 }
