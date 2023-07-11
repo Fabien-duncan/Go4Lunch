@@ -26,6 +26,8 @@ public class User {
         this.displayName = displayName;
         this.email = email;
         this.photoUrl = photoUrl;
+        this.lunchChoiceId="";
+        this.lunchChoiceName="";
     }
     public User(){
 

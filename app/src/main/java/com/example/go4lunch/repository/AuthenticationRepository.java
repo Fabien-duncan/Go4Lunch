@@ -34,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AuthenticationRepository {
     private Context mContext;
@@ -137,20 +138,32 @@ public class AuthenticationRepository {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String userId = user.getUid();
                             DocumentReference documentReference = db.collection("users").document(userId);
-                            User newUser = new User(user.getDisplayName(),user.getEmail(), user.getPhotoUrl());
+
                             //retrieveAllWorkmates();
                             //currentUserMutableLiveData.postValue(newUser);
                             /*Map<String, Object> newUser = new HashMap<>();
                             newUser.put("displayName", user.getDisplayName());
                             newUser.put("email", user.getEmail());*/
-                            documentReference.set(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            Log.d("get user info", "about to get user info");
+                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(Void unused) {
-                                    Log.d("TAG", "onSuccess: user Profile is created for" + userId);
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                            Log.d("get User info", "Document exists!");
+                                        } else {
+                                            Log.d("get User info", "Document does not exist!");
+                                            createFireStoreUser();
+                                        }
+                                    }else{
+                                        Log.d("get User info", "failed to create user");
+                                    }
                                 }
                             });
+
                             mFirebaseUserMutableLiveData.postValue(user);
-                            currentUserMutableLiveData.postValue(newUser);
+                            //currentUserMutableLiveData.postValue(newUser);
                             Toast.makeText(mContext, "SignIn successfully!", Toast.LENGTH_LONG).show();
                         }else{
                             Toast.makeText(mContext, "SignIn Failed!", Toast.LENGTH_LONG).show();
@@ -158,6 +171,21 @@ public class AuthenticationRepository {
                         }
                     }
                 });
+    }
+    public void createFireStoreUser(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userId = user.getUid();
+        DocumentReference documentReference = db.collection("users").document(userId);
+
+        User newUser = new User(user.getDisplayName(),user.getEmail(), user.getPhotoUrl());
+
+        documentReference.set(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("Create User", "onSuccess: user Profile is created for" + userId);
+            }
+        });
+
     }
     public int getGOOGLE_SIGN_IN(){
         return GOOGLE_SIGN_IN;
