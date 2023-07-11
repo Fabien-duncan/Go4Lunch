@@ -231,6 +231,10 @@ public class AuthenticationRepository {
                 }
             }
         });
-
+    }
+    public void updateUserRestaurantChoice(String newChoice){
+        FirebaseUser user = mAuth.getCurrentUser();
+        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoice);
+        setCurrentUser();
     }
 }

@@ -2,10 +2,7 @@ package com.example.go4lunch.views;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +33,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +42,8 @@ public class RestaurantDetailDialogue extends DialogFragment {
     private Uri restaurantUrl;
     private Button websiteLink;
     private ConnectedActivityViewModel mConnectedActivityViewModel;
+    private User currentUser;
+    private boolean isAttending;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -56,19 +54,15 @@ public class RestaurantDetailDialogue extends DialogFragment {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+        isAttending = false;
 
-        mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
+        /*mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 Log.d("User data Rest detail", "id: " + firebaseUser.getUid());
             }
-        });
-        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                Log.d("User data Rest detail", "id: " + user.getDisplayName());
-            }
-        });
+        });*/
+
     }
 
     @Nullable
@@ -113,6 +107,17 @@ public class RestaurantDetailDialogue extends DialogFragment {
             websiteLink.setEnabled(false);
             websiteLink.setAlpha(0.3f);
         }
+        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                Log.d("User data Rest detail", "id: " + user.getDisplayName());
+                currentUser = user;
+                if(user.getLunchChoiceId().equals(currentRestaurant.getId())){
+                    attend.setImageResource(R.drawable.baseline_check_circle_24);
+                    isAttending = true;
+                }
+            }
+        });
         websiteLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,7 +166,12 @@ public class RestaurantDetailDialogue extends DialogFragment {
         attend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(isAttending){
+                    attend.setImageResource(R.drawable.baseline_check_circle_transparent_24);
+                }else{
+                    attend.setImageResource(R.drawable.baseline_check_circle_24);
+                }
+                isAttending = !isAttending;
             }
         });
         getDetail();
@@ -224,4 +234,19 @@ public class RestaurantDetailDialogue extends DialogFragment {
                         }
                     });
         }
+
+    @Override
+    public void onDestroy() {
+        Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
+        if(isAttending && !currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
+            Log.d("Restaurant details", "updating choice...");
+            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId());
+        }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
+            Log.d("Restaurant details", "clearing current choice...");
+            mConnectedActivityViewModel.updateUserRestaurantChoice("");
+        }
+
+
+        super.onDestroy();
+    }
 }
