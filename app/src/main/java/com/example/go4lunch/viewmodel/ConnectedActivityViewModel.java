@@ -92,4 +92,7 @@ public class ConnectedActivityViewModel {
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName);
     }
+    public void setFilteredWorkmates(String restaurantId){
+        mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
+    }
 }

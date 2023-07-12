@@ -219,10 +219,31 @@ public class AuthenticationRepository {
                 if (task.isSuccessful()) {
                     List<User> list = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        System.out.println("user email: " + user.getEmail());
-                        System.out.println("user email: " + document.toObject(User.class).getEmail());
-                        System.out.println(!document.toObject(User.class).getEmail().equals(user.getEmail()));
-                        if(!document.toObject(User.class).getEmail().equals(user.getEmail())){
+                        User workmate = document.toObject(User.class);
+                        if(!workmate.equals(user.getEmail())){
+                            System.out.println("adding a workmate");
+                            list.add(workmate);
+                        }
+                    }
+                    workmatesMutableLiveData.postValue(list);
+                    Log.d("TAG", list.toString());
+                } else {
+                    Log.d("TAG", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+    public void retrieveFilteredWorkmates(String restaurantId){
+        FirebaseUser user = mAuth.getCurrentUser();
+        CollectionReference collectionReference = db.collection("users");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<User> list = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User workmate = document.toObject(User.class);
+                        if(!workmate.getEmail().equals(user.getEmail()) && workmate.getLunchChoiceId().equals(restaurantId)){
                             System.out.println("adding a workmate");
                             list.add(document.toObject(User.class));
                         }

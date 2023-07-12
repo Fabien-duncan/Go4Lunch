@@ -91,7 +91,7 @@ public class RestaurantDetailDialogue extends DialogFragment {
         TextView restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
 
 
-        mConnectedActivityViewModel.setCurrentWorkmates();
+        mConnectedActivityViewModel.setFilteredWorkmates(currentRestaurant.getId());
         attendingWorkmatesList = mConnectedActivityViewModel.getAllWorkmates().getValue();
         //generateUsers();
         //Log.d("attending workmates", attendingWorkmatesList.get(0).getDisplayName() + " is attending");
