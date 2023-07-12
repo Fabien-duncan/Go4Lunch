@@ -122,6 +122,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
             }
         });
+        mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                mConnectedActivityViewModel.updateAttending(users);
+            }
+        });
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

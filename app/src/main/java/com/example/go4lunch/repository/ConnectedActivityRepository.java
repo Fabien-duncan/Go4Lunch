@@ -10,8 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.dataSource.ApiService;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -70,4 +72,20 @@ public class ConnectedActivityRepository {
         restaurantsMutableLiveData.postValue(restaurants);
     }
 
+    public void updateAttending(List<User> workmates){
+        List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
+        List<String> restaurantID = new ArrayList<>();
+        for(int i = 0; i<workmates.size();i++){
+            if(!workmates.get(i).getLunchChoiceId().isEmpty()){
+                restaurantID.add(workmates.get(i).getLunchChoiceId()); }
+        }
+        Log.d("updateAttending", restaurantID.toString());
+        for(int i = 0; i<nearbyRestaurants.size();i++){
+            Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurence " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
+            nearbyRestaurants.get(i).setAttendanceNum(Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
+            //nearbyRestaurants.get(i).setAttendanceNum(5);
+        }
+        Log.d("updateAttending", "number of restaurants " + nearbyRestaurants.size());
+        restaurantsMutableLiveData.postValue(nearbyRestaurants);
+    }
 }

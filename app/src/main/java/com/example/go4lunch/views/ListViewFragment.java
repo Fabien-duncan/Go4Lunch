@@ -24,6 +24,7 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.adapter.RestaurantsAdapter;
 import com.example.go4lunch.model.Restaurant;
+import com.example.go4lunch.model.User;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
@@ -76,6 +77,8 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
         mRestaurantsAdapter = new RestaurantsAdapter(getContext(), restaurantsList, this);
         restaurantsRecyclerView.setAdapter(mRestaurantsAdapter);
 
+        mConnectedActivityViewModel.setCurrentWorkmates();
+
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
@@ -83,6 +86,13 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
                 mRestaurantsAdapter.setRestaurantList(restaurants);
             }
         });
+        //mConnectedActivityViewModel.updateAttending(mConnectedActivityViewModel.getAllWorkmates().getValue());
+        /*mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                mConnectedActivityViewModel.updateAttending(users);
+            }
+        });*/
         //getDetail();
     }
     private void getDetail(){

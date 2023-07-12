@@ -113,7 +113,12 @@ public class MapViewFragment extends SupportMapFragment {
                             +  ", Long: " + nearbyRestaurants.get(0).getLng()
                             + ",rating: " + nearbyRestaurants.get(0).getRating());
                     //placeNearbyRestaurants();
-                    currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
+
+                    try{
+                        currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
+                    }catch (Exception e){
+
+                    }
                     initGoogleMap();
                 }
             }

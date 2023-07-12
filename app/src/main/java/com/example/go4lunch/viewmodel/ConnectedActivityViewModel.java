@@ -95,4 +95,7 @@ public class ConnectedActivityViewModel {
     public void setFilteredWorkmates(String restaurantId){
         mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
     }
+    public void updateAttending(List<User> workmates){
+        mConnectedActivityRepository.updateAttending(workmates);
+    }
 }

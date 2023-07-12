@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.R;
+import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.FormatString;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -287,4 +288,5 @@ public class AuthenticationRepository {
         db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoicId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName));
         setCurrentUser();
     }
+
 }

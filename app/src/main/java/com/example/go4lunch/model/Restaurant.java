@@ -39,7 +39,7 @@ public class Restaurant {
         this.distance = distance;
         //temp extra
         this.type = "french";
-        this.attendanceNum = 2;
+        this.attendanceNum = -1;
         this.openingHours = "23:00";
         this.phoneNumber = "+33 6 58 32 57 01";
         this.imageUrl="https://media.istockphoto.com/id/1446375027/fr/photo/r%C3%A9union-daffaires-dans-le-restaurant.jpg?s=1024x1024&w=is&k=20&c=fypbQnbN5F2zEI81FWLSHSA3EH5cpQXyHZDiSaWEQBY=";
