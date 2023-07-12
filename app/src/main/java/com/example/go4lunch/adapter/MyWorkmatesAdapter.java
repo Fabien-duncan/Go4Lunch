@@ -1,6 +1,7 @@
 package com.example.go4lunch.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,12 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
 
     @Override
     public int getItemCount() {
+        Log.d("MyWorkmateAdapter", "Item count " + workmatesList.size());
         return workmatesList.size();
     }
 
     public void setWorkmatesList(List<User> workmatesList){
+        //Log.d("MyWorkmateAdapter", "updating List with: " + workmatesList.get(0).getDisplayName());
         this.workmatesList = workmatesList;
         notifyDataSetChanged();
     }

@@ -19,11 +19,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
+import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
@@ -34,6 +38,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +49,8 @@ public class RestaurantDetailDialogue extends DialogFragment {
     private ConnectedActivityViewModel mConnectedActivityViewModel;
     private User currentUser;
     private boolean isAttending;
+    private RecyclerView attendingWorkmatesRecyclerView;
+    private List<User> attendingWorkmatesList;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -82,6 +89,25 @@ public class RestaurantDetailDialogue extends DialogFragment {
 
         TextView restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
         TextView restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
+
+
+        mConnectedActivityViewModel.setCurrentWorkmates();
+        attendingWorkmatesList = mConnectedActivityViewModel.getAllWorkmates().getValue();
+        //generateUsers();
+        //Log.d("attending workmates", attendingWorkmatesList.get(0).getDisplayName() + " is attending");
+        attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
+        attendingWorkmatesRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList);
+        attendingWorkmatesRecyclerView.setAdapter(restaurantDetailWorkmatesAdapter);
+        restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
+
+        mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
+                restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
+            }
+        });
 
         Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
         Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);
@@ -246,5 +272,10 @@ public class RestaurantDetailDialogue extends DialogFragment {
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "");
         }
         super.onDestroy();
+    }
+    private void generateUsers(){
+        attendingWorkmatesList = new ArrayList<>();
+        attendingWorkmatesList.add(new User("Fabien Duncan","fab@gmail.com",Uri.parse("https://sdfs.com")));
+        attendingWorkmatesList.add(new User("Bob","bob@gmail.com",Uri.parse("https://sdfs.com")));
     }
 }
