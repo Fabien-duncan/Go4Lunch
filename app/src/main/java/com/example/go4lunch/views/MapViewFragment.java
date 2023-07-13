@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 
 import com.example.go4lunch.R;
@@ -114,7 +115,8 @@ public class MapViewFragment extends SupportMapFragment{
                     Log.d("Map Fragment", nearbyRestaurants.get(0).getName()
                             +  ", Lat: " + nearbyRestaurants.get(0).getLat()
                             +  ", Long: " + nearbyRestaurants.get(0).getLng()
-                            + ",rating: " + nearbyRestaurants.get(0).getRating());
+                            + ",rating: " + nearbyRestaurants.get(0).getRating()
+                            + ", attending " + nearbyRestaurants.get(0).getAttendanceNum());
                     //placeNearbyRestaurants();
 
                     try{
@@ -150,7 +152,15 @@ public class MapViewFragment extends SupportMapFragment{
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                Log.d("click listener", "clicked on " + marker.getTitle());
+                Log.d("click listener", "clicked on " + marker.getId().substring(1));
+                DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+                int index = Integer.parseInt(marker.getId().substring(1));
+                /*int index = 0;
+                for(int i = 0; i<nearbyRestaurants.size(); i++){
+                    if(nearbyRestaurants.get(i).getName().equals(marker.getTitle())) index = i;
+                }*/
+                ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(index));
+                restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");
                 return false;
             }
         });

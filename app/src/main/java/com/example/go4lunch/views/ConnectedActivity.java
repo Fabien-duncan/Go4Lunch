@@ -122,9 +122,20 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
             }
         });
+        /* ******************************************
+            I don't think this is the best approach...
+         */
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                Log.d("get restaurants connected", "*********");
+                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) mConnectedActivityViewModel.setCurrentWorkmates();
+            }
+        });
         mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
+                Log.d("getAllWorkmates", "updating attending workmates");
                 mConnectedActivityViewModel.updateAttending(users);
             }
         });

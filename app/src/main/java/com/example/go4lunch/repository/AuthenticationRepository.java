@@ -227,7 +227,7 @@ public class AuthenticationRepository {
                         }
                     }
                     workmatesMutableLiveData.postValue(list);
-                    Log.d("TAG", list.toString());
+                    Log.d("workmates", list.get(0).getDisplayName());
                 } else {
                     Log.d("TAG", "Error getting documents: ", task.getException());
                 }

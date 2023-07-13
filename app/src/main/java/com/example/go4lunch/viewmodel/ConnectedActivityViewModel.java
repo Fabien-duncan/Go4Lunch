@@ -26,12 +26,12 @@ public class ConnectedActivityViewModel {
 
     public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
+        mConnectedActivityRepository = new ConnectedActivityRepository();
+
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
-
-        mConnectedActivityRepository = new ConnectedActivityRepository();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
 
     }
