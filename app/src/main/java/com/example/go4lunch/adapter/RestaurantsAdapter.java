@@ -73,10 +73,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
         }
 
-        if(restaurant.getAttendanceNum() == 0){
+        if(restaurant.getAttendanceNum() <= 0){
             holder.workmatesNumber.setText("");
             holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
         }else{
+            holder.workmatesNumber_img.setVisibility(View.VISIBLE);
             holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
         }
 

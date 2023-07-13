@@ -87,12 +87,12 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
             }
         });
         //mConnectedActivityViewModel.updateAttending(mConnectedActivityViewModel.getAllWorkmates().getValue());
-        /*mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
+        mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
                 mConnectedActivityViewModel.updateAttending(users);
             }
-        });*/
+        });
         //getDetail();
     }
     private void getDetail(){
@@ -227,6 +227,14 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
                 "+33 6 58 32 57 01"
         ));
 
+    }
+
+    @Override
+    public void onResume() {
+
+        Log.d("on resume", "resuming");
+        mRestaurantsAdapter.setRestaurantList(restaurantsList);
+        super.onResume();
     }
 
     @Override

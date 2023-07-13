@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RestaurantDetailDialogue extends DialogFragment {
+public class RestaurantDetailDialogue extends DialogFragment{
     private Restaurant currentRestaurant;
     private Uri restaurantUrl;
     private Button websiteLink;
@@ -63,6 +64,15 @@ public class RestaurantDetailDialogue extends DialogFragment {
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
         isAttending = false;
 
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Log.d("back pressed", "success!");
+                getDialog().dismiss();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
+
         /*mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
@@ -71,6 +81,7 @@ public class RestaurantDetailDialogue extends DialogFragment {
         });*/
 
     }
+
 
     @Nullable
     @Override
@@ -271,8 +282,10 @@ public class RestaurantDetailDialogue extends DialogFragment {
             //Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "");
         }
+
         super.onDestroy();
     }
+
     private void generateUsers(){
         attendingWorkmatesList = new ArrayList<>();
         attendingWorkmatesList.add(new User("Fabien Duncan","fab@gmail.com",Uri.parse("https://sdfs.com")));
