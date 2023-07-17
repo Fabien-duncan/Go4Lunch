@@ -45,6 +45,21 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         holder.address.setText(restaurant.getAddress());
         holder.distance.setText(restaurant.getDistance() + "m");
 
+
+        holder.workmatesNumber_img.setVisibility(View.VISIBLE);
+        holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
+        /*if(restaurant.getAttendanceNum() <= 0){
+            holder.workmatesNumber.setText("");
+            holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
+        }else{
+            holder.workmatesNumber_img.setVisibility(View.VISIBLE);
+            holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
+        }*/
+        /*if(restaurant.getAttendanceNum() == 0){
+            holder.workmatesNumber.setVisibility(View.INVISIBLE);
+            holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
+        }*/
+
         if(restaurant.getOpeningHours().equals("true")){
             holder.openingHours.setText("Open");
             holder.openingHours.setTextColor(Color.GREEN);
@@ -70,15 +85,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             holder.star1_img.setVisibility(View.VISIBLE);
             holder.star2_img.setVisibility(View.VISIBLE);
             holder.star3_img.setVisibility(View.VISIBLE);
-
-        }
-
-        if(restaurant.getAttendanceNum() <= 0){
-            holder.workmatesNumber.setText("");
-            holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
-        }else{
-            holder.workmatesNumber_img.setVisibility(View.VISIBLE);
-            holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
         }
 
         Glide.with(holder.itemView).load(restaurant.getImageUrl()).centerCrop().into(holder.restaurant_img);

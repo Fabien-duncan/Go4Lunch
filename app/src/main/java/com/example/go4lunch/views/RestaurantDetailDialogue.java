@@ -31,7 +31,9 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
+import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
+import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -48,10 +50,12 @@ public class RestaurantDetailDialogue extends DialogFragment{
     private Uri restaurantUrl;
     private Button websiteLink;
     private ConnectedActivityViewModel mConnectedActivityViewModel;
+    private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private User currentUser;
     private boolean isAttending;
     private RecyclerView attendingWorkmatesRecyclerView;
     private List<User> attendingWorkmatesList;
+    private AuthenticationRepository mAuthenticationRepository;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -62,9 +66,11 @@ public class RestaurantDetailDialogue extends DialogFragment{
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+        mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, currentRestaurant.getId());
 
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Log.d("back pressed", "success!");
@@ -72,7 +78,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
-
+*/
         /*mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
@@ -102,8 +108,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
         TextView restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
 
 
-        mConnectedActivityViewModel.setFilteredWorkmates(currentRestaurant.getId());
-        attendingWorkmatesList = mConnectedActivityViewModel.getAllWorkmates().getValue();
+        //mConnectedActivityViewModel.setFilteredWorkmates(currentRestaurant.getId());
+        //attendingWorkmatesList = mConnectedActivityViewModel.getAllWorkmates().getValue();
+        attendingWorkmatesList = mRestaurantDetailViewModel.getAllWorkmates().getValue();
         //generateUsers();
         //Log.d("attending workmates", attendingWorkmatesList.get(0).getDisplayName() + " is attending");
         attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
@@ -112,7 +119,15 @@ public class RestaurantDetailDialogue extends DialogFragment{
         attendingWorkmatesRecyclerView.setAdapter(restaurantDetailWorkmatesAdapter);
         restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
 
-        mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
+        /*mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
+                restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
+            }
+        });*/
+
+        mRestaurantDetailViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
                 if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
@@ -282,6 +297,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
             //Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "");
         }
+
+        mConnectedActivityViewModel.setCurrentWorkmates();
 
         super.onDestroy();
     }

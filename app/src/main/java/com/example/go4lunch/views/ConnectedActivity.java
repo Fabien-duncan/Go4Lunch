@@ -249,6 +249,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         });
         System.out.println("finished getting restaurants from json");
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("Connected Activity", "resume activity");
+    }
+
     public List<Restaurant> getRestaurants(){
         return new ArrayList<>();
     }

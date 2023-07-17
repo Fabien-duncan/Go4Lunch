@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
@@ -13,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-public class ConnectedActivityViewModel {
+public class ConnectedActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private MutableLiveData<FirebaseUser> userData;
     private MutableLiveData<Boolean> isUserSignedIn;
@@ -76,7 +77,7 @@ public class ConnectedActivityViewModel {
         //return workmatesMutableLiveData;
     }
     public MutableLiveData<List<User>> getAllWorkmates(){
-        return mAuthenticationRepository.getAllWorkmates();
+        return workmatesMutableLiveData;
     }
     public void setGooglePlacesData(Location currentLocation){
         mConnectedActivityRepository.setGooglePlacesData(currentLocation);

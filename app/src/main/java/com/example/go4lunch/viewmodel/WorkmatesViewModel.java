@@ -3,6 +3,7 @@ package com.example.go4lunch.viewmodel;
 import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -10,7 +11,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-public class WorkmatesViewModel {
+public class WorkmatesViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private MutableLiveData<FirebaseUser> userData;
     private MutableLiveData<Boolean> isUserSignedIn;
@@ -66,6 +67,6 @@ public class WorkmatesViewModel {
         //return workmatesMutableLiveData;
     }
     public MutableLiveData<List<User>> getAllWorkmates(){
-        return mAuthenticationRepository.getAllWorkmates();
+        return workmatesMutableLiveData;
     }
 }

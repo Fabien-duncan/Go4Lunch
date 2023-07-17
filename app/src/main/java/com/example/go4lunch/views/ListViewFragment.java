@@ -233,7 +233,7 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     public void onResume() {
 
         Log.d("on resume", "resuming");
-        mRestaurantsAdapter.setRestaurantList(restaurantsList);
+        //mRestaurantsAdapter.setRestaurantList(restaurantsList);
         super.onResume();
     }
 
