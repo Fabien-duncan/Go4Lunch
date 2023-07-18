@@ -55,10 +55,10 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             holder.workmatesNumber_img.setVisibility(View.VISIBLE);
             holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
         }*/
-        /*if(restaurant.getAttendanceNum() == 0){
+        if(restaurant.getAttendanceNum() == 0){
             holder.workmatesNumber.setVisibility(View.INVISIBLE);
             holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
-        }*/
+        }
 
         if(restaurant.getOpeningHours().equals("true")){
             holder.openingHours.setText("Open");
