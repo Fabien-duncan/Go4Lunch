@@ -3,16 +3,20 @@ package com.example.go4lunch.views;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.MatrixCursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,9 +35,18 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.PlaceTypes;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -45,6 +58,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -93,6 +107,35 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         isLocationGranted = false;
         getLocationPermission();
 
+        /*MatrixCursor cursor = new MatrixCursor(new String[]{"_id","suggest_text_1"});
+        String[] myList = {"apple","banana", "cat", "andy", "dog"};
+        for(int i = 0; i <myList.length; i++){
+            Object[] row = new Object[]{i, myList[i]};
+
+            cursor.addRow(row);
+        }*/
+
+        SearchView searchView = findViewById(R.id.toolbar_search);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(newText.length() >1){
+                    Log.d("searchView", "text is " + newText);
+                    autocomplete(newText);
+                    return true;
+                }else return false;
+
+            }
+        });
+        /*searchView.setSuggestionsAdapter(new SimpleCursorAdapter(
+                this, android.R.layout.simple_list_item_1, cursor,
+                new String[] { SearchManager.SUGGEST_COLUMN_TEXT_1 },
+                new int[] { android.R.id.text1 }, 0));*/
 
         mAuthenticationRepository = new AuthenticationRepository(this);
         mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
@@ -264,5 +307,42 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public Location getCurrentLocation(){
         return currentLocation;
+    }
+    private void autocomplete(String text){
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        // Create a RectangularBounds object.
+        RectangularBounds bounds = RectangularBounds.newInstance(
+                new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                new LatLng(43.6371081, 6.6483838));
+        // Use the builder to create a FindAutocompletePredictionsRequest.
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                // Call either setLocationBias() OR setLocationRestriction().
+                //.setLocationBias(bounds)
+                .setLocationRestriction(bounds)
+                .setOrigin(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                .setCountries("FR")
+                .setTypesFilter(Arrays.asList("restaurant"))
+                .setSessionToken(token)
+                .setQuery(text)
+                .build();
+
+        String key = BuildConfig.GMP_key;
+
+        // Initialize Places.
+        Places.initialize(this.getApplicationContext(), key);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                Log.i("autocomplete", prediction.getPlaceId());
+                Log.i("autocomplete", prediction.getPrimaryText(null).toString());
+            }
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.e("autocomplete", "Place not found: " + apiException.getStatusCode());
+            }
+        });
     }
 }
