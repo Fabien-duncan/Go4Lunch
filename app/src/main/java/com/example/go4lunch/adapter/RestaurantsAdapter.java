@@ -47,6 +47,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
 
 
         holder.workmatesNumber_img.setVisibility(View.VISIBLE);
+        holder.workmatesNumber.setVisibility(View.VISIBLE);
         holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
         /*if(restaurant.getAttendanceNum() <= 0){
             holder.workmatesNumber.setText("");

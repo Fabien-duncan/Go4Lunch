@@ -9,6 +9,8 @@ import androidx.core.view.GravityCompat;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,6 +25,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,8 @@ import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
+import com.example.go4lunch.adapter.AutocompleteRecyclerViewAdapter;
+import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -61,7 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RestaurantRecyclerViewInterface {
     private TextView name;
     private TextView email;
     private BottomNavigationView menu;
@@ -76,7 +81,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private ImageView profilePic;
     private boolean isLocationGranted;
     private List<Restaurant> nearbyRestaurants;
+    private List<Restaurant> filteredNearbyRestaurants;
     private Location currentLocation;
+    private RectangularBounds bounds;
+    private LinearLayout autocompleteDisplay;
+    private RecyclerView autocompleteRV;
+    private AutocompleteRecyclerViewAdapter autocompleteAdapter;
     private FusedLocationProviderClient fusedLocationClient;
 
 
@@ -86,6 +96,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connected);
+        filteredNearbyRestaurants = new ArrayList<>();
 
         menu = findViewById(R.id.bottomNavigationView);
 
@@ -96,6 +107,14 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         name = sideBarView.findViewById(R.id.side_menu_display_name);
         email = sideBarView.findViewById(R.id.side_menu_email);
         profilePic = sideBarView.findViewById(R.id.side_bar_profile_img);
+
+        autocompleteDisplay= findViewById(R.id.autocomplete_layout);
+        autocompleteRV = findViewById(R.id.autocomplete_rv);
+        autocompleteRV.setLayoutManager(new LinearLayoutManager(this));
+        autocompleteAdapter = new AutocompleteRecyclerViewAdapter(this, filteredNearbyRestaurants, this);
+        autocompleteRV.setAdapter(autocompleteAdapter);
+
+        autocompleteDisplay.setVisibility(View.INVISIBLE);
 
 
         mMapViewFragment = new MapViewFragment();
@@ -119,6 +138,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                autocompleteDisplay.setVisibility(View.INVISIBLE);
                 return false;
             }
 
@@ -126,7 +146,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public boolean onQueryTextChange(String newText) {
                 if(newText.length() >1){
                     Log.d("searchView", "text is " + newText);
+                    autocompleteDisplay.setVisibility(View.VISIBLE);
                     autocomplete(newText);
+                    autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
                     return true;
                 }else return false;
 
@@ -172,7 +194,10 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 Log.d("get restaurants connected", "*********");
-                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) mConnectedActivityViewModel.setCurrentWorkmates();
+                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
+                    mConnectedActivityViewModel.setCurrentWorkmates();
+                    nearbyRestaurants = restaurants;
+                }
             }
         });
         mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
@@ -283,6 +308,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
                     currentLocation = location;
 
+                    setBounds(location, 400);
+
                     mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
 
                     // Logic to handle location object
@@ -311,9 +338,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private void autocomplete(String text){
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         // Create a RectangularBounds object.
-        RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                new LatLng(43.6371081, 6.6483838));
         // Use the builder to create a FindAutocompletePredictionsRequest.
         FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
                 // Call either setLocationBias() OR setLocationRestriction().
@@ -333,16 +357,59 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
+        List<String> placeIds = new ArrayList<>();
         placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
             for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                placeIds.add(prediction.getPlaceId());
                 Log.i("autocomplete", prediction.getPlaceId());
                 Log.i("autocomplete", prediction.getPrimaryText(null).toString());
             }
+            filterRestaurantsByIds(placeIds);
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
                 Log.e("autocomplete", "Place not found: " + apiException.getStatusCode());
             }
         });
+
+    }
+    private void setBounds(Location location, int mDistanceInMeters ) {
+        double latRadian = Math.toRadians(location.getLatitude());
+
+        double degLatKm = 110.574235;
+        double degLongKm = 110.572833 * Math.cos(latRadian);
+        double deltaLat = mDistanceInMeters / 1000.0 / degLatKm;
+        double deltaLong = mDistanceInMeters / 1000.0 / degLongKm;
+
+        double minLat = location.getLatitude() - deltaLat;
+        double minLong = location.getLongitude() - deltaLong;
+        double maxLat = location.getLatitude() + deltaLat;
+        double maxLong = location.getLongitude() + deltaLong;
+
+        bounds = RectangularBounds.newInstance(
+                new LatLng(minLat, minLong),
+                new LatLng(maxLat, maxLong));
+
+        Log.d("setBounds", "Min: " + Double.toString(minLat) + "," + Double.toString(minLong));
+        Log.d("setBounds", "Max: " + Double.toString(maxLat) + "," + Double.toString(maxLong));
+    }
+    private void filterRestaurantsByIds(List<String> placeIds){
+        filteredNearbyRestaurants = new ArrayList<>();
+        for(int i = 0; i < placeIds.size(); i++){
+            int j = 0;
+            while(j<nearbyRestaurants.size()){
+                if(placeIds.get(i).equals(nearbyRestaurants.get(j).getId())){
+                    filteredNearbyRestaurants.add(nearbyRestaurants.get(j));
+                    j=nearbyRestaurants.size();
+                }
+                j++;
+            }
+        }
+        Log.d("filteredRestaurant", "size: " + filteredNearbyRestaurants.size());
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
     }
 }

@@ -40,7 +40,7 @@ public class ConnectedActivityRepository {
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-        googlePlacesUrl.append("&radius=" + 360);
+        googlePlacesUrl.append("&radius=" + 400); //360
         googlePlacesUrl.append("&types=" + "restaurant");
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=" + key);
