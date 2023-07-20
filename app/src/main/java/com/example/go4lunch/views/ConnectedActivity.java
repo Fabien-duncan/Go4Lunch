@@ -88,6 +88,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private RecyclerView autocompleteRV;
     private AutocompleteRecyclerViewAdapter autocompleteAdapter;
     private FusedLocationProviderClient fusedLocationClient;
+    private String currentFragment;
 
 
 
@@ -146,7 +147,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public boolean onQueryTextChange(String newText) {
                 if(newText.length() >1){
                     Log.d("searchView", "text is " + newText);
-                    autocompleteDisplay.setVisibility(View.VISIBLE);
+                    if(currentFragment.equals("map"))autocompleteDisplay.setVisibility(View.VISIBLE);
                     autocomplete(newText);
                     /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
                     mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
@@ -222,14 +223,20 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.mapView:
-                        if(isLocationGranted)getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                        if(isLocationGranted){
+                            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                            currentFragment = "map";
+                        }
                         else{
                             Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
                         }
                         System.out.println("Maps");
                         break;
                     case R.id.listView:
-                        if(isLocationGranted)getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
+                        if(isLocationGranted){
+                            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
+                            currentFragment = "list";
+                        }
                         else{
                             Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
                         }
@@ -237,6 +244,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         break;
                     case R.id.workmates:
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
+                        currentFragment = "workmates";
                         System.out.println("Workmates");
                         break;
                 }
@@ -285,6 +293,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
                     Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
+                    currentFragment = "map";
                     isLocationGranted =true;
                     getLocation();
 
