@@ -52,17 +52,19 @@ public class MapViewFragment extends SupportMapFragment{
     private ConnectedActivityViewModel mConnectedActivityViewModel;
     //private AuthenticationRepository mAuthenticationRepository;
 
-    private void initGoogleMap() {
+    private void initGoogleMap(boolean hasRestaurants) {
         getMapAsync(new OnMapReadyCallback() {
             @SuppressLint("MissingPermission")
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
-
-                LatLng myLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-                //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                mMap.clear();
+                if(currentLocation!=null) {
+                    LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+                }
 
                 mMap.setMyLocationEnabled(true);
                 View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
@@ -73,7 +75,7 @@ public class MapViewFragment extends SupportMapFragment{
 
                 mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
 
-                placeNearbyRestaurants();
+                if(hasRestaurants)placeNearbyRestaurants();
 
             }
 
@@ -124,7 +126,14 @@ public class MapViewFragment extends SupportMapFragment{
                     }catch (Exception e){
 
                     }
-                    initGoogleMap();
+                    initGoogleMap(true);
+                }else if(nearbyRestaurants!= null && restaurants.size() == 0){
+                    try{
+                        currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
+                        initGoogleMap(false);
+                    }catch (Exception e){
+
+                    }
                 }
             }
         });

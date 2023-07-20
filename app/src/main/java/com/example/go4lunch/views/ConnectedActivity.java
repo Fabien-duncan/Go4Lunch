@@ -148,7 +148,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     Log.d("searchView", "text is " + newText);
                     autocompleteDisplay.setVisibility(View.VISIBLE);
                     autocomplete(newText);
-                    autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
+                    /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
+                    mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
                     return true;
                 }else return false;
 
@@ -196,6 +197,14 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Log.d("get restaurants connected", "*********");
                 if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
                     mConnectedActivityViewModel.setCurrentWorkmates();
+                    //nearbyRestaurants = restaurants;
+                }
+            }
+        });
+        mConnectedActivityViewModel.getAllRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
+            @Override
+            public void onChanged(List<Restaurant> restaurants) {
+                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
                     nearbyRestaurants = restaurants;
                 }
             }
@@ -365,6 +374,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 Log.i("autocomplete", prediction.getPrimaryText(null).toString());
             }
             filterRestaurantsByIds(placeIds);
+            autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
+            mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
