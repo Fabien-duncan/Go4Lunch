@@ -152,8 +152,21 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
                     mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
                     return true;
-                }else return false;
+                }else{
+                    Log.d("searView", "retrievingNearbyPlaces");
+                    autocompleteDisplay.setVisibility(View.INVISIBLE);
+                    mConnectedActivityViewModel.resetNearbyRestaurants(nearbyRestaurants);
+                    return true;
+                }
 
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                autocompleteDisplay.setVisibility(View.INVISIBLE);
+                mConnectedActivityViewModel.resetNearbyRestaurants(nearbyRestaurants);
+                return false;
             }
         });
         /*searchView.setSuggestionsAdapter(new SimpleCursorAdapter(
@@ -226,6 +239,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         if(isLocationGranted){
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                             currentFragment = "map";
+                            searchView.setVisibility(View.VISIBLE);
                         }
                         else{
                             Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
@@ -236,6 +250,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         if(isLocationGranted){
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
                             currentFragment = "list";
+                            searchView.setVisibility(View.VISIBLE);
+
                         }
                         else{
                             Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
@@ -246,6 +262,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
                         currentFragment = "workmates";
                         System.out.println("Workmates");
+                        searchView.setVisibility(View.INVISIBLE);
+
                         break;
                 }
                 return true;
