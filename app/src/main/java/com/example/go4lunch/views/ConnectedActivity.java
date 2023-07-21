@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
-import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,13 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.SearchManager;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.database.MatrixCursor;
+import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,16 +36,23 @@ import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
-import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.PlaceTypes;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -89,6 +93,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private AutocompleteRecyclerViewAdapter autocompleteAdapter;
     private FusedLocationProviderClient fusedLocationClient;
     private String currentFragment;
+    private LocationCallback locationCallback;
+    private LocationRequest locationRequest;
 
 
 
@@ -124,8 +130,26 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         setSupportActionBar(mToolbar);
 
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult != null) {
+                    currentLocation = locationResult.getLastLocation();
+                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
+                    Log.d("locationChanged", "onLocationResult " + locationResult);
+
+                }
+                /*for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                }*/
+
+            }
+        };
+
         isLocationGranted = false;
         getLocationPermission();
+
 
         /*MatrixCursor cursor = new MatrixCursor(new String[]{"_id","suggest_text_1"});
         String[] myList = {"apple","banana", "cat", "andy", "dog"};
@@ -269,6 +293,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 return true;
             }
         });
+
     }
     private void showMainActivity() {
         Intent intent = new Intent(this,MainActivity.class);
@@ -333,10 +358,34 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     @SuppressLint("MissingPermission")
     private void getLocation(){
-
         Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+
+        locationRequest = new com.google.android.gms.location.LocationRequest.Builder(8000).setMinUpdateDistanceMeters(100).build();
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build();
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest).addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+                if(task.isSuccessful()){
+                    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+                }else{
+                    if(task.getException() instanceof ResolvableApiException){
+                        try{
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) task.getException();
+                            resolvableApiException.startResolutionForResult(ConnectedActivity.this, 1001);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+        /*fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 // Got last known location. In some rare situations this can be null.
@@ -352,7 +401,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 }
             }
 
-        });
+        });*/
         System.out.println("finished getting restaurants from json");
     }
 

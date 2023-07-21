@@ -75,6 +75,7 @@ public class MapViewFragment extends SupportMapFragment{
 
                 mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
 
+
                 if(hasRestaurants)placeNearbyRestaurants();
 
             }
@@ -163,11 +164,11 @@ public class MapViewFragment extends SupportMapFragment{
             public boolean onMarkerClick(@NonNull Marker marker) {
                 Log.d("click listener", "clicked on " + marker.getId().substring(1));
                 DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                int index = Integer.parseInt(marker.getId().substring(1));
-                /*int index = 0;
+                //int index = Integer.parseInt(marker.getId().substring(1));
+                int index = 0;
                 for(int i = 0; i<nearbyRestaurants.size(); i++){
                     if(nearbyRestaurants.get(i).getName().equals(marker.getTitle())) index = i;
-                }*/
+                }
                 ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(index));
                 restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");
                 return false;
