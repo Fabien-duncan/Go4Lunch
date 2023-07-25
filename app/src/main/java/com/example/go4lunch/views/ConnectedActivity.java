@@ -87,7 +87,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private List<Restaurant> nearbyRestaurants;
     private List<Restaurant> filteredNearbyRestaurants;
     private Location currentLocation;
-    private RectangularBounds bounds;
+
     private LinearLayout autocompleteDisplay;
     private RecyclerView autocompleteRV;
     private AutocompleteRecyclerViewAdapter autocompleteAdapter;
@@ -135,8 +135,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
                     currentLocation = locationResult.getLastLocation();
-                    setBounds(currentLocation, 400);
-                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
+                    mConnectedActivityViewModel.setCurrentLocation(currentLocation);
+                    mConnectedActivityViewModel.setGooglePlacesData();
                     Log.d("locationChanged", "onLocationResult " + locationResult);
 
                 }
@@ -173,14 +173,15 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 if(newText.length() >1){
                     Log.d("searchView", "text is " + newText);
                     if(currentFragment.equals("map"))autocompleteDisplay.setVisibility(View.VISIBLE);
-                    autocomplete(newText);
+                    //autocomplete(newText);
+                    mConnectedActivityViewModel.autocomplete(newText);
                     /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
                     mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
                     return true;
                 }else{
                     Log.d("searView", "retrievingNearbyPlaces");
                     autocompleteDisplay.setVisibility(View.INVISIBLE);
-                    mConnectedActivityViewModel.resetNearbyRestaurants(nearbyRestaurants);
+                    mConnectedActivityViewModel.resetNearbyRestaurants();
                     return true;
                 }
 
@@ -190,7 +191,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public boolean onClose() {
                 autocompleteDisplay.setVisibility(View.INVISIBLE);
-                mConnectedActivityViewModel.resetNearbyRestaurants(nearbyRestaurants);
+                mConnectedActivityViewModel.resetNearbyRestaurants();
                 return false;
             }
         });
@@ -200,7 +201,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 new int[] { android.R.id.text1 }, 0));*/
 
         mAuthenticationRepository = new AuthenticationRepository(this);
-        mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
+        mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository, this);
         mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         String userName = getIntent().getExtras().getString("name");
@@ -233,9 +234,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
+                autocompleteAdapter.setRestaurantList(restaurants);
                 Log.d("get restaurants connected", "*********");
                 if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
                     mConnectedActivityViewModel.setCurrentWorkmates();
+
                     //nearbyRestaurants = restaurants;
                 }
             }
@@ -245,6 +248,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onChanged(List<Restaurant> restaurants) {
                 if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
                     nearbyRestaurants = restaurants;
+
                 }
             }
         });
@@ -383,26 +387,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 }
             }
         });
-
-
-
-        /*fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    System.out.println("we found last location " + location.getLongitude() + ", " + location.getLatitude());
-                    currentLocation = location;
-
-                    setBounds(location, 400);
-
-                    mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
-
-                    // Logic to handle location object
-                }
-            }
-
-        });*/
         System.out.println("finished getting restaurants from json");
     }
 
@@ -420,80 +404,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public Location getCurrentLocation(){
         return currentLocation;
-    }
-    private void autocomplete(String text){
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-        // Create a RectangularBounds object.
-        // Use the builder to create a FindAutocompletePredictionsRequest.
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                // Call either setLocationBias() OR setLocationRestriction().
-                //.setLocationBias(bounds)
-                .setLocationRestriction(bounds)
-                .setOrigin(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                .setCountries("FR")
-                .setTypesFilter(Arrays.asList("restaurant"))
-                .setSessionToken(token)
-                .setQuery(text)
-                .build();
-
-        String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(this.getApplicationContext(), key);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-        List<String> placeIds = new ArrayList<>();
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                placeIds.add(prediction.getPlaceId());
-                Log.i("autocomplete", prediction.getPlaceId());
-                Log.i("autocomplete", prediction.getPrimaryText(null).toString());
-            }
-            filterRestaurantsByIds(placeIds);
-            autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
-            mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e("autocomplete", "Place not found: " + apiException.getStatusCode());
-            }
-        });
-
-    }
-    private void setBounds(Location location, int mDistanceInMeters ) {
-        double latRadian = Math.toRadians(location.getLatitude());
-
-        double degLatKm = 110.574235;
-        double degLongKm = 110.572833 * Math.cos(latRadian);
-        double deltaLat = mDistanceInMeters / 1000.0 / degLatKm;
-        double deltaLong = mDistanceInMeters / 1000.0 / degLongKm;
-
-        double minLat = location.getLatitude() - deltaLat;
-        double minLong = location.getLongitude() - deltaLong;
-        double maxLat = location.getLatitude() + deltaLat;
-        double maxLong = location.getLongitude() + deltaLong;
-
-        bounds = RectangularBounds.newInstance(
-                new LatLng(minLat, minLong),
-                new LatLng(maxLat, maxLong));
-
-        Log.d("setBounds", "Min: " + Double.toString(minLat) + "," + Double.toString(minLong));
-        Log.d("setBounds", "Max: " + Double.toString(maxLat) + "," + Double.toString(maxLong));
-    }
-    private void filterRestaurantsByIds(List<String> placeIds){
-        filteredNearbyRestaurants = new ArrayList<>();
-        for(int i = 0; i < placeIds.size(); i++){
-            int j = 0;
-            while(j<nearbyRestaurants.size()){
-                if(placeIds.get(i).equals(nearbyRestaurants.get(j).getId())){
-                    filteredNearbyRestaurants.add(nearbyRestaurants.get(j));
-                    j=nearbyRestaurants.size();
-                }
-                j++;
-            }
-        }
-        Log.d("filteredRestaurant", "size: " + filteredNearbyRestaurants.size());
     }
 
     @Override

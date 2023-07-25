@@ -1,5 +1,6 @@
 package com.example.go4lunch.viewmodel;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDateTime;
@@ -29,9 +31,9 @@ public class ConnectedActivityViewModel extends ViewModel {
 
     private MutableLiveData<List<Restaurant>> allRestaurantsMutableLiveData;
 
-    public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository){
+    public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository, Context context){
         mAuthenticationRepository = authenticationRepository;
-        mConnectedActivityRepository = new ConnectedActivityRepository();
+        mConnectedActivityRepository = new ConnectedActivityRepository(context);
 
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
@@ -89,16 +91,16 @@ public class ConnectedActivityViewModel extends ViewModel {
     public MutableLiveData<List<User>> getAllWorkmates(){
         return workmatesMutableLiveData;
     }
-    public void setGooglePlacesData(Location currentLocation){
-        mConnectedActivityRepository.setGooglePlacesData(currentLocation);
+    public void setGooglePlacesData(){
+        mConnectedActivityRepository.setGooglePlacesData();
     }
 
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
         return restaurantsMutableLiveData;
     }
 
-    public void setRestaurantsDistance(Location currentLocation){
-        mConnectedActivityRepository.setRestaurantsDistance(currentLocation);
+    public void setRestaurantsDistance(){
+        mConnectedActivityRepository.setRestaurantsDistance();
     }
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
@@ -112,7 +114,17 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void updateRestaurantsListForFilter(List<Restaurant> filteredRestaurants){
         restaurantsMutableLiveData.postValue(filteredRestaurants);
     }
-    public void resetNearbyRestaurants(List<Restaurant> nearbyRestaurants){
-        restaurantsMutableLiveData.postValue(nearbyRestaurants);
+    public void resetNearbyRestaurants(){
+        mConnectedActivityRepository.resetNearbyRestaurants();
+    }
+    public void autocomplete(String text){
+        mConnectedActivityRepository.autocomplete(text);
+    }
+    public Location getCurrentLocation() {
+        return mConnectedActivityRepository.getCurrentLocation();
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        mConnectedActivityRepository.setCurrentLocation(currentLocation);
     }
 }

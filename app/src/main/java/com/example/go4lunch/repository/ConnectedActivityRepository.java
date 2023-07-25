@@ -31,19 +31,23 @@ import java.util.concurrent.Executors;
 
 public class ConnectedActivityRepository {
     private Context mContext;
-    private Activity mActivity;
+    private Location currentLocation;
+    private RectangularBounds bounds;
+    //private Activity mActivity;
+    private List<Restaurant> nearbyRestaurants;
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private ApiService mGooglePlacesReadTask;
 
-    public ConnectedActivityRepository(){
-        /*this.mContext = context;
-        this.mActivity = (Activity)context;*/
+    public ConnectedActivityRepository(Context context){
+        this.mContext = context;
+        //this.mActivity = (Activity)context;
 
+        nearbyRestaurants = new ArrayList<>();
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mGooglePlacesReadTask = new ApiService();
     }
 
-    public void setGooglePlacesData(Location currentLocation){
+    public void setGooglePlacesData(){
         String key = BuildConfig.GMP_key;
         Executor executor = Executors.newSingleThreadExecutor();
 
@@ -61,7 +65,9 @@ public class ConnectedActivityRepository {
             @Override
             public void run() {
                 //googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
-                restaurantsMutableLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation));
+                nearbyRestaurants = mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation);
+                setBounds();
+                restaurantsMutableLiveData.postValue(nearbyRestaurants);
             }
         });
 
@@ -70,7 +76,7 @@ public class ConnectedActivityRepository {
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
         return restaurantsMutableLiveData;
     }
-    public void setRestaurantsDistance(Location currentLocation){
+    public void setRestaurantsDistance(){
         List<Restaurant> restaurants = restaurantsMutableLiveData.getValue();
         Location restaurantLocation = new Location("");
 
@@ -106,7 +112,7 @@ public class ConnectedActivityRepository {
         Log.d("updateAttending", "number of restaurants " + nearbyRestaurants.size());
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
     }
-    /*private void autocomplete(String text,RectangularBounds bounds, Location currentLocation){
+    public void autocomplete(String text){
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         // Create a RectangularBounds object.
         // Use the builder to create a FindAutocompletePredictionsRequest.
@@ -124,10 +130,10 @@ public class ConnectedActivityRepository {
         String key = BuildConfig.GMP_key;
 
         // Initialize Places.
-        Places.initialize(this.getApplicationContext(), key);
+        Places.initialize(mContext.getApplicationContext(), key);
 
         // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
+        PlacesClient placesClient = Places.createClient(mContext);
         List<String> placeIds = new ArrayList<>();
         placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
             for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
@@ -136,8 +142,9 @@ public class ConnectedActivityRepository {
                 Log.i("autocomplete", prediction.getPrimaryText(null).toString());
             }
             filterRestaurantsByIds(placeIds);
-            autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
-            mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);
+
+            /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
+            mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
@@ -145,5 +152,52 @@ public class ConnectedActivityRepository {
             }
         });
 
-    }*/
+    }
+    private void setBounds() {
+        int mDistanceInMeters = 400;
+        double latRadian = Math.toRadians(currentLocation.getLatitude());
+
+        double degLatKm = 110.574235;
+        double degLongKm = 110.572833 * Math.cos(latRadian);
+        double deltaLat = mDistanceInMeters / 1000.0 / degLatKm;
+        double deltaLong = mDistanceInMeters / 1000.0 / degLongKm;
+
+        double minLat = currentLocation.getLatitude() - deltaLat;
+        double minLong = currentLocation.getLongitude() - deltaLong;
+        double maxLat = currentLocation.getLatitude() + deltaLat;
+        double maxLong = currentLocation.getLongitude() + deltaLong;
+
+        bounds = RectangularBounds.newInstance(
+                new LatLng(minLat, minLong),
+                new LatLng(maxLat, maxLong));
+
+        Log.d("setBounds", "Min: " + Double.toString(minLat) + "," + Double.toString(minLong));
+        Log.d("setBounds", "Max: " + Double.toString(maxLat) + "," + Double.toString(maxLong));
+    }
+    private void filterRestaurantsByIds(List<String> placeIds){
+        List<Restaurant> filteredNearbyRestaurants = new ArrayList<>();
+        for(int i = 0; i < placeIds.size(); i++){
+            int j = 0;
+            while(j<nearbyRestaurants.size()){
+                if(placeIds.get(i).equals(nearbyRestaurants.get(j).getId())){
+                    filteredNearbyRestaurants.add(nearbyRestaurants.get(j));
+                    j=nearbyRestaurants.size();
+                }
+                j++;
+            }
+        }
+        Log.d("filteredRestaurant", "size: " + filteredNearbyRestaurants.size());
+        restaurantsMutableLiveData.postValue(filteredNearbyRestaurants);
+    }
+    public void resetNearbyRestaurants(){
+        restaurantsMutableLiveData.postValue(nearbyRestaurants);
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
 }
