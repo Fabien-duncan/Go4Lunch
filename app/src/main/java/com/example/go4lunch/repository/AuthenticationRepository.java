@@ -33,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -283,9 +284,9 @@ public class AuthenticationRepository {
             }
         });
     }
-    public void updateUserRestaurantChoice(String newChoicId, String newChoiceName){
+    public void updateUserRestaurantChoice(String newChoicId, String newChoiceName, LocalDateTime choiceTimeStamp){
         FirebaseUser user = mAuth.getCurrentUser();
-        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoicId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName));
+        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoicId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp.toString());
         setCurrentUser();
     }
 

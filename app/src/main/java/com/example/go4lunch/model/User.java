@@ -2,7 +2,10 @@ package com.example.go4lunch.model;
 
 import android.net.Uri;
 
+import com.google.firebase.Timestamp;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class User {
     private String displayName;
@@ -11,7 +14,7 @@ public class User {
     private String email;
     private String lunchChoiceId;
     private String lunchChoiceName;
-    private LocalDateTime choiceTimeStamp;
+    private String choiceTimeStamp;
     private Uri photoUrl;
 
 
@@ -65,11 +68,11 @@ public class User {
         this.lunchChoiceId = lunchChoiceId;
     }
 
-    public LocalDateTime getChoiceTimeStamp() {
+    public String getChoiceTimeStamp() {
         return choiceTimeStamp;
     }
 
-    public void setChoiceTimeStamp(LocalDateTime choiceTimeStamp) {
+    public void setChoiceTimeStamp(String choiceTimeStamp) {
         this.choiceTimeStamp = choiceTimeStamp;
     }
     public String getDisplayName() {

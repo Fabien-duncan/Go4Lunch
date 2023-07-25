@@ -41,6 +41,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -289,13 +290,14 @@ public class RestaurantDetailDialogue extends DialogFragment{
 
     @Override
     public void onDestroy() {
+        LocalDateTime timeChoiceStamp = LocalDateTime.now();
         //Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
         if(isAttending && !currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
             //Log.d("Restaurant details", "updating choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName());
+            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
         }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
             //Log.d("Restaurant details", "clearing current choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice("", "");
+            mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
         }
 
         mConnectedActivityViewModel.setCurrentWorkmates();

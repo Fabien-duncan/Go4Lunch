@@ -155,19 +155,20 @@ public class MapViewFragment extends SupportMapFragment{
 
         for(int i = 0; i < nearbyRestaurants.size();i++){
             LatLng restaurantLocation = new LatLng(nearbyRestaurants.get(i).getLat(),nearbyRestaurants.get(i).getLng());
-            if(nearbyRestaurants.get(i).getAttendanceNum()<=0)mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange))));
-            else mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
+            if(nearbyRestaurants.get(i).getAttendanceNum()<=0)mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange)))).setTag(nearbyRestaurants.get(i).getId());
+            else mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green)))).setTag(nearbyRestaurants.get(i).getId());
 
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                Log.d("click listener", "clicked on " + marker.getId().substring(1));
+                //Log.d("click listener", "clicked on " + marker.getId().substring(1));
                 DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
                 //int index = Integer.parseInt(marker.getId().substring(1));
                 int index = 0;
                 for(int i = 0; i<nearbyRestaurants.size(); i++){
-                    if(nearbyRestaurants.get(i).getName().equals(marker.getTitle())) index = i;
+                    //if(nearbyRestaurants.get(i).getName().equals(marker.getTitle())) index = i;
+                    if(nearbyRestaurants.get(i).getId().equals((String) marker.getTag())) index = i;
                 }
                 ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(index));
                 restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");

@@ -135,6 +135,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
                     currentLocation = locationResult.getLastLocation();
+                    setBounds(currentLocation, 400);
                     mConnectedActivityViewModel.setGooglePlacesData(currentLocation);
                     Log.d("locationChanged", "onLocationResult " + locationResult);
 

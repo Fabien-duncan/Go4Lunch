@@ -13,6 +13,7 @@ import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConnectedActivityViewModel extends ViewModel {
@@ -99,8 +100,8 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void setRestaurantsDistance(Location currentLocation){
         mConnectedActivityRepository.setRestaurantsDistance(currentLocation);
     }
-    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName){
-        mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName);
+    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
+        mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
     }
     public void setFilteredWorkmates(String restaurantId){
         mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
