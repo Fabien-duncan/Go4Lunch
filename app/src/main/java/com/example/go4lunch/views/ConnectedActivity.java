@@ -13,9 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -35,6 +40,7 @@ import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.util.ReminderBroadcast;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -68,6 +74,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RestaurantRecyclerViewInterface {
@@ -140,25 +147,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     Log.d("locationChanged", "onLocationResult " + locationResult);
 
                 }
-                /*for (Location location : locationResult.getLocations()) {
-                    // Update UI with location data
-                    // ...
-                }*/
 
             }
         };
 
         isLocationGranted = false;
         getLocationPermission();
-
-
-        /*MatrixCursor cursor = new MatrixCursor(new String[]{"_id","suggest_text_1"});
-        String[] myList = {"apple","banana", "cat", "andy", "dog"};
-        for(int i = 0; i <myList.length; i++){
-            Object[] row = new Object[]{i, myList[i]};
-
-            cursor.addRow(row);
-        }*/
 
         SearchView searchView = findViewById(R.id.toolbar_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -204,7 +198,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository, this);
         mConnectedActivityViewModel.setupGoogleSignInOptions();
 
-        String userName = getIntent().getExtras().getString("name");
+        /////////////////////////////
+        notificationChannel();
+        setCalendar();
+        ////////////////////////////
+
+        //String userName = getIntent().getExtras().getString("name");
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -240,15 +239,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     mConnectedActivityViewModel.setCurrentWorkmates();
 
                     //nearbyRestaurants = restaurants;
-                }
-            }
-        });
-        mConnectedActivityViewModel.getAllRestaurantsMutableLiveData().observe(this, new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
-                    nearbyRestaurants = restaurants;
-
                 }
             }
         });
@@ -409,5 +399,34 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     @Override
     public void onItemClick(int position) {
 
+    }
+    public void setCalendar(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE, 52);
+        calendar.set(Calendar.SECOND, 05);
+
+        if(Calendar.getInstance().after(calendar)){
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+        }
+
+        //ReminderBroadcast.text="Fabien";
+        Intent intent = new Intent(ConnectedActivity.this, ReminderBroadcast.class);
+        intent.putExtra("Name", "bob");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,intent,PendingIntent.FLAG_MUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+    }
+    public void notificationChannel(){
+        CharSequence name = "Restaurant Choice";
+        String description = "contains the name of the restaurants, the address and the attending workmates";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel("notifyRestaurant", name, importance);
+        channel.setDescription(description);
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
 }

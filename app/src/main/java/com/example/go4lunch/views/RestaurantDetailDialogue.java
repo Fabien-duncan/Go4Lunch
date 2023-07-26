@@ -279,13 +279,13 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     websiteLink.setAlpha(1);
                 }
             }).addOnFailureListener((exception) -> {
-                        if (exception instanceof ApiException) {
-                            final ApiException apiException = (ApiException) exception;
-                            Log.e("Places detail", "Place not found: " + exception.getMessage());
-                            final int statusCode = apiException.getStatusCode();
-                            // TODO: Handle error with given status code.
-                        }
-                    });
+                    if (exception instanceof ApiException) {
+                        final ApiException apiException = (ApiException) exception;
+                        Log.e("Places detail", "Place not found: " + exception.getMessage());
+                        final int statusCode = apiException.getStatusCode();
+                        // TODO: Handle error with given status code.
+                    }
+            });
         }
 
     @Override

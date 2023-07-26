@@ -29,7 +29,6 @@ public class ConnectedActivityViewModel extends ViewModel {
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private ConnectedActivityRepository mConnectedActivityRepository;
 
-    private MutableLiveData<List<Restaurant>> allRestaurantsMutableLiveData;
 
     public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository, Context context){
         mAuthenticationRepository = authenticationRepository;
@@ -40,13 +39,9 @@ public class ConnectedActivityViewModel extends ViewModel {
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
-        allRestaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
 
     }
 
-    public MutableLiveData<List<Restaurant>> getAllRestaurantsMutableLiveData() {
-        return allRestaurantsMutableLiveData;
-    }
 
     public void setupGoogleSignInOptions(){
         mAuthenticationRepository.setupGoogleSignInOptions();
