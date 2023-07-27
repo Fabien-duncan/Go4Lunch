@@ -2,10 +2,12 @@ package com.example.go4lunch.util;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
@@ -67,6 +69,11 @@ public class ReminderBroadcast extends BroadcastReceiver {
                     for (int i = 0; i < list.size();i++){
                         if(list.get(i).getLunchChoiceId().equals(currentUser.getLunchChoiceId())) workmates += " " + list.get(i).getDisplayName() + ",";
                     }
+                    if(workmates.endsWith(",")) {
+
+                        workmates= workmates.substring(0, workmates.length() - 1);
+                    }
+                    String address = loadAddress(context, currentUser.getEmail());
 
                     Log.d("broadcast","in broadcast");
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
@@ -75,10 +82,11 @@ public class ReminderBroadcast extends BroadcastReceiver {
                             .setContentIntent(pendingIntent)
                             .setSmallIcon(R.drawable.baseline_notifications_active_24)
                             .setContentTitle("Restaurant Choice")
-                            .setContentText("You are attending " + currentUser.getLunchChoiceName() + " \n Workmate: " + workmates)
+                            //.setContentText("You are attending " + currentUser.getLunchChoiceName() +", " + address + " \n Workmate: " + workmates)
+                            .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(currentUser.getLunchChoiceName() +", " + address + "\nWorkmate attending: " + workmates))
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                             .setAutoCancel(true);
-
 
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
                     notificationManagerCompat.notify(200, builder.build());
@@ -102,5 +110,9 @@ public class ReminderBroadcast extends BroadcastReceiver {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(200, builder.build());*/
 
+    }
+    public String loadAddress(Context context, String email){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(email, "No address found");
     }
 }

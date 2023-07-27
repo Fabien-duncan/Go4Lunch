@@ -402,9 +402,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public void setCalendar(){
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 52);
-        calendar.set(Calendar.SECOND, 05);
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
+        calendar.set(Calendar.MINUTE, 24);
+        calendar.set(Calendar.SECOND, 15);
 
         if(Calendar.getInstance().after(calendar)){
             calendar.add(Calendar.DAY_OF_MONTH,1);

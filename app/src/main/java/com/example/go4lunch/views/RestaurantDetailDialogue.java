@@ -1,7 +1,10 @@
 package com.example.go4lunch.views;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,6 +73,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
         mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, currentRestaurant.getId());
+
+
 
         /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -165,9 +170,11 @@ public class RestaurantDetailDialogue extends DialogFragment{
             public void onChanged(User user) {
                 Log.d("User data Rest detail", "id: " + user.getDisplayName());
                 currentUser = user;
+                loadData();//temp
                 if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
                     attend.setImageResource(R.drawable.baseline_check_circle_24);
                     isAttending = true;
+
                 }
             }
         });
@@ -295,6 +302,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
         if(isAttending && !currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
             //Log.d("Restaurant details", "updating choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
+            saveData();
         }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
             //Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
@@ -304,10 +312,21 @@ public class RestaurantDetailDialogue extends DialogFragment{
 
         super.onDestroy();
     }
+    public void saveData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(currentUser.getEmail(), currentRestaurant.getAddress());
+        editor.apply();
+    }
 
     private void generateUsers(){
         attendingWorkmatesList = new ArrayList<>();
         attendingWorkmatesList.add(new User("Fabien Duncan","fab@gmail.com",Uri.parse("https://sdfs.com")));
         attendingWorkmatesList.add(new User("Bob","bob@gmail.com",Uri.parse("https://sdfs.com")));
+    }
+    private void loadData(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        Log.d("sharedPrefs", sharedPreferences.getString(currentUser.getEmail(), "No address found"));
     }
 }
