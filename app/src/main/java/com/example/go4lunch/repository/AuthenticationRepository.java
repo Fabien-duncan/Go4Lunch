@@ -290,11 +290,11 @@ public class AuthenticationRepository {
         db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoiceId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp.toString());
         setCurrentUser();
     }
-    public void updateUserRestaurantFavorite(String newFavorite, String type){
+    public void updateUserRestaurantFavorite(String restaurantID, String type){
         FirebaseUser user = mAuth.getCurrentUser();
-        if(type.equals("add"))db.collection("users").document(user.getUid()).update("favoriteRestaurants", FieldValue.arrayUnion(newFavorite));
+        if(type.equals("add"))db.collection("users").document(user.getUid()).update("favoriteRestaurants", FieldValue.arrayUnion(restaurantID));
         else if (type.equals("remove")) {
-            
+            db.collection("users").document(user.getUid()).update("favoriteRestaurants", FieldValue.arrayRemove(restaurantID));
         }
         setCurrentUser();
     }

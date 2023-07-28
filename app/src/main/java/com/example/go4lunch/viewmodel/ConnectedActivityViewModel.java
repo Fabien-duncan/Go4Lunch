@@ -102,8 +102,8 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
     }
-    public void updateUserRestaurantFavorite(String newFavorite, String type){
-        mAuthenticationRepository.updateUserRestaurantFavorite(newFavorite, type);
+    public void updateUserRestaurantFavorite(String restaurantID, String type){
+        mAuthenticationRepository.updateUserRestaurantFavorite(restaurantID, type);
     }
     public void setFilteredWorkmates(String restaurantId){
         mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);

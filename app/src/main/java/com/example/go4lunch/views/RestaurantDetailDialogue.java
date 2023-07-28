@@ -358,8 +358,10 @@ public class RestaurantDetailDialogue extends DialogFragment{
             //Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
         }
-        if(isFavorite){
+        if(isFavorite && !currentUser.isFavorite(currentRestaurant.getId())){
             mConnectedActivityViewModel.updateUserRestaurantFavorite(currentRestaurant.getId(), "add");
+        } else if (!isFavorite && currentUser.isFavorite(currentRestaurant.getId())) {
+            mConnectedActivityViewModel.updateUserRestaurantFavorite(currentRestaurant.getId(), "remove");
         }
 
         mConnectedActivityViewModel.setCurrentWorkmates();
