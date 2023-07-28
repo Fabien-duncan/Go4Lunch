@@ -7,6 +7,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -102,6 +103,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private String currentFragment;
     private LocationCallback locationCallback;
     private LocationRequest locationRequest;
+    private User currentUser;
 
 
 
@@ -249,6 +251,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 mConnectedActivityViewModel.updateAttending(users);
             }
         });
+        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                currentUser = user;
+                Log.d("currentUser", "size of favorite List: " + currentUser.getFavoriteRestaurants().size());
+            }
+        });
 
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -312,6 +321,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         switch (item.getItemId()){
             case R.id.side_bar_lunch:
                 Toast.makeText(this, "view lunch!", Toast.LENGTH_SHORT).show();
+               /* DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+                ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(0));
+                restaurantDetailDialogue.show(this.getSupportFragmentManager(),"Restaurant Details");*/
                 break;
             case R.id.side_bar_settings:
                 Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
@@ -320,6 +332,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 mConnectedActivityViewModel.signOut();
                 //showMainActivity();
                 System.out.println("singOut");
+
                 break;
         }
         return true;

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,7 +42,9 @@ import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -57,9 +62,11 @@ public class RestaurantDetailDialogue extends DialogFragment{
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private User currentUser;
     private boolean isAttending;
+    private boolean isFavorite;
     private RecyclerView attendingWorkmatesRecyclerView;
     private List<User> attendingWorkmatesList;
     private AuthenticationRepository mAuthenticationRepository;
+    private ImageView restaurantImage;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -72,6 +79,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
         mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
+        isFavorite = false;
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, currentRestaurant.getId());
 
 
@@ -100,7 +108,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_restaurant_detail,container,false);
 
-        ImageView restaurantImage = view.findViewById(R.id.restaurant_detail_restaurant_iv);
+        restaurantImage = view.findViewById(R.id.restaurant_detail_restaurant_iv);
         ImageView star3 = view.findViewById(R.id.restaurant_list_star_3_iv);
         ImageView star2 = view.findViewById(R.id.restaurant_list_star_2_iv);
         ImageView star1 = view.findViewById(R.id.restaurant_list_star_1_iv);
@@ -109,6 +117,10 @@ public class RestaurantDetailDialogue extends DialogFragment{
         Button like = view.findViewById(R.id.restaurant_detail_like_btn);
         Button phone = view.findViewById(R.id.restaurant_detail_call_btn);
         FloatingActionButton attend = view.findViewById(R.id.restaurant_detail_attend_fb);
+
+        //like.setAlpha(0.5f);
+        like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
 
         TextView restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
         TextView restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
@@ -174,7 +186,11 @@ public class RestaurantDetailDialogue extends DialogFragment{
                 if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
                     attend.setImageResource(R.drawable.baseline_check_circle_24);
                     isAttending = true;
-
+                }
+                if(user.isFavorite(currentRestaurant.getId())){
+                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                    isFavorite = true;
                 }
             }
         });
@@ -220,7 +236,16 @@ public class RestaurantDetailDialogue extends DialogFragment{
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(isFavorite){
+                    //like.setAlpha(0.5f);
+                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+                }else {
+                    //like.setAlpha(1.0f);
+                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                }
+                isFavorite = !isFavorite;
             }
         });
         attend.setOnClickListener(new View.OnClickListener() {
@@ -267,7 +292,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
             final String placeId = currentRestaurant.getId();
 
             // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.PHOTO_METADATAS);
 
             // Construct a request object, passing the place ID and fields array.
             final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
@@ -285,6 +310,32 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     websiteLink.setEnabled(true);
                     websiteLink.setAlpha(1);
                 }
+                /*final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                if (metadata == null || metadata.isEmpty()) {
+                    Log.w("PlaceImage", "No photo metadata.");
+                    return;
+                }
+                final PhotoMetadata photoMetadata = metadata.get(0);
+
+                // Get the attribution text.
+                final String attributions = photoMetadata.getAttributions();
+
+                // Create a FetchPhotoRequest.
+                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                        .setMaxWidth(500) // Optional.
+                        .setMaxHeight(300) // Optional.
+                        .build();
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    restaurantImage.setImageBitmap(bitmap);
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        final ApiException apiException = (ApiException) exception;
+                        Log.e("PlaceImage", "Place not found: " + exception.getMessage());
+                        final int statusCode = apiException.getStatusCode();
+                        // TODO: Handle error with given status code.
+                    }
+                });*/
             }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         final ApiException apiException = (ApiException) exception;
@@ -306,6 +357,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
         }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
             //Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
+        }
+        if(isFavorite){
+            mConnectedActivityViewModel.updateUserRestaurantFavorite(currentRestaurant.getId(), "add");
         }
 
         mConnectedActivityViewModel.setCurrentWorkmates();

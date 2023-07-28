@@ -6,6 +6,8 @@ import com.google.firebase.Timestamp;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User {
     private String displayName;
@@ -16,6 +18,7 @@ public class User {
     private String lunchChoiceName;
     private String choiceTimeStamp;
     private Uri photoUrl;
+    private List<String> favoriteRestaurants;
 
 
     public User(String displayName,String firstName, String lastName, String email, Uri photoUrl) {
@@ -24,6 +27,7 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.photoUrl = photoUrl;
+        favoriteRestaurants = new ArrayList<>();
     }
     public User(String displayName, String email, Uri photoUrl) {
         this.displayName = displayName;
@@ -31,6 +35,7 @@ public class User {
         this.photoUrl = photoUrl;
         this.lunchChoiceId="";
         this.lunchChoiceName="";
+        favoriteRestaurants = new ArrayList<>();
     }
     public User(){
 
@@ -102,4 +107,20 @@ public class User {
         this.lunchChoiceName = lunchChoiceName;
     }
 
+    public List<String> getFavoriteRestaurants() {
+        return favoriteRestaurants;
+    }
+
+    public void setFavoriteRestaurants(List<String> favoriteRestaurants) {
+        this.favoriteRestaurants = favoriteRestaurants;
+    }
+    public boolean isFavorite(String restaurantID){
+        boolean found = false;
+        int i = 0;
+        while(!found && i < favoriteRestaurants.size()){
+            if(restaurantID.equals(favoriteRestaurants.get(i))) found = true;
+            i++;
+        }
+        return found;
+    }
 }

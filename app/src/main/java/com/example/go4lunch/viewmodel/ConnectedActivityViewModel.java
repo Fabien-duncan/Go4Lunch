@@ -28,6 +28,7 @@ public class ConnectedActivityViewModel extends ViewModel {
 
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private ConnectedActivityRepository mConnectedActivityRepository;
+    private MutableLiveData<Restaurant> currentRestaurantChoice;
 
 
     public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository, Context context){
@@ -39,6 +40,7 @@ public class ConnectedActivityViewModel extends ViewModel {
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
+        currentRestaurantChoice = mConnectedActivityRepository.getCurrentRestaurantChoice();
 
     }
 
@@ -100,6 +102,9 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
     }
+    public void updateUserRestaurantFavorite(String newFavorite, String type){
+        mAuthenticationRepository.updateUserRestaurantFavorite(newFavorite, type);
+    }
     public void setFilteredWorkmates(String restaurantId){
         mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
     }
@@ -121,5 +126,9 @@ public class ConnectedActivityViewModel extends ViewModel {
 
     public void setCurrentLocation(Location currentLocation) {
         mConnectedActivityRepository.setCurrentLocation(currentLocation);
+    }
+
+    public MutableLiveData<Restaurant> getCurrentRestaurantChoice() {
+        return currentRestaurantChoice;
     }
 }

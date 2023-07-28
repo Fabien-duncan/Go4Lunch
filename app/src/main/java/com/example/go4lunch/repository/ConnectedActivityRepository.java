@@ -16,7 +16,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
@@ -30,6 +32,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ConnectedActivityRepository {
+    private Activity mActivity;
     private Context mContext;
     private Location currentLocation;
     private RectangularBounds bounds;
@@ -37,12 +40,14 @@ public class ConnectedActivityRepository {
     private List<Restaurant> nearbyRestaurants;
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private ApiService mGooglePlacesReadTask;
+    private MutableLiveData<Restaurant> currentRestaurantChoice;
 
     public ConnectedActivityRepository(Context context){
         this.mContext = context;
-        //this.mActivity = (Activity)context;
+        this.mActivity = (Activity)context;
 
         nearbyRestaurants = new ArrayList<>();
+        currentRestaurantChoice = new MutableLiveData<>();
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mGooglePlacesReadTask = new ApiService();
     }
@@ -72,6 +77,7 @@ public class ConnectedActivityRepository {
         });
 
     }
+
 
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
         return restaurantsMutableLiveData;
@@ -199,5 +205,46 @@ public class ConnectedActivityRepository {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    private Restaurant getRestaurant(String id){
+        String key = BuildConfig.GMP_key;
+
+        // Initialize Places.
+        Places.initialize(mActivity.getApplicationContext(), key);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(mContext);
+        // Define a Place ID.
+
+        // Specify the fields to return.
+        final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS);
+
+        // Construct a request object, passing the place ID and fields array.
+        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(id, placeFields);
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+            Log.i("Places detail", "Place found: " + place.getName());
+
+
+            Restaurant currentRestaurantChoice = new Restaurant();
+            currentRestaurantChoice.setAddress(place.getAddress());
+            currentRestaurantChoice.setName(place.getName());
+            currentRestaurantChoice.setImageUrl(place.getPhotoMetadatas().get(0).getAttributions());
+
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                final ApiException apiException = (ApiException) exception;
+                Log.e("Places detail", "Place not found: " + exception.getMessage());
+                final int statusCode = apiException.getStatusCode();
+                // TODO: Handle error with given status code.
+            }
+        });
+        return null;
+    }
+
+    public MutableLiveData<Restaurant> getCurrentRestaurantChoice() {
+        return currentRestaurantChoice;
     }
 }

@@ -29,6 +29,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -284,9 +285,17 @@ public class AuthenticationRepository {
             }
         });
     }
-    public void updateUserRestaurantChoice(String newChoicId, String newChoiceName, LocalDateTime choiceTimeStamp){
+    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         FirebaseUser user = mAuth.getCurrentUser();
-        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoicId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp.toString());
+        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoiceId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp.toString());
+        setCurrentUser();
+    }
+    public void updateUserRestaurantFavorite(String newFavorite, String type){
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(type.equals("add"))db.collection("users").document(user.getUid()).update("favoriteRestaurants", FieldValue.arrayUnion(newFavorite));
+        else if (type.equals("remove")) {
+            
+        }
         setCurrentUser();
     }
 

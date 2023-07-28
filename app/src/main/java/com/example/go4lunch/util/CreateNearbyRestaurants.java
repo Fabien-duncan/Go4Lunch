@@ -106,7 +106,7 @@ public class CreateNearbyRestaurants {
                 restaurant.setImageUrl(photoUrl);
             }
             restaurant.setOpeningHours(openNow);
-            //System.out.println("restaurant " + restaurant.getName());
+            Log.d("createRestaurant","restaurant " + restaurant.getName());
         } catch (JSONException e) {
             e.printStackTrace();
         }
