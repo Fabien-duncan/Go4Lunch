@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
     <string name="moto_En">Find a nice restaurant and invite your co-workers for lunch!</string>
-    <string name="sign_in_facebook_en">Sign in with Facebook</string>
+    <string name="sign_in_login_en">Sign in with Login</string>
     <string name="sign_in_gmail_en">Sign in with Google</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -204,15 +204,18 @@ public class AuthenticationRepository {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            User user = new User(displayName,email,Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg"));
-                            FirebaseDatabase.getInstance().getReference("users")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Log.d("createUser", "sucessful!!!");
-                                        }
-                                    });
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            String userId = user.getUid();
+                            DocumentReference documentReference = db.collection("users").document(userId);
+                            User newUser = new User(displayName,email,Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg"));
+                            documentReference.set(newUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Log.d("Create User", "onSuccess: user Profile is created for" + userId);
+                                }
+                            });
+                            mFirebaseUserMutableLiveData.postValue(user);
+                            isUserSignedIn.postValue(true);
                         } else {
                             Toast.makeText(mContext, "Authentication failed!!!", Toast.LENGTH_LONG).show();
 
@@ -220,7 +223,7 @@ public class AuthenticationRepository {
                     }
                 });
     }
-    public void createFireStoreUser(){
+    private void createFireStoreUser(){
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
         DocumentReference documentReference = db.collection("users").document(userId);

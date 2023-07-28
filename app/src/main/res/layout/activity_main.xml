@@ -65,7 +65,7 @@
             android:background="@drawable/bg_btn_login"
             android:drawableStart="@drawable/baseline_person_32"
             android:paddingHorizontal="20dp"
-            android:text="@string/sign_in_facebook_en"
+            android:text="@string/sign_in_login_en"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="20sp"

@@ -69,6 +69,9 @@ public class MainActivityViewModel extends ViewModel {
     public MutableLiveData<List<User>> getAllWorkmates(){
         return mAuthenticationRepository.getAllWorkmates();
     }
+    public void firebaseCreateUser(String email, String password, String displayName){
+        mAuthenticationRepository.firebaseCreateUser(email,password,displayName);
+    }
     /*public User getCurrentUser(){
         return mAuthenticationRepository.getCurrentUser();
     }*/
