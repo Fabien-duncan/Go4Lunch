@@ -3,12 +3,14 @@ package com.example.go4lunch.repository;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
@@ -26,6 +28,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -171,6 +174,48 @@ public class AuthenticationRepository {
                         }else{
                             Toast.makeText(mContext, "SignIn Failed!", Toast.LENGTH_LONG).show();
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
+                        }
+                    }
+                });
+    }
+    public void firebaseAuthWithEmailAndPassword(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("SignInWithPassword", "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("SignInWithPassword", "signInWithEmail:failure", task.getException());
+                            Toast.makeText(mContext, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+    public void firebaseCreateUser(String email, String password, String displayName){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            User user = new User(displayName,email,Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg"));
+                            FirebaseDatabase.getInstance().getReference("users")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d("createUser", "sucessful!!!");
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(mContext, "Authentication failed!!!", Toast.LENGTH_LONG).show();
+
                         }
                     }
                 });

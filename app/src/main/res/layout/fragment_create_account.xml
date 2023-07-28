@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:layout_gravity="fill_horizontal"
+    android:orientation="vertical"
+    android:layout_margin="12dp">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="Create Account"
+        android:id="@+id/Label"
+        />
+
+    <EditText
+        android:id="@+id/create_account_display_name"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:selectAllOnFocus="true"
+        android:lines="1"
+        android:hint="display name"
+        android:layout_gravity="fill_horizontal"
+        android:layout_width="match_parent">
+    </EditText>
+    <EditText
+        android:id="@+id/create_account_email"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:selectAllOnFocus="true"
+        android:lines="1"
+        android:hint="email"
+        android:layout_gravity="fill_horizontal"
+        android:layout_width="match_parent">
+    </EditText>
+    <EditText
+        android:id="@+id/create_account_password"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:selectAllOnFocus="true"
+        android:lines="1"
+        android:hint="password"
+        android:inputType="textPassword"
+        android:layout_gravity="fill_horizontal"
+        android:layout_width="match_parent">
+    </EditText>
+    <Button
+        android:id="@+id/create_account_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
+        android:background="@drawable/bg_btn_login"
+        android:text="create"
+        android:layout_gravity="right"/>
+
+</LinearLayout>

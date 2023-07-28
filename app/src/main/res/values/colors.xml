@@ -12,5 +12,6 @@
     <color name="orange">#FB7540</color>
     <color name="green">#5CF09D</color>
     <color name="yellow">#F4E319</color>
+    <color name="loginYellow">#FFC107</color>
     <color name="darkOrange">#AF3329</color>
 </resources>

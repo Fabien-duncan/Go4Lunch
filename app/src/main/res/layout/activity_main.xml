@@ -47,6 +47,7 @@
         app:layout_constraintTop_toBottomOf="@+id/go4Lunch_title_tv" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -57,13 +58,13 @@
         app:layout_constraintTop_toBottomOf="@+id/go4Lunch_title_tv">
 
         <Button
-            android:id="@+id/facebook_signin_btn"
+            android:id="@+id/Login_signin_btn"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="@drawable/bg_btn_facebook"
-            android:drawableStart="@drawable/facebook_logo_48"
-            android:paddingHorizontal="16dp"
             android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_btn_login"
+            android:drawableStart="@drawable/baseline_person_32"
+            android:paddingHorizontal="20dp"
             android:text="@string/sign_in_facebook_en"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -88,6 +89,24 @@
 
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/main_create_account_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="?android:attr/selectableItemBackground"
+        android:text="@string/create_Account_btn"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+    </Button>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

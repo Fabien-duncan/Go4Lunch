@@ -213,6 +213,11 @@ public class RestaurantDetailDialogue extends DialogFragment{
                         getContext(), Manifest.permission.CALL_PHONE) ==
                         PackageManager.PERMISSION_GRANTED) {
                     // You can use the API that requires the permission.
+                    Log.d("calling", "phone num: " + currentRestaurant.getPhoneNumber());
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
+                    startActivity(intent);
+
 
                 } else if (shouldShowRequestPermissionRationale("")) {
                     // In an educational UI, explain to the user why your app requires this
@@ -227,9 +232,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     requestPermissionLauncher.launch(
                             Manifest.permission.CALL_PHONE);
                 }
-                /*Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + number));
-                startActivity(intent);*/
 
             }
         });
@@ -292,7 +294,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
             final String placeId = currentRestaurant.getId();
 
             // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.PHOTO_METADATAS);
+            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
 
             // Construct a request object, passing the place ID and fields array.
             final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
@@ -303,6 +305,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
                         + " Phone Num: " + place.getPhoneNumber()
                         + " web: " + place.getWebsiteUri());
                 restaurantUrl = place.getWebsiteUri();
+                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
                 if(restaurantUrl==null){
                     websiteLink.setEnabled(false);
                     websiteLink.setAlpha(0.3f);
