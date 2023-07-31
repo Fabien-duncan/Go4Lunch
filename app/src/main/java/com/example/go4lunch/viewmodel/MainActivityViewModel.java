@@ -75,4 +75,7 @@ public class MainActivityViewModel extends ViewModel {
     /*public User getCurrentUser(){
         return mAuthenticationRepository.getCurrentUser();
     }*/
+    public void signInWithEmail(String email, String password){
+        mAuthenticationRepository.firebaseAuthWithEmailAndPassword(email,password);
+    }
 }

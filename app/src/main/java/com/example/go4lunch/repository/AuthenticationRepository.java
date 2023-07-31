@@ -188,6 +188,8 @@ public class AuthenticationRepository {
                             Log.d("SignInWithPassword", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            mFirebaseUserMutableLiveData.postValue(user);
+                            isUserSignedIn.postValue(true);
 
                         } else {
                             // If sign in fails, display a message to the user.

@@ -1,27 +1,21 @@
 package com.example.go4lunch;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.ConnectedActivity;
 import com.example.go4lunch.views.CreateAccountFragment;
+import com.example.go4lunch.views.SignInFragment;
 import com.google.firebase.auth.FirebaseUser;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -31,19 +25,21 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener {
+public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener, SignInFragment.SignInListener {
     private MainActivityViewModel mMainActivityViewModel;
     private AuthenticationRepository mAuthenticationRepository;
-    private Button signInWithGoogle;
-    private Button createAccount;
+    private Button signInWithGoogle_btn;
+    private Button createAccount_btn;
+    private Button signIn_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        signInWithGoogle = findViewById(R.id.gmail_signin_btn);
-        createAccount = findViewById(R.id.main_create_account_btn);
+        signInWithGoogle_btn = findViewById(R.id.gmail_signin_btn);
+        createAccount_btn = findViewById(R.id.main_create_account_btn);
+        signIn_btn = findViewById(R.id.login_signin_btn);
 
         mAuthenticationRepository = new AuthenticationRepository(this);
         mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
@@ -78,17 +74,24 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             }
         });
 
-        signInWithGoogle.setOnClickListener(new View.OnClickListener() {
+        signInWithGoogle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mMainActivityViewModel.signIn();
             }
         });
-        createAccount.setOnClickListener(new View.OnClickListener() {
+        createAccount_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment createAccountFragment = new CreateAccountFragment();
                 createAccountFragment.show(getSupportFragmentManager(), "Create Account");
+            }
+        });
+        signIn_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SignInFragment signInFragment = new SignInFragment();
+                signInFragment.show(getSupportFragmentManager(), "Sign in");
             }
         });
     }
@@ -135,5 +138,11 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
     public void userInformation(String displayName, String email, String password) {
         Log.d("userInformation", "creating this user: " + displayName + " email: " + email);
         mMainActivityViewModel.firebaseCreateUser(email,password,displayName);
+    }
+
+    @Override
+    public void userSingInInformation(String email, String password) {
+        Log.d("userInformation", "Sign in with this email " + email);
+        mMainActivityViewModel.signInWithEmail(email,password);
     }
 }
