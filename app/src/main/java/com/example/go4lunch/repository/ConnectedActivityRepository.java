@@ -111,7 +111,7 @@ public class ConnectedActivityRepository {
         }
         Log.d("updateAttending", restaurantID.toString());
         for(int i = 0; i<nearbyRestaurants.size();i++){
-            Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurence " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
+            Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurance " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
             nearbyRestaurants.get(i).setAttendanceNum(Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
             //nearbyRestaurants.get(i).setAttendanceNum(5);
         }

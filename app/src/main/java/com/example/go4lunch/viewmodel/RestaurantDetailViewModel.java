@@ -13,13 +13,16 @@ public class RestaurantDetailViewModel extends ViewModel{
 
     private MutableLiveData<List<User>> attendingWorkmatesMutableLiveData;
 
-    public RestaurantDetailViewModel(AuthenticationRepository authenticationRepository, String restaurantId){
+    public RestaurantDetailViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         attendingWorkmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
-        mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
+        //mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
     }
 
     public MutableLiveData<List<User>> getAllWorkmates(){
         return attendingWorkmatesMutableLiveData;
+    }
+    public void retrieveFilteredWorkmates(String restaurantId){
+        mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
     }
 }

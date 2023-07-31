@@ -71,7 +71,7 @@ public class CreateNearbyRestaurants {
                 rating = Double.parseDouble(googlePlaceJson.getString("rating"));
             }
             if(!googlePlaceJson.isNull("photos")) {
-                //photo_reference = googlePlaceJson.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                photo_reference = googlePlaceJson.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
             }
             if(!googlePlaceJson.isNull("opening_hours")) {
                 openNow = googlePlaceJson.getJSONObject("opening_hours").getString("open_now");

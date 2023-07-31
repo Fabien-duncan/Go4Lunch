@@ -255,7 +255,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onChanged(User user) {
                 currentUser = user;
-                Log.d("currentUser", "size of favorite List: " + currentUser.getFavoriteRestaurants().size());
+                //Log.d("currentUser", "size of favorite List: " + currentUser.getFavoriteRestaurants().size());
             }
         });
 
@@ -321,9 +321,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         switch (item.getItemId()){
             case R.id.side_bar_lunch:
                 Toast.makeText(this, "view lunch!", Toast.LENGTH_SHORT).show();
-               /* DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(0));
-                restaurantDetailDialogue.show(this.getSupportFragmentManager(),"Restaurant Details");*/
+                DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+                ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
+                restaurantDetailDialogue.show(this.getSupportFragmentManager(),"Restaurant Details");
                 break;
             case R.id.side_bar_settings:
                 Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
@@ -415,8 +415,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public void setCalendar(){
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 13);
-        calendar.set(Calendar.MINUTE, 24);
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 22);
         calendar.set(Calendar.SECOND, 15);
 
         if(Calendar.getInstance().after(calendar)){

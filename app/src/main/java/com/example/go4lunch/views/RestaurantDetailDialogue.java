@@ -38,6 +38,7 @@ import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.util.FormatString;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.google.android.gms.common.api.ApiException;
@@ -66,7 +67,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
     private RecyclerView attendingWorkmatesRecyclerView;
     private List<User> attendingWorkmatesList;
     private AuthenticationRepository mAuthenticationRepository;
-    private ImageView restaurantImage;
+    private ImageView restaurantImage, star1, star2, star3;
+    private TextView restaurantName,restaurantDetail;
 
     public static RestaurantDetailDialogue newInstance(){
         return new RestaurantDetailDialogue();
@@ -80,7 +82,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
         mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         isFavorite = false;
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, currentRestaurant.getId());
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository);
 
 
 
@@ -109,9 +111,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
         View view = inflater.inflate(R.layout.activity_restaurant_detail,container,false);
 
         restaurantImage = view.findViewById(R.id.restaurant_detail_restaurant_iv);
-        ImageView star3 = view.findViewById(R.id.restaurant_list_star_3_iv);
-        ImageView star2 = view.findViewById(R.id.restaurant_list_star_2_iv);
-        ImageView star1 = view.findViewById(R.id.restaurant_list_star_1_iv);
+        star3 = view.findViewById(R.id.restaurant_list_star_3_iv);
+        star2 = view.findViewById(R.id.restaurant_list_star_2_iv);
+        star1 = view.findViewById(R.id.restaurant_list_star_1_iv);
 
         websiteLink = view.findViewById(R.id.restaurant_detail_website_btn);
         Button like = view.findViewById(R.id.restaurant_detail_like_btn);
@@ -122,8 +124,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
         like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
         like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
 
-        TextView restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
-        TextView restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
+        restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
+        restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
 
 
         //mConnectedActivityViewModel.setFilteredWorkmates(currentRestaurant.getId());
@@ -136,6 +138,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
         RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList);
         attendingWorkmatesRecyclerView.setAdapter(restaurantDetailWorkmatesAdapter);
         restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
+
+
 
         /*mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
             @Override
@@ -153,45 +157,42 @@ public class RestaurantDetailDialogue extends DialogFragment{
             }
         });
 
-        Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
-        Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);
-        restaurantName.setText(currentRestaurant.getName());
-        restaurantDetail.setText(currentRestaurant.getAddress());
 
-        if(currentRestaurant.getRating() <= 0){
-            star1.setVisibility(View.INVISIBLE);
-            star2.setVisibility(View.INVISIBLE);
-            star3.setVisibility(View.INVISIBLE);
-        } else if (currentRestaurant.getRating() == 1) {
-            star2.setVisibility(View.INVISIBLE);
-            star3.setVisibility(View.INVISIBLE);
-        } else if (currentRestaurant.getRating() == 2) {
-            star3.setVisibility(View.INVISIBLE);
-        } else {
-            star1.setVisibility(View.VISIBLE);
-            star2.setVisibility(View.VISIBLE);
-            star3.setVisibility(View.VISIBLE);
-        }
-
-        if(restaurantUrl==null){
-            websiteLink.setEnabled(false);
-            websiteLink.setAlpha(0.3f);
-        }
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 Log.d("User data Rest detail", "id: " + user.getDisplayName());
                 currentUser = user;
-                loadData();//temp
-                if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
+                mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
+                if(currentRestaurant!= null){
+                    getDetail();
+                    setRestaurantDetail(view);
+                }
+                else{
+                    getAllInformation(currentUser.getLunchChoiceId(), view);
+                    Log.d("restaurantDetail", "there is no restaurant");
+                }
+
+                //loadData();//temp
+                if(currentRestaurant != null){
+                    if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
+                        attend.setImageResource(R.drawable.baseline_check_circle_24);
+                        isAttending = true;
+                    }
+                    if(user.isFavorite(currentRestaurant.getId())){
+                        like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                        isFavorite = true;
+                    }
+                }
+                else{
                     attend.setImageResource(R.drawable.baseline_check_circle_24);
                     isAttending = true;
-                }
-                if(user.isFavorite(currentRestaurant.getId())){
                     like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
                     like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
                     isFavorite = true;
                 }
+
             }
         });
         websiteLink.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +262,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
                 isAttending = !isAttending;
             }
         });
-        getDetail();
+
         return view;
     }
     public void setCurrentRestaurant(Restaurant currentRestaurant) {
@@ -347,7 +348,77 @@ public class RestaurantDetailDialogue extends DialogFragment{
                         // TODO: Handle error with given status code.
                     }
             });
-        }
+    }
+
+    public void getAllInformation(String restaurantID, View view){
+        String key = BuildConfig.GMP_key;
+
+        // Initialize Places.
+        Places.initialize(getActivity().getApplicationContext(), key);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(getContext());
+        Restaurant restaurant =new Restaurant();
+        // Define a Place ID.
+
+        // Specify the fields to return.
+        final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.RATING);
+
+        // Construct a request object, passing the place ID and fields array.
+        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(restaurantID, placeFields);
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+
+
+
+            restaurant.setName(FormatString.capitalizeEveryWord(place.getName()));
+            restaurant.setId(restaurantID);
+            restaurant.setPhoneNumber(place.getPhoneNumber());
+            restaurant.setAddress(place.getAddress());
+            restaurant.setRating(place.getRating());
+            Log.i("Places detail", "Place found: " + restaurant.getName()
+                    + " Phone Num: " + restaurant.getPhoneNumber()
+                    + " address: " + restaurant.getAddress());
+
+            currentRestaurant = restaurant;
+            setRestaurantDetail(view);
+
+            final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+            if (metadata == null || metadata.isEmpty()) {
+                Log.w("PlaceImage", "No photo metadata.");
+                return;
+            }
+            final PhotoMetadata photoMetadata = metadata.get(0);
+
+            // Get the attribution text.
+            final String attributions = photoMetadata.getAttributions();
+
+            // Create a FetchPhotoRequest.
+            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .setMaxWidth(700) // Optional.
+                    .setMaxHeight(500) // Optional.
+                    .build();
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                restaurantImage.setImageBitmap(bitmap);
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    final ApiException apiException = (ApiException) exception;
+                    Log.e("PlaceImage", "Place not found: " + exception.getMessage());
+                    final int statusCode = apiException.getStatusCode();
+                    // TODO: Handle error with given status code.
+                }
+            });
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                final ApiException apiException = (ApiException) exception;
+                Log.e("Places detail", "Place not found: " + exception.getMessage());
+                final int statusCode = apiException.getStatusCode();
+                // TODO: Handle error with given status code.
+            }
+        });
+    }
 
     @Override
     public void onDestroy() {
@@ -387,5 +458,32 @@ public class RestaurantDetailDialogue extends DialogFragment{
     private void loadData(){
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         Log.d("sharedPrefs", sharedPreferences.getString(currentUser.getEmail(), "No address found"));
+    }
+    private void setRestaurantDetail(View view){
+        Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
+        if(currentRestaurant.getImageUrl()!=null)Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);
+        Log.d("setRestaurantDetails", "currentRestaurant Name " +  currentRestaurant.getName());
+        restaurantName.setText(currentRestaurant.getName());
+        restaurantDetail.setText(currentRestaurant.getAddress());
+
+        if(currentRestaurant.getRating() <= 0){
+            star1.setVisibility(View.INVISIBLE);
+            star2.setVisibility(View.INVISIBLE);
+            star3.setVisibility(View.INVISIBLE);
+        } else if (currentRestaurant.getRating() == 1) {
+            star2.setVisibility(View.INVISIBLE);
+            star3.setVisibility(View.INVISIBLE);
+        } else if (currentRestaurant.getRating() == 2) {
+            star3.setVisibility(View.INVISIBLE);
+        } else {
+            star1.setVisibility(View.VISIBLE);
+            star2.setVisibility(View.VISIBLE);
+            star3.setVisibility(View.VISIBLE);
+        }
+
+        if(restaurantUrl==null){
+            websiteLink.setEnabled(false);
+            websiteLink.setAlpha(0.3f);
+        }
     }
 }
