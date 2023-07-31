@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_gravity="fill_horizontal"
+    android:orientation="vertical"
+    android:layout_margin="12dp"
+    android:paddingVertical="36dp"
+    android:paddingHorizontal="12dp">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="Settings "
+        android:id="@+id/Label"
+        />
+    <CheckBox
+        android:id="@+id/settings_notification_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Receive notifications"
+        android:checked="true"/>
+
+    <Button
+        android:id="@+id/settings_save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="48dp"
+        android:paddingRight="48dp"
+        android:background="@drawable/bg_btn_login"
+        android:text="save"
+        android:layout_gravity="right"/>
+
+</LinearLayout>

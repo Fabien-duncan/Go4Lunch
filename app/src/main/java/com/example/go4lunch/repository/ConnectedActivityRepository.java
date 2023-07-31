@@ -96,17 +96,23 @@ public class ConnectedActivityRepository {
     }
 
     public void updateAttending(List<User> workmates){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime now = LocalDateTime.now();
-        String endOfLunch = now.format(formatter).toString() +"T15:00";
-        String  startOfLunch = now.minusDays(1).format(formatter) +"T15:00";
+        String endOfLunch;
+        String  startOfLunch;
+        if(now.getHour() <= 14){
+            endOfLunch = now.format(formatter).toString() +"T14:00";
+            startOfLunch = now.minusDays(1).format(formatter) +"T14:00";
+        }else {
+            startOfLunch = now.format(formatter).toString() +"T14:00";
+            endOfLunch = now.plusDays(1).format(formatter) +"T14:00";
+        }
 
-        Log.d("checkTime", "start: " + startOfLunch + " end: " + endOfLunch + " now: " + now.toString());
-
+        Log.d("checkTime", "start: " + startOfLunch + " end: " + endOfLunch + " now: " + now.toString() + "\n workmate Time: " + workmates.get(5).getChoiceTimeStamp() + " is today " + workmates.get(5).isToday());
         List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
         List<String> restaurantID = new ArrayList<>();
         for(int i = 0; i<workmates.size();i++){
-            if(!workmates.get(i).getLunchChoiceId().isEmpty()){
+            if(!workmates.get(i).getLunchChoiceId().isEmpty() && workmates.get(i).isToday()){
                 restaurantID.add(workmates.get(i).getLunchChoiceId()); }
         }
         Log.d("updateAttending", restaurantID.toString());
@@ -205,43 +211,6 @@ public class ConnectedActivityRepository {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
-    }
-
-    private Restaurant getRestaurant(String id){
-        String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(mActivity.getApplicationContext(), key);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(mContext);
-        // Define a Place ID.
-
-        // Specify the fields to return.
-        final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS);
-
-        // Construct a request object, passing the place ID and fields array.
-        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(id, placeFields);
-
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-            Log.i("Places detail", "Place found: " + place.getName());
-
-
-            Restaurant currentRestaurantChoice = new Restaurant();
-            currentRestaurantChoice.setAddress(place.getAddress());
-            currentRestaurantChoice.setName(place.getName());
-            currentRestaurantChoice.setImageUrl(place.getPhotoMetadatas().get(0).getAttributions());
-
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                final ApiException apiException = (ApiException) exception;
-                Log.e("Places detail", "Place not found: " + exception.getMessage());
-                final int statusCode = apiException.getStatusCode();
-                // TODO: Handle error with given status code.
-            }
-        });
-        return null;
     }
 
     public MutableLiveData<Restaurant> getCurrentRestaurantChoice() {

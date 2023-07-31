@@ -248,13 +248,15 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onChanged(List<User> users) {
                 Log.d("getAllWorkmates", "updating attending workmates");
-                mConnectedActivityViewModel.updateAttending(users);
+                if(users.size()>0)mConnectedActivityViewModel.updateAttending(users);
             }
         });
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 currentUser = user;
+                name.setText(user.getDisplayName());
+                Glide.with(sideBarView).load(currentUser.getPhotoUrl()).circleCrop().into(profilePic);
                 //Log.d("currentUser", "size of favorite List: " + currentUser.getFavoriteRestaurants().size());
             }
         });
@@ -320,13 +322,14 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.side_bar_lunch:
-                Toast.makeText(this, "view lunch!", Toast.LENGTH_SHORT).show();
                 DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
                 ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
                 restaurantDetailDialogue.show(this.getSupportFragmentManager(),"Restaurant Details");
                 break;
             case R.id.side_bar_settings:
                 Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
+                SettingsFragment settingsFragment = new SettingsFragment();
+                settingsFragment.show(getSupportFragmentManager(), "Settings");
                 break;
             case R.id.side_bar_logout:
                 mConnectedActivityViewModel.signOut();
@@ -415,9 +418,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public void setCalendar(){
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
-        calendar.set(Calendar.MINUTE, 22);
-        calendar.set(Calendar.SECOND, 15);
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE, 8);
+        calendar.set(Calendar.SECOND, 16);
 
         if(Calendar.getInstance().after(calendar)){
             calendar.add(Calendar.DAY_OF_MONTH,1);

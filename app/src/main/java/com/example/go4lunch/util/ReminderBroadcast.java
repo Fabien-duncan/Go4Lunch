@@ -41,75 +41,68 @@ public class ReminderBroadcast extends BroadcastReceiver {
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
+
         Intent repeating_intent = new Intent(context, ConnectedActivity.class);
         repeating_intent.setFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
-
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        CollectionReference collectionReference = db.collection("users");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    String workmates = "";
-                    List<User> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        User workmate = document.toObject(User.class);
-                        list.add(workmate);
-                    }
-                    User currentUser = new User();
-                    for (int i = 0; i < list.size();i++){
-                        if(user.getEmail().equals(list.get(i).getEmail())){
-                            currentUser = list.get(i);
-                            list.remove(i);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        if(sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true")) {
+
+            CollectionReference collectionReference = db.collection("users");
+            collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        String workmates = "";
+                        List<User> list = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            User workmate = document.toObject(User.class);
+                            list.add(workmate);
                         }
+                        User currentUser = new User();
+                        for (int i = 0; i < list.size(); i++) {
+                            if (user.getEmail().equals(list.get(i).getEmail())) {
+                                currentUser = list.get(i);
+                                list.remove(i);
+                            }
+                        }
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getLunchChoiceId().equals(currentUser.getLunchChoiceId()))
+                                workmates += " " + list.get(i).getDisplayName() + ",";
+                        }
+                        if (workmates.endsWith(",")) {
+
+                            workmates = workmates.substring(0, workmates.length() - 1);
+                        }
+                        String address = loadAddress(context, currentUser.getEmail());
+
+                        Log.d("broadcast", "in broadcast");
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
+
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyRestaurant")
+                                .setContentIntent(pendingIntent)
+                                .setSmallIcon(R.drawable.baseline_notifications_active_24)
+                                .setContentTitle("Restaurant Choice")
+                                //.setContentText("You are attending " + currentUser.getLunchChoiceName() +", " + address + " \n Workmate: " + workmates)
+                                .setStyle(new NotificationCompat.BigTextStyle()
+                                        .bigText(currentUser.getLunchChoiceName() + ", " + address + "\nWorkmate attending: " + workmates))
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                .setAutoCancel(true);
+
+                        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+                        notificationManagerCompat.notify(200, builder.build());
+                    } else {
+                        Log.d("TAG", "Error getting documents: ", task.getException());
                     }
-                    for (int i = 0; i < list.size();i++){
-                        if(list.get(i).getLunchChoiceId().equals(currentUser.getLunchChoiceId())) workmates += " " + list.get(i).getDisplayName() + ",";
-                    }
-                    if(workmates.endsWith(",")) {
-
-                        workmates= workmates.substring(0, workmates.length() - 1);
-                    }
-                    String address = loadAddress(context, currentUser.getEmail());
-
-                    Log.d("broadcast","in broadcast");
-                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
-
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyRestaurant")
-                            .setContentIntent(pendingIntent)
-                            .setSmallIcon(R.drawable.baseline_notifications_active_24)
-                            .setContentTitle("Restaurant Choice")
-                            //.setContentText("You are attending " + currentUser.getLunchChoiceName() +", " + address + " \n Workmate: " + workmates)
-                            .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(currentUser.getLunchChoiceName() +", " + address + "\nWorkmate attending: " + workmates))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                            .setAutoCancel(true);
-
-                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-                    notificationManagerCompat.notify(200, builder.build());
-                } else {
-                    Log.d("TAG", "Error getting documents: ", task.getException());
                 }
-            }
-        });
-        /*Log.d("broadcast","in broadcast");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyRestaurant")
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.baseline_notifications_active_24)
-                .setContentTitle("Restaurant Choice")
-                .setContentText("You are attending " + name[0])
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
-
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(200, builder.build());*/
-
+            });
+        }else{
+            Log.d("broadcats", "notification turned off");
+        }
     }
     public String loadAddress(Context context, String email){
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);

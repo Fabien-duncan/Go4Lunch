@@ -1,6 +1,7 @@
 package com.example.go4lunch.model;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
@@ -122,5 +123,25 @@ public class User {
             i++;
         }
         return found;
+    }
+    public boolean isToday(){
+        if(choiceTimeStamp == null) return false;
+        else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime now = LocalDateTime.now();
+            String endOfLunch;
+            String startOfLunch;
+            if (now.getHour() <= 14) {
+                endOfLunch = now.format(formatter).toString() + "T14:00";
+                startOfLunch = now.minusDays(1).format(formatter) + "T14:00";
+            } else {
+                startOfLunch = now.format(formatter).toString() + "T14:00";
+                endOfLunch = now.plusDays(1).format(formatter) + "T14:00";
+            }
+
+            //Log.d("isTaday", choiceTimeStamp + " compare to " + startOfLunch + " is equal to " + choiceTimeStamp.compareTo(startOfLunch));
+
+            return choiceTimeStamp.compareTo(startOfLunch) > 0 && choiceTimeStamp.compareTo(endOfLunch) < 0;
+        }
     }
 }

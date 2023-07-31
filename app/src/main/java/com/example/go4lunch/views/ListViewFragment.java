@@ -90,7 +90,7 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
         mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                mConnectedActivityViewModel.updateAttending(users);
+                if(users.size()>0)mConnectedActivityViewModel.updateAttending(users);
             }
         });
         //getDetail();

@@ -41,7 +41,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
     public void onBindViewHolder(@NonNull MyWorkmatesAdapter.MyViewHolder holder, int position) {
         User user = workmatesList.get(position);
 
-        if(user.getLunchChoiceId().isEmpty()){
+        if(user.getLunchChoiceId().isEmpty() || !user.isToday()){
             holder.info.setText(user.getDisplayName() + " hasn't decided yet");
             holder.info.setAlpha(0.5f);
         }else{

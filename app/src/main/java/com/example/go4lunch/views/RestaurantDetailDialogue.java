@@ -165,6 +165,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
                 currentUser = user;
                 mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
                 if(currentRestaurant!= null){
+                    mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
                     getDetail();
                     setRestaurantDetail(view);
                 }
@@ -382,6 +383,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     + " address: " + restaurant.getAddress());
 
             currentRestaurant = restaurant;
+            mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
             setRestaurantDetail(view);
 
             final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
