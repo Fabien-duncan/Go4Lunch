@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:layout_gravity="fill_horizontal"
@@ -13,41 +14,51 @@
         android:textStyle="bold"
         android:textSize="24sp"
         android:gravity="center"
-        android:text="Create Account"
+        android:text="@string/create_account"
         android:id="@+id/Label"
         />
 
     <EditText
         android:id="@+id/create_account_display_name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:selectAllOnFocus="true"
-        android:lines="1"
-        android:hint="display name"
         android:layout_gravity="fill_horizontal"
-        android:layout_width="match_parent">
-    </EditText>
+        android:gravity="start"
+        android:hint="@string/display_name"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="1"
+        android:minHeight="48dp"
+        android:selectAllOnFocus="true"
+        tools:ignore="VisualLintTextFieldSize" />
+
     <EditText
         android:id="@+id/create_account_email"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:selectAllOnFocus="true"
-        android:lines="1"
-        android:hint="email"
         android:layout_gravity="fill_horizontal"
-        android:layout_width="match_parent">
-    </EditText>
+        android:autofillHints="emailAddress"
+        android:gravity="start"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:lines="1"
+        android:minHeight="48dp"
+        android:selectAllOnFocus="true"
+        tools:ignore="VisualLintTextFieldSize" />
+
     <EditText
         android:id="@+id/create_account_password"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:selectAllOnFocus="true"
-        android:lines="1"
-        android:hint="password"
-        android:inputType="textPassword"
         android:layout_gravity="fill_horizontal"
-        android:layout_width="match_parent">
-    </EditText>
+        android:gravity="start"
+        android:hint="@string/password"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:lines="1"
+        android:minHeight="48dp"
+        android:selectAllOnFocus="true"
+        tools:ignore="VisualLintTextFieldSize" />
     <Button
         android:id="@+id/create_account_btn"
         android:layout_width="wrap_content"
@@ -55,7 +66,7 @@
         android:paddingLeft="48dp"
         android:paddingRight="48dp"
         android:background="@drawable/bg_btn_login"
-        android:text="create"
+        android:text="@string/create"
         android:layout_gravity="right"/>
 
 </LinearLayout>

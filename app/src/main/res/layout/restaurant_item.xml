@@ -60,12 +60,13 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:gravity="bottom|right">
+                android:gravity="bottom|end">
                 <ImageView
                     android:id="@+id/restaurant_list_workmates_num_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/baseline_person_outline_24"/>
+                    android:background="@drawable/baseline_person_outline_24"
+                    android:contentDescription="@string/num_attending" />
                 <TextView
                     android:id="@+id/restaurant_list_workmates_num_tv"
                     android:layout_width="wrap_content"
@@ -81,25 +82,28 @@
                 android:layout_weight="1"
                 android:orientation="horizontal"
                 android:paddingTop="6dp"
-                android:gravity="right">
+                android:gravity="end">
                 <ImageView
                     android:id="@+id/restaurant_list_star_3_iv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/baseline_star_24"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:contentDescription="@string/restaurant_rating" />
                 <ImageView
                     android:id="@+id/restaurant_list_star_2_iv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/baseline_star_24"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:contentDescription="@string/restaurant_rating" />
                 <ImageView
                     android:id="@+id/restaurant_list_star_1_iv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/baseline_star_24"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:contentDescription="@string/restaurant_rating" />
             </LinearLayout>
 
         </LinearLayout>
@@ -110,7 +114,8 @@
             android:layout_width="0dp"
             android:background="@color/black"
             android:layout_height="match_parent"
-            android:layout_weight="0.8"/>
+            android:layout_weight="0.8"
+            android:contentDescription="@string/restaurant_photo" />
 
     </LinearLayout>
 

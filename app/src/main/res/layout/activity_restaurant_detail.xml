@@ -14,7 +14,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/header_image_go4lunch"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:contentDescription="@string/restaurant_photo"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/restaurant_detail_attend_fb"
@@ -27,7 +28,8 @@
         app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/restaurant_detail_restaurant_iv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurant_detail_restaurant_iv" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_detail_restaurant_iv"
+        android:contentDescription="@string/attend_description"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +47,8 @@
             android:gravity="center"
             android:orientation="vertical"
             android:background="@color/orange"
-            android:paddingLeft="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -69,17 +72,20 @@
                     android:id="@+id/restaurant_list_star_3_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/baseline_star_24"/>
+                    android:background="@drawable/baseline_star_24"
+                    android:contentDescription="@string/restaurant_rating"/>
                 <ImageView
                     android:id="@+id/restaurant_list_star_2_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/baseline_star_24"/>
+                    android:background="@drawable/baseline_star_24"
+                    android:contentDescription="@string/restaurant_rating"/>
                 <ImageView
                     android:id="@+id/restaurant_list_star_1_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/baseline_star_24"/>
+                    android:background="@drawable/baseline_star_24"
+                    android:contentDescription="@string/restaurant_rating"/>
 
 
             </LinearLayout>
@@ -104,28 +110,31 @@
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="CALL"
+                android:text="@string/call"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_phone_24" />
+                android:drawableTop="@drawable/baseline_phone_24"
+                style="?android:attr/buttonBarButtonStyle"/>
             <Button
                 android:id="@+id/restaurant_detail_like_btn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="LIKE"
+                android:text="@string/like"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_like_star_24" />
+                android:drawableTop="@drawable/baseline_like_star_24"
+                style="?android:attr/buttonBarButtonStyle" />
             <Button
                 android:id="@+id/restaurant_detail_website_btn"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="WEBSITE"
+                android:text="@string/website"
                 android:textColor="@color/orange"
                 android:background="@color/white"
-                android:drawableTop="@drawable/baseline_website_24" />
+                android:drawableTop="@drawable/baseline_website_24"
+                style="?android:attr/buttonBarButtonStyle"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

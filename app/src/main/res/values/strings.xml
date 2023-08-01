@@ -1,12 +1,30 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
     <string name="moto_En">Find a nice restaurant and invite your co-workers for lunch!</string>
-    <string name="sign_in_login_en">Sign in with Login</string>
+    <string name="sign_in_login_en">Sign in with email/password</string>
     <string name="sign_in_gmail_en">Sign in with Google</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="create_Account_btn"><u>create account</u></string>
+    <string name="go4lunch_logo">Go4Lunch logo</string>
+    <string name="go4lunch">Go4Lunch</string>
+    <string name="restaurant_photo">restaurant photo</string>
+    <string name="attend_description">click to attend restaurant</string>
+    <string name="restaurant_rating">restaurant rating</string>
+    <string name="call">CALL</string>
+    <string name="like">LIKE</string>
+    <string name="website">WEBSITE</string>
+    <string name="create_account">Create Account</string>
+    <string name="display_name">display name</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
+    <string name="create">create</string>
+    <string name="settings">Settings</string>
+    <string name="toggle_notifications">Receive notifications</string>
+    <string name="save">save</string>
+    <string name="sign_in">Sign in</string>
+    <string name="num_attending">number of people attending</string>
+    <string name="profile_picture">profile picture</string>
 
 </resources>

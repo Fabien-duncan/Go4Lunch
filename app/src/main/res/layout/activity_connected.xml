@@ -33,7 +33,8 @@
                 android:layout_height="160dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="-30dp"
-                android:src="@drawable/logo_go4lunch" />
+                android:src="@drawable/logo_go4lunch"
+                android:contentDescription="@string/go4lunch_logo"/>
 
         </LinearLayout>
 

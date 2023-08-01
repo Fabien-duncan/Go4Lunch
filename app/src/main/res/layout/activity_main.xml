@@ -17,7 +17,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_go4lunch" />
+        app:srcCompat="@drawable/logo_go4lunch"
+        android:contentDescription="@string/go4lunch_logo"/>
 
     <TextView
         android:id="@+id/go4Lunch_title_tv"
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-48dp"
         android:fontFamily="@font/cousine_bold"
-        android:text="Go4Lunch"
+        android:text="@string/go4lunch"
         android:textColor="@color/white"
         android:textSize="66sp"
         app:layout_constraintEnd_toEndOf="parent"

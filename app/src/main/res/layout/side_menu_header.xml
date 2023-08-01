@@ -14,7 +14,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="-48dp"
         android:fontFamily="@font/cousine_bold"
-        android:text="Go4Lunch"
+        android:text="@string/go4lunch"
         android:textColor="@color/white"
         android:textSize="40sp"
         android:layout_gravity="center"/>
@@ -27,7 +27,8 @@
             android:id="@+id/side_bar_profile_img"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/baseline_circle_24"/>
+            android:background="@drawable/baseline_circle_24"
+            android:contentDescription="@string/profile_picture"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"

@@ -13,15 +13,17 @@
         android:textStyle="bold"
         android:textSize="24sp"
         android:gravity="center"
-        android:text="Settings "
+        android:text="@string/settings"
         android:id="@+id/Label"
         />
+
     <CheckBox
         android:id="@+id/settings_notification_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Receive notifications"
-        android:checked="true"/>
+        android:checked="true"
+        android:minHeight="48dp"
+        android:text="@string/toggle_notifications" />
 
     <Button
         android:id="@+id/settings_save_btn"
@@ -30,7 +32,7 @@
         android:paddingLeft="48dp"
         android:paddingRight="48dp"
         android:background="@drawable/bg_btn_login"
-        android:text="save"
-        android:layout_gravity="right"/>
+        android:text="@string/save"
+        android:layout_gravity="end"/>
 
 </LinearLayout>

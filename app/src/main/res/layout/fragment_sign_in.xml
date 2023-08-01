@@ -13,32 +13,36 @@
         android:textStyle="bold"
         android:textSize="24sp"
         android:gravity="center"
-        android:text="Sign in "
+        android:text="@string/sign_in"
         android:id="@+id/Label"
         />
 
 
     <EditText
         android:id="@+id/sign_in_email"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:selectAllOnFocus="true"
-        android:lines="1"
-        android:hint="email"
         android:layout_gravity="fill_horizontal"
-        android:layout_width="match_parent">
-    </EditText>
+        android:gravity="start"
+        android:hint="@string/email"
+        android:lines="1"
+        android:minHeight="48dp"
+        android:selectAllOnFocus="true"
+        android:autofillHints="emailAddress"
+        android:inputType="textEmailAddress" />
+
     <EditText
         android:id="@+id/sign_in_password"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="left"
-        android:selectAllOnFocus="true"
-        android:lines="1"
-        android:hint="password"
-        android:inputType="textPassword"
         android:layout_gravity="fill_horizontal"
-        android:layout_width="match_parent">
-    </EditText>
+        android:gravity="start"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:lines="1"
+        android:minHeight="48dp"
+        android:selectAllOnFocus="true"
+        android:autofillHints="password" />
     <Button
         android:id="@+id/sign_in_btn"
         android:layout_width="wrap_content"
@@ -46,7 +50,7 @@
         android:paddingLeft="48dp"
         android:paddingRight="48dp"
         android:background="@drawable/bg_btn_login"
-        android:text="Sign in"
-        android:layout_gravity="right"/>
+        android:text="@string/sign_in"
+        android:layout_gravity="end"/>
 
 </LinearLayout>

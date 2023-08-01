@@ -17,7 +17,8 @@
             android:id="@+id/workmates_profile_picture_img"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginRight="8dp" />
+            android:layout_marginRight="8dp"
+            android:contentDescription="@string/profile_picture"/>
 
                 <TextView
                     android:id="@+id/workmates_info_tv"
@@ -34,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginLeft="80dp"
         android:background="?android:attr/listDivider" />
 
