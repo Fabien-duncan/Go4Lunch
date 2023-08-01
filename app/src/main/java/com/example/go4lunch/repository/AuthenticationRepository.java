@@ -298,7 +298,8 @@ public class AuthenticationRepository {
                         User workmate = document.toObject(User.class);
                         if(!workmate.getEmail().equals(user.getEmail()) && workmate.getLunchChoiceId().equals(restaurantId)){
                             System.out.println("adding a workmate");
-                            list.add(document.toObject(User.class));
+                            User tempUser = document.toObject(User.class);
+                            if(tempUser.isToday())list.add(tempUser);
                         }
                     }
                     workmatesMutableLiveData.postValue(list);

@@ -299,19 +299,23 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.side_bar_lunch:
-                DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
-                restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
+                if(!currentUser.isToday() || currentUser.getLunchChoiceId().isEmpty()){
+                    Toast.makeText(this, "You have not selected a lunch choice yet!", Toast.LENGTH_LONG).show();
+                }else{
+                    DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+                    ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
+                    restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
+                }
                 break;
             case R.id.side_bar_settings:
-                Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
                 SettingsFragment settingsFragment = new SettingsFragment();
                 settingsFragment.show(getSupportFragmentManager(), getString(R.string.settings));
                 break;
             case R.id.side_bar_logout:
                 mConnectedActivityViewModel.signOut();
                 //showMainActivity();
-                System.out.println("singOut");
+                //System.out.println("singOut");
 
                 break;
         }
