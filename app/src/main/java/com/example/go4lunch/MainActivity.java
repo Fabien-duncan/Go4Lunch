@@ -84,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             @Override
             public void onClick(View view) {
                 DialogFragment createAccountFragment = new CreateAccountFragment();
-                createAccountFragment.show(getSupportFragmentManager(), "Create Account");
+                createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
             }
         });
         signIn_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SignInFragment signInFragment = new SignInFragment();
-                signInFragment.show(getSupportFragmentManager(), "Sign in");
+                signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
             }
         });
     }

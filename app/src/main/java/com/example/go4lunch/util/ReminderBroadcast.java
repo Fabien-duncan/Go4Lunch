@@ -86,10 +86,10 @@ public class ReminderBroadcast extends BroadcastReceiver {
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyRestaurant")
                                 .setContentIntent(pendingIntent)
                                 .setSmallIcon(R.drawable.baseline_notifications_active_24)
-                                .setContentTitle("Restaurant Choice")
+                                .setContentTitle(context.getString(R.string.restaurant_choice))
                                 //.setContentText("You are attending " + currentUser.getLunchChoiceName() +", " + address + " \n Workmate: " + workmates)
                                 .setStyle(new NotificationCompat.BigTextStyle()
-                                        .bigText(currentUser.getLunchChoiceName() + ", " + address + "\nWorkmate attending: " + workmates))
+                                        .bigText(currentUser.getLunchChoiceName() + ", " + address + "\n"+ context.getString(R.string.workmates_attending) + workmates))
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                 .setAutoCancel(true);
 
@@ -106,6 +106,6 @@ public class ReminderBroadcast extends BroadcastReceiver {
     }
     public String loadAddress(Context context, String email){
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getString(email, "No address found");
+        return sharedPreferences.getString(email, context.getString(R.string.no_address_found));
     }
 }

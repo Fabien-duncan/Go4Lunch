@@ -42,10 +42,10 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         User user = workmatesList.get(position);
 
         if(user.getLunchChoiceId().isEmpty() || !user.isToday()){
-            holder.info.setText(user.getDisplayName() + " hasn't decided yet");
+            holder.info.setText(user.getDisplayName() + " " + mContext.getString(R.string.not_decided));
             holder.info.setAlpha(0.5f);
         }else{
-            holder.info.setText(user.getDisplayName() + " is eating at " + user.getLunchChoiceName());
+            holder.info.setText(user.getDisplayName() + " " + mContext.getString(R.string.eating_at) + " " + user.getLunchChoiceName());
         }
         //Glide.with(holder).load(user.).circleCrop().into(holder.profilePic);
         Glide.with(holder.itemView).load(user.getPhotoUrl()).circleCrop().into(holder.profilePic);

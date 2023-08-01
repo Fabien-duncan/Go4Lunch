@@ -85,23 +85,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository);
 
 
-
-        /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                Log.d("back pressed", "success!");
-                getDialog().dismiss();
-            }
-        };
-        requireActivity().getOnBackPressedDispatcher().addCallback(this,callback);
-*/
-        /*mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
-            @Override
-            public void onChanged(FirebaseUser firebaseUser) {
-                Log.d("User data Rest detail", "id: " + firebaseUser.getUid());
-            }
-        });*/
-
     }
 
 
@@ -120,7 +103,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
         Button phone = view.findViewById(R.id.restaurant_detail_call_btn);
         FloatingActionButton attend = view.findViewById(R.id.restaurant_detail_attend_fb);
 
-        //like.setAlpha(0.5f);
         like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
         like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
 
@@ -128,11 +110,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
         restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
 
 
-        //mConnectedActivityViewModel.setFilteredWorkmates(currentRestaurant.getId());
-        //attendingWorkmatesList = mConnectedActivityViewModel.getAllWorkmates().getValue();
+
         attendingWorkmatesList = mRestaurantDetailViewModel.getAllWorkmates().getValue();
-        //generateUsers();
-        //Log.d("attending workmates", attendingWorkmatesList.get(0).getDisplayName() + " is attending");
+
         attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
         attendingWorkmatesRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList);
@@ -140,14 +120,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
         restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
 
 
-
-        /*mConnectedActivityViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
-                restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
-            }
-        });*/
 
         mRestaurantDetailViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
             @Override
@@ -315,32 +287,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     websiteLink.setEnabled(true);
                     websiteLink.setAlpha(1);
                 }
-                /*final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-                if (metadata == null || metadata.isEmpty()) {
-                    Log.w("PlaceImage", "No photo metadata.");
-                    return;
-                }
-                final PhotoMetadata photoMetadata = metadata.get(0);
-
-                // Get the attribution text.
-                final String attributions = photoMetadata.getAttributions();
-
-                // Create a FetchPhotoRequest.
-                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(500) // Optional.
-                        .setMaxHeight(300) // Optional.
-                        .build();
-                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                    restaurantImage.setImageBitmap(bitmap);
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception;
-                        Log.e("PlaceImage", "Place not found: " + exception.getMessage());
-                        final int statusCode = apiException.getStatusCode();
-                        // TODO: Handle error with given status code.
-                    }
-                });*/
             }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         final ApiException apiException = (ApiException) exception;
@@ -452,15 +398,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
         editor.apply();
     }
 
-    private void generateUsers(){
-        attendingWorkmatesList = new ArrayList<>();
-        attendingWorkmatesList.add(new User("Fabien Duncan","fab@gmail.com",Uri.parse("https://sdfs.com")));
-        attendingWorkmatesList.add(new User("Bob","bob@gmail.com",Uri.parse("https://sdfs.com")));
-    }
-    private void loadData(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
-        Log.d("sharedPrefs", sharedPreferences.getString(currentUser.getEmail(), "No address found"));
-    }
     private void setRestaurantDetail(View view){
         Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
         if(currentRestaurant.getImageUrl()!=null)Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);

@@ -26,5 +26,17 @@
     <string name="sign_in">Sign in</string>
     <string name="num_attending">number of people attending</string>
     <string name="profile_picture">profile picture</string>
+    <string name="restaurant_details">Restaurant Details</string>
+    <string name="restaurant_choice">Restaurant Choice</string>
+    <string name="notification_description">contains the name of the restaurants, the address and the attending workmates</string>
+    <string name="location_permission_rejected">you have not granted permissions!</string>
+    <string name="workmates_attending">Workmate attending: </string>
+    <string name="no_address_found">No address found</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="unknown_open_status">Unknown open status</string>
+    <string name="is_joining"> is joining!</string>
+    <string name="not_decided">hasn\'t decided yet</string>
+    <string name="eating_at">is eating at</string>
 
 </resources>

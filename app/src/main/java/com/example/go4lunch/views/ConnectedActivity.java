@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.AutocompleteRecyclerViewAdapter;
@@ -43,7 +41,6 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.util.ReminderBroadcast;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -53,16 +50,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -74,7 +63,6 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -169,10 +157,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 if(newText.length() >1){
                     Log.d("searchView", "text is " + newText);
                     if(currentFragment.equals("map"))autocompleteDisplay.setVisibility(View.VISIBLE);
-                    //autocomplete(newText);
                     mConnectedActivityViewModel.autocomplete(newText);
-                    /*autocompleteAdapter.setRestaurantList(filteredNearbyRestaurants);
-                    mConnectedActivityViewModel.updateRestaurantsListForFilter(filteredNearbyRestaurants);*/
                     return true;
                 }else{
                     Log.d("searView", "retrievingNearbyPlaces");
@@ -191,21 +176,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 return false;
             }
         });
-        /*searchView.setSuggestionsAdapter(new SimpleCursorAdapter(
-                this, android.R.layout.simple_list_item_1, cursor,
-                new String[] { SearchManager.SUGGEST_COLUMN_TEXT_1 },
-                new int[] { android.R.id.text1 }, 0));*/
 
         mAuthenticationRepository = new AuthenticationRepository(this);
         mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository, this);
         mConnectedActivityViewModel.setupGoogleSignInOptions();
 
-        /////////////////////////////
         notificationChannel();
         setCalendar();
-        ////////////////////////////
-
-        //String userName = getIntent().getExtras().getString("name");
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -272,7 +249,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                             searchView.setVisibility(View.VISIBLE);
                         }
                         else{
-                            Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                         }
                         System.out.println("Maps");
                         break;
@@ -284,7 +261,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
                         }
                         else{
-                            Toast.makeText(ConnectedActivity.this, "you have not granted permissions! ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                         }
                         System.out.println("List");
                         break;
@@ -324,12 +301,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             case R.id.side_bar_lunch:
                 DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
                 ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
-                restaurantDetailDialogue.show(this.getSupportFragmentManager(),"Restaurant Details");
+                restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
                 break;
             case R.id.side_bar_settings:
                 Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
                 SettingsFragment settingsFragment = new SettingsFragment();
-                settingsFragment.show(getSupportFragmentManager(), "Settings");
+                settingsFragment.show(getSupportFragmentManager(), getString(R.string.settings));
                 break;
             case R.id.side_bar_logout:
                 mConnectedActivityViewModel.signOut();
@@ -345,7 +322,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                    Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                     currentFragment = "map";
                     isLocationGranted =true;
@@ -369,7 +346,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     @SuppressLint("MissingPermission")
     private void getLocation(){
-        Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         locationRequest = new com.google.android.gms.location.LocationRequest.Builder(8000).setMinUpdateDistanceMeters(100).build();
@@ -418,8 +395,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
     public void setCalendar(){
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
-        calendar.set(Calendar.MINUTE, 8);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 54);
         calendar.set(Calendar.SECOND, 16);
 
         if(Calendar.getInstance().after(calendar)){
@@ -436,8 +413,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
     }
     public void notificationChannel(){
-        CharSequence name = "Restaurant Choice";
-        String description = "contains the name of the restaurants, the address and the attending workmates";
+        CharSequence name = getString(R.string.restaurant_choice);
+        String description = getString(R.string.notification_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
         NotificationChannel channel = new NotificationChannel("notifyRestaurant", name, importance);
         channel.setDescription(description);

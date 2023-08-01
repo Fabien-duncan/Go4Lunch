@@ -104,11 +104,7 @@ public class MapViewFragment extends SupportMapFragment{
         super.onActivityCreated(savedInstanceState);
         googlePlacesReadTask = new ApiService();
 
-        //mAuthenticationRepository = new AuthenticationRepository(getContext());
-        //mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository);
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
-
-
 
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
             @Override
@@ -120,8 +116,6 @@ public class MapViewFragment extends SupportMapFragment{
                             +  ", Long: " + nearbyRestaurants.get(0).getLng()
                             + ",rating: " + nearbyRestaurants.get(0).getRating()
                             + ", attending " + nearbyRestaurants.get(0).getAttendanceNum());
-                    //placeNearbyRestaurants();
-
                     try{
                         currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
                     }catch (Exception e){
@@ -138,14 +132,6 @@ public class MapViewFragment extends SupportMapFragment{
                 }
             }
         });
-        /*mConnectedActivityViewModel.getGooglePlacesLiveData().observe(getActivity(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                //Log.d("Places live Data", s);
-                mConnectedActivityViewModel.setRestaurantsMutableLiveData();
-            }
-        });*/
-
 
         mapView = this.getView();
         if(!mLocationPermissionGranted)return;
@@ -162,16 +148,13 @@ public class MapViewFragment extends SupportMapFragment{
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                //Log.d("click listener", "clicked on " + marker.getId().substring(1));
                 DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                //int index = Integer.parseInt(marker.getId().substring(1));
                 int index = 0;
                 for(int i = 0; i<nearbyRestaurants.size(); i++){
-                    //if(nearbyRestaurants.get(i).getName().equals(marker.getTitle())) index = i;
                     if(nearbyRestaurants.get(i).getId().equals((String) marker.getTag())) index = i;
                 }
                 ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(nearbyRestaurants.get(index));
-                restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");
+                restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),getString(R.string.restaurant_details));
                 return false;
             }
         });

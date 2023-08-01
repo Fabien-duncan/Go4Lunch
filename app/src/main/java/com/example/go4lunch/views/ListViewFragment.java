@@ -86,7 +86,6 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
                 mRestaurantsAdapter.setRestaurantList(restaurants);
             }
         });
-        //mConnectedActivityViewModel.updateAttending(mConnectedActivityViewModel.getAllWorkmates().getValue());
         mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
@@ -118,60 +117,6 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
 
             // Construct a request object, passing the place ID and fields array.
             final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-            /*placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Place place = response.getPlace();
-                Log.i("Places detail", "Place found: " + place.getName() + "Phone Num: " + place.getPhoneNumber() + "Icon: ");
-            }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-                    final ApiException apiException = (ApiException) exception;
-                    Log.e("Places detail", "Place not found: " + exception.getMessage());
-                    final int statusCode = apiException.getStatusCode();
-                    // TODO: Handle error with given status code.
-                }
-             */
-
-            /*String url = String.format("https://maps.googleapis.com/maps/api/place/photo" +
-                    "?maxwidth=400" +
-                    "&photo_reference=Aaw_FcKi-CVGZR14DFgZChcHB3XchlsspKk4GVhHT2-XQ4ykmQlLRc6PTMTlv_yJa0rVkY_3jpMV6InZUjFGKzFD7Rpcdq7hhiz451WStl5GdMmdIriCbqxzD5viKojY9fGySweOnhTuTggvDn-txsXTjUufMAdZzzxIrkJKqFatXNROCdZ_" +
-                    "&key=" + key);
-            Log.d("Place Photo url", url);
-            ImageView imageView = getView().findViewById(R.id.restauran_pitcture);
-
-            Glide.with(this).load(url).centerCrop().into(imageView);*/
-            /*placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                final Place place = response.getPlace();
-
-                // Get the photo metadata.
-                final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-                if (metadata == null || metadata.isEmpty()) {
-                    Log.w("Places Photo", "No photo metadata.");
-                    return;
-                }
-                final PhotoMetadata photoMetadata = metadata.get(0);
-
-                // Get the attribution text.
-                final String attributions = photoMetadata.getAttributions();
-
-                // Create a FetchPhotoRequest.
-                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(500) // Optional.
-                        .setMaxHeight(300) // Optional.
-                        .build();
-                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                    ImageView imageView = getView().findViewById(R.id.restauran_pitcture);
-                    imageView.setImageBitmap(bitmap);
-
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception;
-                        Log.e("Places Photo", "Place not found: " + exception.getMessage());
-                        final int statusCode = apiException.getStatusCode();
-                        // TODO: Handle error with given status code.
-                    }
-                });
-            });*/
 
         }
 
@@ -230,19 +175,11 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     }
 
     @Override
-    public void onResume() {
-
-        Log.d("on resume", "resuming");
-        //mRestaurantsAdapter.setRestaurantList(restaurantsList);
-        super.onResume();
-    }
-
-    @Override
     public void onItemClick(int position) {
         Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
         DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
         ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(restaurantsList.get(position));
-        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),"Restaurant Details");
+        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),getString(R.string.restaurant_details));
 
     }
 }

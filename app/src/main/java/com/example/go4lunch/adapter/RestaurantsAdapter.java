@@ -62,13 +62,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         }
 
         if(restaurant.getOpeningHours().equals("true")){
-            holder.openingHours.setText("Open");
+            holder.openingHours.setText(R.string.open);
             holder.openingHours.setTextColor(Color.GREEN);
         }else if(restaurant.getOpeningHours().equals("false")){
-            holder.openingHours.setText("Closed");
+            holder.openingHours.setText(R.string.closed);
             holder.openingHours.setTextColor(Color.RED);
         }else {
-            holder.openingHours.setText(restaurant.getOpeningHours());
+            holder.openingHours.setText(R.string.unknown_open_status);
             holder.openingHours.setTextColor(Color.BLUE);
         }
 
