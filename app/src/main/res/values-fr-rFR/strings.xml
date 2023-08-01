@@ -39,4 +39,5 @@
     <string name="map_view">Carte</string>
     <string name="list_view">Liste</string>
     <string name="workmates">Collègues</string>
+    <string name="no_restaurants">Il n\'y a pas re restaurants!</string>
 </resources>

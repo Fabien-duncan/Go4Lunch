@@ -18,7 +18,7 @@
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="There are no restaurants!"
+        android:text="@string/no_restaurants"
         android:visibility="invisible"
         app:drawableTopCompat="@drawable/no_restaurant_24" />
 
