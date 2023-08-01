@@ -148,7 +148,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
 
                 //loadData();//temp
                 if(currentRestaurant != null){
-                    if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId())){
+                    if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId()) && user.isToday()){
                         attend.setImageResource(R.drawable.baseline_check_circle_24);
                         isAttending = true;
                     }

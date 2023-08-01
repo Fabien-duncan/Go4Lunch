@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">Go4Lunch</string>
+    <string name="app_name" translatable="false">Go4Lunch</string>
     <string name="moto_En">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="sign_in_login_en">Sign in with email/password</string>
     <string name="sign_in_gmail_en">Sign in with Google</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="create_Account_btn"><u>create account</u></string>
     <string name="go4lunch_logo">Go4Lunch logo</string>
-    <string name="go4lunch">Go4Lunch</string>
+    <string name="go4lunch" translatable="false">Go4Lunch</string>
     <string name="restaurant_photo">restaurant photo</string>
     <string name="attend_description">click to attend restaurant</string>
     <string name="restaurant_rating">restaurant rating</string>
@@ -17,7 +17,7 @@
     <string name="website">WEBSITE</string>
     <string name="create_account">Create Account</string>
     <string name="display_name">display name</string>
-    <string name="email">email</string>
+    <string name="email" translatable="false">email</string>
     <string name="password">password</string>
     <string name="create">create</string>
     <string name="settings">Settings</string>
@@ -38,5 +38,11 @@
     <string name="is_joining"> is joining!</string>
     <string name="not_decided">hasn\'t decided yet</string>
     <string name="eating_at">is eating at</string>
+    <string name="your_lunch">YOUR LUNCH</string>
+    <string name="settings_caps">SETTINGS</string>
+    <string name="logout">LOGOUT</string>
+    <string name="map_view">Map view</string>
+    <string name="list_view">List View</string>
+    <string name="workmates">Workmates</string>
 
 </resources>

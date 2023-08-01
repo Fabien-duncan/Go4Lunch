@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="moto_En">trouver un bon restaurant pour manger avec vos vos collègues</string>
+    <string name="sign_in_login_en">Se connecter avec un e-mail</string>
+    <string name="sign_in_gmail_en">Se connecter avec Google</string>
+    <string name="create_Account_btn"><u>créer un compte</u></string>
+    <string name="go4lunch_logo">logo Go4Lunch</string>
+    <string name="restaurant_photo">photo du restaurant</string>
+    <string name="attend_description">cliquer pour choisir ce restaurant</string>
+    <string name="restaurant_rating">note du restaurant</string>
+    <string name="call">APPELER</string>
+    <string name="like">FAVORI</string>
+    <string name="website">SITE WEB</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="display_name">nom d\'utilisateur</string>
+    <string name="password">mot de passe</string>
+    <string name="create">créer</string>
+    <string name="settings">Paramètres</string>
+    <string name="toggle_notifications">Recevoir des notifications</string>
+    <string name="save">sauvegarder</string>
+    <string name="sign_in">se connecter</string>
+    <string name="num_attending">nombre de collègues présents</string>
+    <string name="profile_picture">photo de profil</string>
+    <string name="restaurant_details">Détails du restaurant</string>
+    <string name="restaurant_choice">Choix du restaurant</string>
+    <string name="notification_description">le nom du restaurant</string>
+    <string name="location_permission_rejected">vous n\'avez pas accordé les permissions!</string>
+    <string name="workmates_attending">Collègues présents:</string>
+    <string name="no_address_found">Pas d\'adresse trouvée</string>
+    <string name="open">Ouvert</string>
+    <string name="closed">Fermé</string>
+    <string name="unknown_open_status">Statut inconnu</string>
+    <string name="is_joining">nous rejoint!</string>
+    <string name="not_decided">n\'a pas encore décidé</string>
+    <string name="eating_at">mange à</string>
+    <string name="your_lunch">VOTRE CHOIX</string>
+    <string name="settings_caps">PARAMETRES</string>
+    <string name="logout">DECONNEXION</string>
+    <string name="map_view">Carte</string>
+    <string name="list_view">Liste</string>
+    <string name="workmates">Collègues</string>
+</resources>
