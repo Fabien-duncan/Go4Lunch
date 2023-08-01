@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
@@ -79,17 +80,25 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
 
         mConnectedActivityViewModel.setCurrentWorkmates();
 
+        TextView noData_tv = view.findViewById(R.id.restaurant_list_no_data);
+
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
                 restaurantsList = restaurants;
+                if(restaurants.size()>0)noData_tv.setVisibility(View.INVISIBLE);
+                else noData_tv.setVisibility(View.VISIBLE);
                 mRestaurantsAdapter.setRestaurantList(restaurants);
+
             }
         });
         mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                if(users.size()>0)mConnectedActivityViewModel.updateAttending(users);
+                if(users.size()>0){
+
+                    mConnectedActivityViewModel.updateAttending(users);
+                }
             }
         });
         //getDetail();

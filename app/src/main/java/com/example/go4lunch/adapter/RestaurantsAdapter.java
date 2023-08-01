@@ -2,11 +2,13 @@ package com.example.go4lunch.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -99,10 +101,11 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public void setRestaurantList(List<Restaurant> restaurantList){
         this.mRestaurantList = restaurantList;
         notifyDataSetChanged();
+        if(mRestaurantList.size()==0) Log.d("restaurantRecycler", "there are no restaurants");
     }
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView restaurant_img, star1_img, star2_img, star3_img, workmatesNumber_img;
-        TextView name, address, openingHours, distance, workmatesNumber;
+        TextView name, address, openingHours, distance, workmatesNumber, nodata;
         public MyViewHolder(@NonNull View itemView, RestaurantRecyclerViewInterface restaurantRecyclerViewInterface) {
             super(itemView);
             restaurant_img = itemView.findViewById(R.id.restaurant_list_picture_img);
