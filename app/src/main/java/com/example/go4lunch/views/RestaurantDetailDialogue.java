@@ -177,9 +177,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
         websiteLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(restaurantUrl!=null){
+                if(currentRestaurant.getWebsite()!=null){
                     Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(restaurantUrl.toString()));
+                    i.setData(Uri.parse(currentRestaurant.getWebsite().toString()));
                     startActivity(i);
                 }
                 else Log.d("RestaurantURL", "there is no website!");
@@ -262,6 +262,38 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     Log.d("Call permission", "not granted to use phone, please change your settings in order to have access to all the features ");
                 }
             });
+    private void getDetail(){
+            String key = BuildConfig.GMP_key;
+
+            // Initialize Places.
+            Places.initialize(getActivity().getApplicationContext(), key);
+
+            // Create a new Places client instance.
+            PlacesClient placesClient = Places.createClient(getContext());
+            // Define a Place ID.
+            final String placeId = currentRestaurant.getId();
+
+            // Specify the fields to return.
+            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+
+            // Construct a request object, passing the place ID and fields array.
+            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
+            placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                Place place = response.getPlace();
+                Log.i("Places detail", "Place found: " + place.getName()
+                        + " Phone Num: " + place.getPhoneNumber()
+                        + " web: " + place.getWebsiteUri());
+                restaurantUrl = place.getWebsiteUri();
+                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
+            }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        final ApiException apiException = (ApiException) exception;
+                        Log.e("Places detail", "Place not found: " + exception.getMessage());
+                        final int statusCode = apiException.getStatusCode();
+                    }
+            });
+    }
 
     public void getAllInformation(String restaurantID, View view){
         String key = BuildConfig.GMP_key;
@@ -386,9 +418,12 @@ public class RestaurantDetailDialogue extends DialogFragment{
             star3.setVisibility(View.VISIBLE);
         }
 
-        if(restaurantUrl==null){
+        if(currentRestaurant.getWebsite()==null){
             websiteLink.setEnabled(false);
             websiteLink.setAlpha(0.3f);
+        }else{
+            websiteLink.setEnabled(true);
+            websiteLink.setAlpha(1);
         }
     }
 }
