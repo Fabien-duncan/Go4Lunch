@@ -82,9 +82,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
         mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         isFavorite = false;
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository);
-
-
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, getContext());
     }
 
 
@@ -128,6 +126,13 @@ public class RestaurantDetailDialogue extends DialogFragment{
                 restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
             }
         });
+        mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().observe(this, new Observer<Restaurant>() {
+            @Override
+            public void onChanged(Restaurant restaurant) {
+                currentRestaurant = restaurant;
+                setRestaurantDetail(view);
+            }
+        });
 
 
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
@@ -138,8 +143,9 @@ public class RestaurantDetailDialogue extends DialogFragment{
                 mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
                 if(currentRestaurant!= null){
                     mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
-                    getDetail();
-                    setRestaurantDetail(view);
+                    mRestaurantDetailViewModel.setDetail(currentRestaurant);
+                    //getDetail();
+                    //setRestaurantDetail(view);
                 }
                 else{
                     getAllInformation(currentUser.getLunchChoiceId(), view);
@@ -256,46 +262,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     Log.d("Call permission", "not granted to use phone, please change your settings in order to have access to all the features ");
                 }
             });
-    private void getDetail(){
-            String key = BuildConfig.GMP_key;
-
-            // Initialize Places.
-            Places.initialize(getActivity().getApplicationContext(), key);
-
-            // Create a new Places client instance.
-            PlacesClient placesClient = Places.createClient(getContext());
-            // Define a Place ID.
-            final String placeId = currentRestaurant.getId();
-
-            // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
-
-            // Construct a request object, passing the place ID and fields array.
-            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-            placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Place place = response.getPlace();
-                Log.i("Places detail", "Place found: " + place.getName()
-                        + " Phone Num: " + place.getPhoneNumber()
-                        + " web: " + place.getWebsiteUri());
-                restaurantUrl = place.getWebsiteUri();
-                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
-                if(restaurantUrl==null){
-                    websiteLink.setEnabled(false);
-                    websiteLink.setAlpha(0.3f);
-                }else{
-                    websiteLink.setEnabled(true);
-                    websiteLink.setAlpha(1);
-                }
-            }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception;
-                        Log.e("Places detail", "Place not found: " + exception.getMessage());
-                        final int statusCode = apiException.getStatusCode();
-                        // TODO: Handle error with given status code.
-                    }
-            });
-    }
 
     public void getAllInformation(String restaurantID, View view){
         String key = BuildConfig.GMP_key;

@@ -41,7 +41,6 @@ public class ConnectedActivityViewModel extends ViewModel {
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
         currentRestaurantChoice = mConnectedActivityRepository.getCurrentRestaurantChoice();
-
     }
 
 

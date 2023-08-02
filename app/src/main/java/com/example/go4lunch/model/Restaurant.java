@@ -1,5 +1,9 @@
 package com.example.go4lunch.model;
 
+import android.net.Uri;
+
+import com.example.go4lunch.util.FormatString;
+
 public class Restaurant {
     private String name;
     private int distance;
@@ -13,14 +17,15 @@ public class Restaurant {
     private double lng;
     private String id;
     private String phoneNumber;
+    private Uri website;
 
     public Restaurant(){}
     public Restaurant(String id, String name, String address, double lat, double lng, int attendanceNum,String imageUrl, String type, String openingHours, double rating, int distance, String number) {
         this.id = id;
-        this.name = name;
+        this.name = FormatString.capitalizeEveryWord(name);
         this.imageUrl = imageUrl;
         this.type = type;
-        this.address = address;
+        this.address = FormatString.capitalizeEveryWord(address);
         this.attendanceNum = attendanceNum;
         this.openingHours = openingHours;
         this.rating = rating;
@@ -31,8 +36,8 @@ public class Restaurant {
     }
     public Restaurant(String id, String name, String address, double lat, double lng,double rating, int distance) {
         this.id = id;
-        this.name = name;
-        this.address = address;
+        this.name = FormatString.capitalizeEveryWord(name);
+        this.address = FormatString.capitalizeEveryWord(address);
         this.lat = lat;
         this.lng = lng;
         this.rating = rating;
@@ -51,7 +56,7 @@ public class Restaurant {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = FormatString.capitalizeEveryWord(name);
     }
 
     public int getDistance() {
@@ -83,7 +88,7 @@ public class Restaurant {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = FormatString.capitalizeEveryWord(address);
     }
 
     public int getAttendanceNum() {
@@ -144,5 +149,13 @@ public class Restaurant {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Uri getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(Uri website) {
+        this.website = website;
     }
 }
