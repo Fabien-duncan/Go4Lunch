@@ -140,7 +140,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
             public void onChanged(User user) {
                 Log.d("User data Rest detail", "id: " + user.getDisplayName());
                 currentUser = user;
-                mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
                 if(currentRestaurant!= null){
                     mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
                     mRestaurantDetailViewModel.setDetail(currentRestaurant);
@@ -148,7 +147,12 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     //setRestaurantDetail(view);
                 }
                 else{
-                    getAllInformation(currentUser.getLunchChoiceId(), view);
+                    mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
+                    Restaurant tempRestaurant = new Restaurant();
+                    tempRestaurant.setId(user.getLunchChoiceId());
+                    mRestaurantDetailViewModel.setDetail(tempRestaurant);
+
+                    //getAllInformation(currentUser.getLunchChoiceId(), view);
                     Log.d("restaurantDetail", "there is no restaurant");
                 }
 
@@ -262,109 +266,6 @@ public class RestaurantDetailDialogue extends DialogFragment{
                     Log.d("Call permission", "not granted to use phone, please change your settings in order to have access to all the features ");
                 }
             });
-    private void getDetail(){
-            String key = BuildConfig.GMP_key;
-
-            // Initialize Places.
-            Places.initialize(getActivity().getApplicationContext(), key);
-
-            // Create a new Places client instance.
-            PlacesClient placesClient = Places.createClient(getContext());
-            // Define a Place ID.
-            final String placeId = currentRestaurant.getId();
-
-            // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
-
-            // Construct a request object, passing the place ID and fields array.
-            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-            placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Place place = response.getPlace();
-                Log.i("Places detail", "Place found: " + place.getName()
-                        + " Phone Num: " + place.getPhoneNumber()
-                        + " web: " + place.getWebsiteUri());
-                restaurantUrl = place.getWebsiteUri();
-                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
-            }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception;
-                        Log.e("Places detail", "Place not found: " + exception.getMessage());
-                        final int statusCode = apiException.getStatusCode();
-                    }
-            });
-    }
-
-    public void getAllInformation(String restaurantID, View view){
-        String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(getActivity().getApplicationContext(), key);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(getContext());
-        Restaurant restaurant =new Restaurant();
-        // Define a Place ID.
-
-        // Specify the fields to return.
-        final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.RATING);
-
-        // Construct a request object, passing the place ID and fields array.
-        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(restaurantID, placeFields);
-
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-
-
-
-            restaurant.setName(FormatString.capitalizeEveryWord(place.getName()));
-            restaurant.setId(restaurantID);
-            restaurant.setPhoneNumber(place.getPhoneNumber());
-            restaurant.setAddress(place.getAddress());
-            restaurant.setRating(place.getRating());
-            Log.i("Places detail", "Place found: " + restaurant.getName()
-                    + " Phone Num: " + restaurant.getPhoneNumber()
-                    + " address: " + restaurant.getAddress());
-
-            currentRestaurant = restaurant;
-            mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
-            setRestaurantDetail(view);
-
-            final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-            if (metadata == null || metadata.isEmpty()) {
-                Log.w("PlaceImage", "No photo metadata.");
-                return;
-            }
-            final PhotoMetadata photoMetadata = metadata.get(0);
-
-            // Get the attribution text.
-            final String attributions = photoMetadata.getAttributions();
-
-            // Create a FetchPhotoRequest.
-            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(700) // Optional.
-                    .setMaxHeight(500) // Optional.
-                    .build();
-            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                restaurantImage.setImageBitmap(bitmap);
-            }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-                    final ApiException apiException = (ApiException) exception;
-                    Log.e("PlaceImage", "Place not found: " + exception.getMessage());
-                    final int statusCode = apiException.getStatusCode();
-                    // TODO: Handle error with given status code.
-                }
-            });
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                final ApiException apiException = (ApiException) exception;
-                Log.e("Places detail", "Place not found: " + exception.getMessage());
-                final int statusCode = apiException.getStatusCode();
-                // TODO: Handle error with given status code.
-            }
-        });
-    }
 
     @Override
     public void onDestroy() {
@@ -399,6 +300,8 @@ public class RestaurantDetailDialogue extends DialogFragment{
     private void setRestaurantDetail(View view){
         Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
         if(currentRestaurant.getImageUrl()!=null)Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);
+        else if(currentRestaurant.getImageBitmap()!=null) restaurantImage.setImageBitmap(currentRestaurant.getImageBitmap());
+
         Log.d("setRestaurantDetails", "currentRestaurant Name " +  currentRestaurant.getName());
         restaurantName.setText(currentRestaurant.getName());
         restaurantDetail.setText(currentRestaurant.getAddress());

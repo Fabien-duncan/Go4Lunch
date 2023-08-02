@@ -1,5 +1,6 @@
 package com.example.go4lunch.model;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.go4lunch.util.FormatString;
@@ -8,6 +9,7 @@ public class Restaurant {
     private String name;
     private int distance;
     private String imageUrl;
+    private Bitmap imageBitmap;
     private String type;
     private String address;
     private int attendanceNum;
@@ -157,5 +159,13 @@ public class Restaurant {
 
     public void setWebsite(Uri website) {
         this.website = website;
+    }
+
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 }
