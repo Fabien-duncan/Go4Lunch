@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
@@ -15,11 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.MyWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
 import com.example.go4lunch.injection.ViewModelFactory;
+import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
@@ -72,6 +75,14 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     @Override
     public void onItemClicked(int position) {
         Log.d("workmateClicked", "you have clicked on " + workmatesList.get(position).getDisplayName());
-
+        if(!workmatesList.get(position).isToday() || workmatesList.get(position).getLunchChoiceId().isEmpty()){
+            Toast.makeText(getActivity(), "Workmate has not decided on a lunch choice yet!", Toast.LENGTH_LONG).show();
+        }else{
+            Restaurant tempRestaurant = new Restaurant();
+            tempRestaurant.setId(workmatesList.get(position).getLunchChoiceId());
+            DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+            ((RestaurantDetailDialogue) restaurantDetailDialogue).setCurrentRestaurant(tempRestaurant);
+            restaurantDetailDialogue.show(this.getActivity().getSupportFragmentManager(), getString(R.string.restaurant_details));
+        }
     }
 }

@@ -309,8 +309,10 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     Toast.makeText(this, R.string.no_lunch_choice_msg, Toast.LENGTH_LONG).show();
 
                 } else {
+                    Restaurant tempRestaurant = new Restaurant();
+                    tempRestaurant.setId(currentUser.getLunchChoiceId());
                     DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                    ((RestaurantDetailDialogue) restaurantDetailDialogue).setCurrentRestaurant(null);
+                    ((RestaurantDetailDialogue) restaurantDetailDialogue).setCurrentRestaurant(tempRestaurant);
                     restaurantDetailDialogue.show(this.getSupportFragmentManager(), getString(R.string.restaurant_details));
                 }
                 break;

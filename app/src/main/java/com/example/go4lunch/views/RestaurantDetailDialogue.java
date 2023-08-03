@@ -141,7 +141,10 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
             public void onChanged(User user) {
                 Log.d("User data Rest detail", "id: " + user.getDisplayName());
                 currentUser = user;
-                if(currentRestaurant!= null){
+
+                mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
+                mRestaurantDetailViewModel.setDetail(currentRestaurant);
+                /*if(currentRestaurant!= null){
                     mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
                     mRestaurantDetailViewModel.setDetail(currentRestaurant);
                     //getDetail();
@@ -155,7 +158,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
                     //getAllInformation(currentUser.getLunchChoiceId(), view);
                     Log.d("restaurantDetail", "there is no restaurant");
-                }
+                }*/
 
                 //loadData();//temp
                 if(currentRestaurant != null){
@@ -272,14 +275,17 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     public void onDestroy() {
         LocalDateTime timeChoiceStamp = LocalDateTime.now();
         //Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
-        if(isAttending && !currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
-            //Log.d("Restaurant details", "updating choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
-            saveData();
-        }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())){
-            //Log.d("Restaurant details", "clearing current choice...");
+        if(isAttending ){
+            if(!currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) || (isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) && !currentUser.isToday())){
+                Log.d("Restaurant details", "updating choice...");
+                mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
+                saveData();
+            }
+        }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())&& currentUser.isToday()){
+            Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
         }
+
         if(isFavorite && !currentUser.isFavorite(currentRestaurant.getId())){
             mConnectedActivityViewModel.updateUserRestaurantFavorite(currentRestaurant.getId(), "add");
         } else if (!isFavorite && currentUser.isFavorite(currentRestaurant.getId())) {
