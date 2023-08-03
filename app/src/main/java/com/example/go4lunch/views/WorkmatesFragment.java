@@ -11,12 +11,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.MyWorkmatesAdapter;
+import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
 import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -25,7 +27,7 @@ import com.example.go4lunch.viewmodel.WorkmatesViewModel;
 
 import java.util.List;
 
-public class WorkmatesFragment extends Fragment {
+public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerViewInterface {
     private RecyclerView workmatesRecyclerView;
     private List<User> workmatesList;
     private MyWorkmatesAdapter mMyWorkmatesAdapter;
@@ -54,15 +56,22 @@ public class WorkmatesFragment extends Fragment {
         //workmatesList = mMainActivityViewModel.getWorkmatesMutableLiveData().getValue();
         workmatesList = mWorkmatesViewModel.getAllWorkmates().getValue();
         //System.out.println("workmate 1: " + workmatesList.get(0).getDisplayName());
-        mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesList);
+        mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesList, this);
         workmatesRecyclerView.setAdapter(mMyWorkmatesAdapter);
         //mMyWorkmatesAdapter.notifyDataSetChanged();
         mWorkmatesViewModel.getAllWorkmates().observe((LifecycleOwner) getContext(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
+                workmatesList = users;
                 mMyWorkmatesAdapter.setWorkmatesList(users);
             }
         });
+
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        Log.d("workmateClicked", "you have clicked on " + workmatesList.get(position).getDisplayName());
 
     }
 }

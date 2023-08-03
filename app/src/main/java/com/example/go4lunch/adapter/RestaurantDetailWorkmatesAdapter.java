@@ -14,8 +14,8 @@ import java.util.List;
 
 public class RestaurantDetailWorkmatesAdapter extends MyWorkmatesAdapter{
 
-    public RestaurantDetailWorkmatesAdapter(Context context, List<User> workmatesList) {
-        super(context, workmatesList);
+    public RestaurantDetailWorkmatesAdapter(Context context, List<User> workmatesList, WorkmatesRecyclerViewInterface workmatesRecyclerViewInterface) {
+        super(context, workmatesList, workmatesRecyclerViewInterface);
         //Log.d("restaurant detail adapter", "has been created, attending: " + workmatesList.get(0).getDisplayName());
     }
 

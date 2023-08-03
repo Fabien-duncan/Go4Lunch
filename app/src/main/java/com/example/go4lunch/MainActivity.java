@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.ConnectedActivity;
@@ -28,41 +29,21 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener, SignInFragment.SignInListener {
     private MainActivityViewModel mMainActivityViewModel;
     private AuthenticationRepository mAuthenticationRepository;
-    private Button signInWithGoogle_btn;
-    private Button createAccount_btn;
-    private Button signIn_btn;
+
+    private ActivityMainBinding mActivityMainBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        signInWithGoogle_btn = findViewById(R.id.gmail_signin_btn);
-        createAccount_btn = findViewById(R.id.main_create_account_btn);
-        signIn_btn = findViewById(R.id.login_signin_btn);
+        //setContentView(R.layout.activity_main);
+        mActivityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = mActivityMainBinding.getRoot();
+        setContentView(view);
 
         mAuthenticationRepository = new AuthenticationRepository(this);
         mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
-        //mMainActivityViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
         mMainActivityViewModel.setupGoogleSignInOptions();
         getNotificationPermission();
-      /*  if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }*/
-
-       /*try {
-            String signoutStatus = getIntent().getExtras().getString("signout");
-
-            if (signoutStatus.equals("true")) mMainActivityViewModel.signOut();
-        }catch (Exception e){}*/
-        System.out.println("in Main Activity");
 
         mMainActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
             @Override
@@ -74,20 +55,20 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             }
         });
 
-        signInWithGoogle_btn.setOnClickListener(new View.OnClickListener() {
+        mActivityMainBinding.gmailSigninBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mMainActivityViewModel.signIn();
             }
         });
-        createAccount_btn.setOnClickListener(new View.OnClickListener() {
+        mActivityMainBinding.mainCreateAccountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment createAccountFragment = new CreateAccountFragment();
                 createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
             }
         });
-        signIn_btn.setOnClickListener(new View.OnClickListener() {
+        mActivityMainBinding.loginSigninBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SignInFragment signInFragment = new SignInFragment();

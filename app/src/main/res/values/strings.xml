@@ -45,5 +45,7 @@
     <string name="list_view">List View</string>
     <string name="workmates">Workmates</string>
     <string name="no_restaurants">There are no restaurants!</string>
+    <string name="need_location_permission_msg">Location permissions have not been granted, please update your settings.</string>
+    <string name="no_lunch_choice_msg">You have not selected a lunch choice yet!</string>
 
 </resources>

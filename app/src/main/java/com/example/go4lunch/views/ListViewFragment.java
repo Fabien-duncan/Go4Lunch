@@ -101,34 +101,6 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
                 }
             }
         });
-        //getDetail();
-    }
-    private void getDetail(){
-        ApplicationInfo applicationInfo = null;
-        try {
-            applicationInfo = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        if(applicationInfo!= null){
-            String key = applicationInfo.metaData.getString("com.google.android.geo.API_KEY");
-
-            // Initialize Places.
-            Places.initialize(getActivity().getApplicationContext(), key);
-
-            // Create a new Places client instance.
-            PlacesClient placesClient = Places.createClient(getContext());
-            // Define a Place ID.
-            final String placeId = "ChIJ_zPKVjUczBIRVYgPE0r41UE";
-
-            // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.PHONE_NUMBER,Place.Field.PHOTO_METADATAS);
-
-            // Construct a request object, passing the place ID and fields array.
-            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-        }
-
     }
 
     private void initRestaurants() {

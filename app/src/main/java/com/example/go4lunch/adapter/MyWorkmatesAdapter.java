@@ -19,13 +19,14 @@ import com.example.go4lunch.util.FormatString;
 import java.util.List;
 
 public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.MyViewHolder> {
-
+    private final WorkmatesRecyclerViewInterface mWorkmatesRecyclerViewInterface;
     Context mContext;
     List<User> workmatesList;
 
-    public MyWorkmatesAdapter(Context context, List<User> workmatesList) {
+    public MyWorkmatesAdapter(Context context, List<User> workmatesList, WorkmatesRecyclerViewInterface workmatesRecyclerViewInterface) {
         mContext = context;
         this.workmatesList = workmatesList;
+        this.mWorkmatesRecyclerViewInterface = workmatesRecyclerViewInterface;
     }
 
     @NonNull
@@ -34,7 +35,7 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
 
         View v = LayoutInflater.from(mContext).inflate(R.layout.workmates_item,parent,false);
 
-        return new MyViewHolder(v);
+        return new MyViewHolder(v,mWorkmatesRecyclerViewInterface);
     }
 
     @Override
@@ -68,12 +69,24 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView profilePic;
         TextView info, extraInfo;
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, WorkmatesRecyclerViewInterface workmatesRecyclerViewInterface) {
             super(itemView);
             profilePic = itemView.findViewById(R.id.workmates_profile_picture_img);
             info = itemView.findViewById(R.id.workmates_info_tv);
             //extraInfo = itemView.findViewById(R.id.workmates_extra_info_tv);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (workmatesRecyclerViewInterface != null) {
+                        int pos = getAdapterPosition();
+
+                        if (pos != RecyclerView.NO_POSITION) {
+                            workmatesRecyclerViewInterface.onItemClicked(pos);
+                        }
+                    }
+                }
+            });
         }
     }
 }

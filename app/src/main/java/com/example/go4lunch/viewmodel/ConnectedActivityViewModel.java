@@ -1,5 +1,9 @@
 package com.example.go4lunch.viewmodel;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -8,14 +12,18 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
+import com.example.go4lunch.util.ReminderBroadcast;
+import com.example.go4lunch.views.ConnectedActivity;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 
 public class ConnectedActivityViewModel extends ViewModel {

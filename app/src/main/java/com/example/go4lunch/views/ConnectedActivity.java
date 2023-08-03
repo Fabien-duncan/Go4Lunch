@@ -2,6 +2,7 @@ package com.example.go4lunch.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -21,8 +22,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +39,7 @@ import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.AutocompleteRecyclerViewAdapter;
 import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
+import com.example.go4lunch.databinding.ActivityConnectedBinding;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -92,14 +96,14 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private LocationCallback locationCallback;
     private LocationRequest locationRequest;
     private User currentUser;
-
-
+    //private ActivityConnectedBinding mActivityConnectedBinding;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connected);
+
         filteredNearbyRestaurants = new ArrayList<>();
 
         menu = findViewById(R.id.bottomNavigationView);
@@ -112,7 +116,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         email = sideBarView.findViewById(R.id.side_menu_email);
         profilePic = sideBarView.findViewById(R.id.side_bar_profile_img);
 
-        autocompleteDisplay= findViewById(R.id.autocomplete_layout);
+        autocompleteDisplay = findViewById(R.id.autocomplete_layout);
         autocompleteRV = findViewById(R.id.autocomplete_rv);
         autocompleteRV.setLayoutManager(new LinearLayoutManager(this));
         autocompleteAdapter = new AutocompleteRecyclerViewAdapter(this, filteredNearbyRestaurants, this);
@@ -154,12 +158,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.length() >1){
+                if (newText.length() > 1) {
                     Log.d("searchView", "text is " + newText);
-                    if(currentFragment.equals("map"))autocompleteDisplay.setVisibility(View.VISIBLE);
+                    if (currentFragment.equals("map"))
+                        autocompleteDisplay.setVisibility(View.VISIBLE);
                     mConnectedActivityViewModel.autocomplete(newText);
                     return true;
-                }else{
+                } else {
                     Log.d("searView", "retrievingNearbyPlaces");
                     autocompleteDisplay.setVisibility(View.INVISIBLE);
                     mConnectedActivityViewModel.resetNearbyRestaurants();
@@ -185,7 +190,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         setCalendar();
 
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -194,7 +199,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         mConnectedActivityViewModel.getIsUserSignedIn().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if(!aBoolean)showMainActivity();
+                if (!aBoolean) showMainActivity();
             }
         });
         mConnectedActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
@@ -214,7 +219,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onChanged(List<Restaurant> restaurants) {
                 autocompleteAdapter.setRestaurantList(restaurants);
                 Log.d("get restaurants connected", "*********");
-                if(restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0){
+                if (restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) {
                     mConnectedActivityViewModel.setCurrentWorkmates();
 
                     //nearbyRestaurants = restaurants;
@@ -225,7 +230,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onChanged(List<User> users) {
                 Log.d("getAllWorkmates", "updating attending workmates");
-                if(users.size()>0)mConnectedActivityViewModel.updateAttending(users);
+                if (users.size() > 0) mConnectedActivityViewModel.updateAttending(users);
             }
         });
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
@@ -241,26 +246,24 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         menu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.mapView:
-                        if(isLocationGranted){
+                        if (isLocationGranted) {
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                             currentFragment = "map";
                             searchView.setVisibility(View.VISIBLE);
-                        }
-                        else{
+                        } else {
                             Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                         }
                         System.out.println("Maps");
                         break;
                     case R.id.listView:
-                        if(isLocationGranted){
+                        if (isLocationGranted) {
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
                             currentFragment = "list";
                             searchView.setVisibility(View.VISIBLE);
 
-                        }
-                        else{
+                        } else {
                             Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                         }
                         System.out.println("List");
@@ -278,8 +281,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         });
 
     }
+
     private void showMainActivity() {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
         finish();
@@ -287,24 +291,27 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public void onBackPressed() {
-        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else{
+        } else {
             super.onBackPressed();
         }
 
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.side_bar_lunch:
-                if(!currentUser.isToday() || currentUser.getLunchChoiceId().isEmpty()){
-                    Toast.makeText(this, "You have not selected a lunch choice yet!", Toast.LENGTH_LONG).show();
-                }else{
+                if(!isLocationGranted){
+                    Toast.makeText(this, R.string.need_location_permission_msg, Toast.LENGTH_LONG).show();
+                }else if (!currentUser.isToday() || currentUser.getLunchChoiceId().isEmpty()) {
+                    Toast.makeText(this, R.string.no_lunch_choice_msg, Toast.LENGTH_LONG).show();
+
+                } else {
                     DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                    ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(null);
-                    restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
+                    ((RestaurantDetailDialogue) restaurantDetailDialogue).setCurrentRestaurant(null);
+                    restaurantDetailDialogue.show(this.getSupportFragmentManager(), getString(R.string.restaurant_details));
                 }
                 break;
             case R.id.side_bar_settings:
@@ -321,23 +328,25 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         }
         return true;
     }
-    private void getLocationPermission(){
-        Dexter.withContext(this).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
+
+    private void getLocationPermission() {
+        Dexter.withContext(this).withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
                     //Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                     currentFragment = "map";
-                    isLocationGranted =true;
+                    isLocationGranted = true;
                     getLocation();
 
                 }
 
                 // check for permanent decline of any permission
                 if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
-                    Toast.makeText(ConnectedActivity.this,"permission NOT granted!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConnectedActivity.this, "permission NOT granted!!!", Toast.LENGTH_SHORT).show();
                     isLocationGranted = false;
+                    showSettingsDialog();
                 }
             }
 
@@ -348,8 +357,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         }).onSameThread().check();
 
     }
+
     @SuppressLint("MissingPermission")
-    private void getLocation(){
+    private void getLocation() {
         //Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -360,11 +370,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         settingsClient.checkLocationSettings(locationSettingsRequest).addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
             @Override
             public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-                }else{
-                    if(task.getException() instanceof ResolvableApiException){
-                        try{
+                } else {
+                    if (task.getException() instanceof ResolvableApiException) {
+                        try {
                             ResolvableApiException resolvableApiException = (ResolvableApiException) task.getException();
                             resolvableApiException.startResolutionForResult(ConnectedActivity.this, 1001);
                         } catch (IntentSender.SendIntentException e) {
@@ -383,13 +393,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         Log.d("Connected Activity", "resume activity");
     }
 
-    public List<Restaurant> getRestaurants(){
-        return new ArrayList<>();
-    }
-    public ConnectedActivityViewModel getConnectedActivityViewModel(){
+    public ConnectedActivityViewModel getConnectedActivityViewModel() {
         return this.mConnectedActivityViewModel;
     }
-    public Location getCurrentLocation(){
+
+    public Location getCurrentLocation() {
         return currentLocation;
     }
 
@@ -397,26 +405,28 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     public void onItemClick(int position) {
 
     }
-    public void setCalendar(){
+
+    public void setCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 54);
-        calendar.set(Calendar.SECOND, 16);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
 
-        if(Calendar.getInstance().after(calendar)){
-            calendar.add(Calendar.DAY_OF_MONTH,1);
+        if (Calendar.getInstance().after(calendar)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         //ReminderBroadcast.text="Fabien";
         Intent intent = new Intent(ConnectedActivity.this, ReminderBroadcast.class);
         intent.putExtra("Name", "bob");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,intent,PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
-    public void notificationChannel(){
+
+    public void notificationChannel() {
         CharSequence name = getString(R.string.restaurant_choice);
         String description = getString(R.string.notification_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -425,5 +435,32 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    private void showSettingsDialog() {
+        // we are displaying an alert dialog for permissions
+        AlertDialog.Builder builder = new AlertDialog.Builder(ConnectedActivity.this);
+
+        // below line is the title for our alert dialog.
+        builder.setTitle("Need Permissions");
+
+        // below line is our message for our dialog
+        builder.setMessage("This app needs to use location permissions this feature. You can grant them in app settings.");
+        builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
+            // this method is called on click on positive button and on clicking shit button
+            // we are redirecting our user from our app to the settings page of our app.
+            dialog.cancel();
+            // below is the intent from which we are redirecting our user.
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivity(intent);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // this method is called when user click on negative button.
+            dialog.cancel();
+        });
+        // below line is used to display our dialog
+        builder.show();
     }
 }

@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
+import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -55,7 +56,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RestaurantDetailDialogue extends DialogFragment{
+public class RestaurantDetailDialogue extends DialogFragment implements WorkmatesRecyclerViewInterface {
     private Restaurant currentRestaurant;
     private Uri restaurantUrl;
     private Button websiteLink;
@@ -113,7 +114,7 @@ public class RestaurantDetailDialogue extends DialogFragment{
 
         attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
         attendingWorkmatesRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList);
+        RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList, this);
         attendingWorkmatesRecyclerView.setAdapter(restaurantDetailWorkmatesAdapter);
         restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
 
@@ -328,5 +329,10 @@ public class RestaurantDetailDialogue extends DialogFragment{
             websiteLink.setEnabled(true);
             websiteLink.setAlpha(1);
         }
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+
     }
 }

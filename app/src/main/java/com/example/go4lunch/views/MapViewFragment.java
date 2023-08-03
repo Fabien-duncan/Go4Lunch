@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.dataSource.ApiService;
+import com.example.go4lunch.util.VectorDrawableConverter;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,16 +42,11 @@ public class MapViewFragment extends SupportMapFragment{
     private GoogleMap mMap;
     private View mapView;
     private List<Restaurant> nearbyRestaurants;
-    private ApiService googlePlacesReadTask;
 
     private boolean mLocationPermissionGranted = false;
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-
     private Location currentLocation;
-    private FusedLocationProviderClient fusedLocationClient;
     private ConnectedActivityViewModel mConnectedActivityViewModel;
-    //private AuthenticationRepository mAuthenticationRepository;
 
     private void initGoogleMap(boolean hasRestaurants) {
         getMapAsync(new OnMapReadyCallback() {
@@ -62,7 +58,7 @@ public class MapViewFragment extends SupportMapFragment{
                 if(currentLocation!=null) {
                     LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                     //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
-                    mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
                 }
 
@@ -73,8 +69,8 @@ public class MapViewFragment extends SupportMapFragment{
                 rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
                 rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);rlp.setMargins(0,0,30,30);
 
+                //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
-
 
                 if(hasRestaurants)placeNearbyRestaurants();
 
@@ -84,25 +80,10 @@ public class MapViewFragment extends SupportMapFragment{
         });
 
     }
-    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
-        Drawable drawable =  AppCompatResources.getDrawable(context, drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
     @SuppressLint("MissingPermission")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        googlePlacesReadTask = new ApiService();
 
         mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
 
@@ -111,11 +92,11 @@ public class MapViewFragment extends SupportMapFragment{
             public void onChanged(List<Restaurant> restaurants) {
                 nearbyRestaurants = restaurants;
                 if(nearbyRestaurants.size()>0){
-                    Log.d("Map Fragment", nearbyRestaurants.get(0).getName()
+                    /*Log.d("Map Fragment", nearbyRestaurants.get(0).getName()
                             +  ", Lat: " + nearbyRestaurants.get(0).getLat()
                             +  ", Long: " + nearbyRestaurants.get(0).getLng()
                             + ",rating: " + nearbyRestaurants.get(0).getRating()
-                            + ", attending " + nearbyRestaurants.get(0).getAttendanceNum());
+                            + ", attending " + nearbyRestaurants.get(0).getAttendanceNum());*/
                     try{
                         currentLocation = ((ConnectedActivity) getActivity()).getCurrentLocation();
                     }catch (Exception e){
@@ -141,8 +122,8 @@ public class MapViewFragment extends SupportMapFragment{
 
         for(int i = 0; i < nearbyRestaurants.size();i++){
             LatLng restaurantLocation = new LatLng(nearbyRestaurants.get(i).getLat(),nearbyRestaurants.get(i).getLng());
-            if(nearbyRestaurants.get(i).getAttendanceNum()<=0)mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange)))).setTag(nearbyRestaurants.get(i).getId());
-            else mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green)))).setTag(nearbyRestaurants.get(i).getId());
+            if(nearbyRestaurants.get(i).getAttendanceNum()<=0)mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(VectorDrawableConverter.getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_orange)))).setTag(nearbyRestaurants.get(i).getId());
+            else mMap.addMarker(new MarkerOptions().title(nearbyRestaurants.get(i).getName()).position(restaurantLocation).icon(BitmapDescriptorFactory.fromBitmap(VectorDrawableConverter.getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green)))).setTag(nearbyRestaurants.get(i).getId());
 
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
