@@ -73,12 +73,6 @@ public class AuthenticationRepository {
         }
     }
 
-    /*private void initAllUsers() {
-        List<User> tempUsers = new ArrayList<>();
-        tempUsers.add(new User("Marion Chenus", "chenus.marion@gmail.com"));
-        tempUsers.add(new User("Hugh Duncan", "hugh.duncan@gmail.com"));
-        workmatesMutableLiveData.postValue(tempUsers);
-    }*/
 
     public void setupGoogleSignInOptions(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -87,10 +81,6 @@ public class AuthenticationRepository {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(mContext,gso);
         mAuth = FirebaseAuth.getInstance();
-    }
-    public boolean isUserAlreadySignIn(){
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        return currentUser != null;
     }
 
     public void signIn(){
@@ -109,16 +99,6 @@ public class AuthenticationRepository {
         isUserSignedIn.postValue(false);
         Toast.makeText(mContext, "signed Out", Toast.LENGTH_LONG).show();
 
-    }
-    public FirebaseUser getProfileInfo(){
-        FirebaseUser account = FirebaseAuth.getInstance().getCurrentUser();
-        if(account != null){
-
-        }
-        else{
-            Toast.makeText(mContext, "No account info found.", Toast.LENGTH_LONG).show();
-        }
-        return account;
     }
     public void handleSignInResult(Intent data){
         System.out.println("in handleSignInResult");
@@ -256,10 +236,6 @@ public class AuthenticationRepository {
         return currentUserMutableLiveData;
     }
 
-    public void setCurrentUserMutableLiveData(MutableLiveData<User> currentUserMutableLiveData) {
-        this.currentUserMutableLiveData = currentUserMutableLiveData;
-    }
-
     public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
         return workmatesMutableLiveData;
     }
@@ -309,9 +285,6 @@ public class AuthenticationRepository {
                 }
             }
         });
-    }
-    public MutableLiveData<List<User>> getAllWorkmates(){
-        return workmatesMutableLiveData;
     }
     public void setCurrentUser(){
         FirebaseUser user = mAuth.getCurrentUser();

@@ -55,23 +55,8 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void setupGoogleSignInOptions(){
         mAuthenticationRepository.setupGoogleSignInOptions();
     }
-    public boolean isUserAlreadySignIn() {
-        return mAuthenticationRepository.isUserAlreadySignIn();
-    }
-    public void signIn() {
-        mAuthenticationRepository.signIn();
-    }
     public void signOut() {
         mAuthenticationRepository.signOut();
-    }
-    public FirebaseUser getProfileInfo(){
-        return mAuthenticationRepository.getProfileInfo();
-    }
-    public void handleSignInResult(Intent data){
-        mAuthenticationRepository.handleSignInResult(data);
-    }
-    public int getGOOGLE_SIGN_IN(){
-        return mAuthenticationRepository.getGOOGLE_SIGN_IN();
     }
 
     public MutableLiveData<FirebaseUser> getUserData() {
@@ -103,23 +88,14 @@ public class ConnectedActivityViewModel extends ViewModel {
         return restaurantsMutableLiveData;
     }
 
-    public void setRestaurantsDistance(){
-        mConnectedActivityRepository.setRestaurantsDistance();
-    }
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
     }
     public void updateUserRestaurantFavorite(String restaurantID, String type){
         mAuthenticationRepository.updateUserRestaurantFavorite(restaurantID, type);
     }
-    public void setFilteredWorkmates(String restaurantId){
-        mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
-    }
     public void updateAttending(List<User> workmates){
         mConnectedActivityRepository.updateAttending(workmates);
-    }
-    public void updateRestaurantsListForFilter(List<Restaurant> filteredRestaurants){
-        restaurantsMutableLiveData.postValue(filteredRestaurants);
     }
     public void resetNearbyRestaurants(){
         mConnectedActivityRepository.resetNearbyRestaurants();
@@ -127,15 +103,9 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void autocomplete(String text){
         mConnectedActivityRepository.autocomplete(text);
     }
-    public Location getCurrentLocation() {
-        return mConnectedActivityRepository.getCurrentLocation();
-    }
 
     public void setCurrentLocation(Location currentLocation) {
         mConnectedActivityRepository.setCurrentLocation(currentLocation);
     }
 
-    public MutableLiveData<Restaurant> getCurrentRestaurantChoice() {
-        return currentRestaurantChoice;
-    }
 }

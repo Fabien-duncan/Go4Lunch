@@ -14,32 +14,16 @@ import java.util.List;
 public class MainActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private MutableLiveData<FirebaseUser> userData;
-    private MutableLiveData<Boolean> isUserSignedIn;
-    private MutableLiveData<User> currentUserMutableLiveData;
-
-    private MutableLiveData<List<User>> workmatesMutableLiveData;
 
     public MainActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
-        isUserSignedIn = authenticationRepository.getIsUserSignedIn();
-        currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
-        workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
     }
-    public void setupGoogleSignInOptions(){
-        mAuthenticationRepository.setupGoogleSignInOptions();
+    public void firebaseCreateUser(String email, String password, String displayName){
+        mAuthenticationRepository.firebaseCreateUser(email,password,displayName);
     }
-    public boolean isUserAlreadySignIn() {
-        return mAuthenticationRepository.isUserAlreadySignIn();
-    }
-    public void signIn() {
-        mAuthenticationRepository.signIn();
-    }
-    public void signOut() {
-        mAuthenticationRepository.signOut();
-    }
-    public FirebaseUser getProfileInfo(){
-        return mAuthenticationRepository.getProfileInfo();
+    public void signInWithEmail(String email, String password){
+        mAuthenticationRepository.firebaseAuthWithEmailAndPassword(email,password);
     }
     public void handleSignInResult(Intent data){
         mAuthenticationRepository.handleSignInResult(data);
@@ -51,31 +35,10 @@ public class MainActivityViewModel extends ViewModel {
     public MutableLiveData<FirebaseUser> getUserData() {
         return userData;
     }
-
-    public MutableLiveData<Boolean> getIsUserSignedIn() {
-        return isUserSignedIn;
+    public void signIn() {
+        mAuthenticationRepository.signIn();
     }
-
-    public MutableLiveData<User> getCurrentUserMutableLiveData() {
-        return currentUserMutableLiveData;
-    }
-    public void setCurrentWorkmates(){
-        mAuthenticationRepository.retrieveAllWorkmates();
-    }
-    public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
-        return mAuthenticationRepository.getWorkmatesMutableLiveData();
-        //return workmatesMutableLiveData;
-    }
-    public MutableLiveData<List<User>> getAllWorkmates(){
-        return mAuthenticationRepository.getAllWorkmates();
-    }
-    public void firebaseCreateUser(String email, String password, String displayName){
-        mAuthenticationRepository.firebaseCreateUser(email,password,displayName);
-    }
-    /*public User getCurrentUser(){
-        return mAuthenticationRepository.getCurrentUser();
-    }*/
-    public void signInWithEmail(String email, String password){
-        mAuthenticationRepository.firebaseAuthWithEmailAndPassword(email,password);
+    public void setupGoogleSignInOptions(){
+        mAuthenticationRepository.setupGoogleSignInOptions();
     }
 }

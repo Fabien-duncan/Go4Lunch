@@ -205,10 +205,6 @@ public class ConnectedActivityRepository {
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
     }
 
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
     }
