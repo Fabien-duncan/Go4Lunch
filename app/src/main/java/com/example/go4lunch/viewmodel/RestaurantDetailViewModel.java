@@ -19,10 +19,11 @@ public class RestaurantDetailViewModel extends ViewModel{
     private RestaurantDetailRepository mRestaurantDetailRepository;
     private MutableLiveData<Restaurant> currentRestaurantMutableLiveDate;
 
-    public RestaurantDetailViewModel(AuthenticationRepository authenticationRepository, Context context){
+    public RestaurantDetailViewModel(AuthenticationRepository authenticationRepository, RestaurantDetailRepository restaurantDetailRepository){
         mAuthenticationRepository = authenticationRepository;
         attendingWorkmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
-        mRestaurantDetailRepository = new RestaurantDetailRepository(context);
+        //mRestaurantDetailRepository = new RestaurantDetailRepository(context);
+        mRestaurantDetailRepository = restaurantDetailRepository;
 
         currentRestaurantMutableLiveDate = mRestaurantDetailRepository.getCurrentRestaurantMutableLiveData();
 

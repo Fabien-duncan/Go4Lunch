@@ -33,8 +33,8 @@ public class WorkmatesViewModelTest {
 
     @Test
     public void setCurrentWorkmates() {
-        Mockito.doReturn(workmateList).when(mAuthenticationRepository).retrieveAllWorkmates();
-
+        mWorkmatesViewModel.setCurrentWorkmates();
+        Mockito.verify(mAuthenticationRepository).retrieveAllWorkmates();
     }
 
     @Test

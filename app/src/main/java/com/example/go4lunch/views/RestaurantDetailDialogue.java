@@ -39,6 +39,7 @@ import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.repository.RestaurantDetailRepository;
 import com.example.go4lunch.util.FormatString;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
@@ -83,7 +84,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         mAuthenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         isFavorite = false;
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, getContext());
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, new RestaurantDetailRepository(getContext()));
     }
 
 

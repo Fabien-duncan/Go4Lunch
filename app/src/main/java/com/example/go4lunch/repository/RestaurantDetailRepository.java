@@ -22,14 +22,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RestaurantDetailRepository {
-    private Activity mActivity;
+    //private Activity mActivity;
     private Context mContext;
 
     private MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
 
     public RestaurantDetailRepository(Context context){
         this.mContext = context;
-        this.mActivity = (Activity)context;
+        //this.mActivity = (Activity)context;
 
         currentRestaurantMutableLiveData = new MutableLiveData<>();
     }
@@ -41,7 +41,7 @@ public class RestaurantDetailRepository {
         String key = BuildConfig.GMP_key;
 
         // Initialize Places.
-        Places.initialize(mActivity.getApplicationContext(), key);
+        Places.initialize(mContext.getApplicationContext(), key);
 
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(mContext);
