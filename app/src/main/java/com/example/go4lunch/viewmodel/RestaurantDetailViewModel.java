@@ -1,7 +1,5 @@
 package com.example.go4lunch.viewmodel;
 
-import android.content.Context;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -15,19 +13,16 @@ import java.util.List;
 public class RestaurantDetailViewModel extends ViewModel{
     private final AuthenticationRepository mAuthenticationRepository;
 
-    private MutableLiveData<List<User>> attendingWorkmatesMutableLiveData;
-    private RestaurantDetailRepository mRestaurantDetailRepository;
-    private MutableLiveData<Restaurant> currentRestaurantMutableLiveDate;
+    private final MutableLiveData<List<User>> attendingWorkmatesMutableLiveData;
+    private final RestaurantDetailRepository mRestaurantDetailRepository;
+    private final MutableLiveData<Restaurant> currentRestaurantMutableLiveDate;
 
     public RestaurantDetailViewModel(AuthenticationRepository authenticationRepository, RestaurantDetailRepository restaurantDetailRepository){
         mAuthenticationRepository = authenticationRepository;
         attendingWorkmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
-        //mRestaurantDetailRepository = new RestaurantDetailRepository(context);
         mRestaurantDetailRepository = restaurantDetailRepository;
 
         currentRestaurantMutableLiveDate = mRestaurantDetailRepository.getCurrentRestaurantMutableLiveData();
-
-        //mAuthenticationRepository.retrieveFilteredWorkmates(restaurantId);
     }
 
     public void setDetail(Restaurant currentRestaurant){

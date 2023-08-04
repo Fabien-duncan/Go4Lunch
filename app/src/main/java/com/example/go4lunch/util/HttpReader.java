@@ -20,8 +20,8 @@ public class HttpReader {
             httpURLConnection.connect();
             inputStream = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuffer stringBuffer = new StringBuffer();
-            String line = "";
+            StringBuilder stringBuffer = new StringBuilder();
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line);
             }
@@ -29,8 +29,9 @@ public class HttpReader {
             bufferedReader.close();
             //System.out.println(httpData);
         } catch (Exception e) {
-            Log.d("Exception - reading Http url", e.toString());
+            Log.d("ExceptionReadingHttpUrl", e.toString());
         } finally {
+            assert inputStream != null;
             inputStream.close();
             httpURLConnection.disconnect();
         }

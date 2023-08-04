@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.go4lunch"
-        minSdk 29
+        minSdk 21
         targetSdk 33
         versionCode 1
         versionName "1.0"

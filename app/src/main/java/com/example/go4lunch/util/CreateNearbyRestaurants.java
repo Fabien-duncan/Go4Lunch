@@ -1,20 +1,16 @@
 package com.example.go4lunch.util;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.util.Log;
 
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.views.ConnectedActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class CreateNearbyRestaurants {
@@ -25,13 +21,14 @@ public class CreateNearbyRestaurants {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        assert jsonArray != null;
         return getRestaurants(jsonArray, currentLocation);
     }
 
     private List<Restaurant> getRestaurants(JSONArray jsonArray, Location currentLocation) {
         int placesCount = jsonArray.length();
         List<Restaurant> restaurantsList = new ArrayList<>();
-        Restaurant aRestaurant = null;
+        Restaurant aRestaurant;
 
         for (int i = 0; i < placesCount; i++) {
             try {
@@ -57,8 +54,8 @@ public class CreateNearbyRestaurants {
         String openNow = "Unknown open status";
 
 
-        String latitude = "";
-        String longitude = "";
+        String latitude;
+        String longitude;
 
         try {
             if (!googlePlaceJson.isNull("name")) {

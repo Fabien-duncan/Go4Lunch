@@ -4,16 +4,13 @@ import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.List;
 
 public class MainActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
-    private MutableLiveData<FirebaseUser> userData;
+    private final MutableLiveData<FirebaseUser> userData;
 
     public MainActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
