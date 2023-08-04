@@ -1,5 +1,6 @@
 package com.example.go4lunch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -8,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +39,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return new RestaurantsAdapter.MyViewHolder(v, mRestaurantRecyclerViewInterface);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RestaurantsAdapter.MyViewHolder holder, int position) {
         Restaurant restaurant = mRestaurantList.get(position);
@@ -51,13 +52,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         holder.workmatesNumber_img.setVisibility(View.VISIBLE);
         holder.workmatesNumber.setVisibility(View.VISIBLE);
         holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
-        /*if(restaurant.getAttendanceNum() <= 0){
-            holder.workmatesNumber.setText("");
-            holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
-        }else{
-            holder.workmatesNumber_img.setVisibility(View.VISIBLE);
-            holder.workmatesNumber.setText("(" + restaurant.getAttendanceNum() + ")");
-        }*/
+
         if(restaurant.getAttendanceNum() == 0){
             holder.workmatesNumber.setVisibility(View.INVISIBLE);
             holder.workmatesNumber_img.setVisibility(View.INVISIBLE);
@@ -98,6 +93,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
     public int getItemCount() {
         return mRestaurantList.size();
     }
+    @SuppressLint("NotifyDataSetChanged")
     public void setRestaurantList(List<Restaurant> restaurantList){
         this.mRestaurantList = restaurantList;
         notifyDataSetChanged();
@@ -119,15 +115,12 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             workmatesNumber = itemView.findViewById(R.id.restaurant_list_workmates_num_tv);
             workmatesNumber_img = itemView.findViewById(R.id.restaurant_list_workmates_num_iv);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(restaurantRecyclerViewInterface!=null){
-                        int pos = getAdapterPosition();
+            itemView.setOnClickListener(view -> {
+                if(restaurantRecyclerViewInterface!=null){
+                    int pos = getAdapterPosition();
 
-                        if(pos != RecyclerView.NO_POSITION){
-                            restaurantRecyclerViewInterface.onItemClick(pos);
-                        }
+                    if(pos != RecyclerView.NO_POSITION){
+                        restaurantRecyclerViewInterface.onItemClick(pos);
                     }
                 }
             });

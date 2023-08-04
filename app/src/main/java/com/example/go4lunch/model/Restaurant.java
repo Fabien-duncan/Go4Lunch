@@ -111,7 +111,7 @@ public class Restaurant {
 
     /**
      * turns a rating out of 5 to out of 3 rounded to the closest integer
-     * @return
+     * @return the converted rating
      */
     public int getRating() {
         return (int)Math.round((rating/5.0) * 3);

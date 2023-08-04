@@ -1,6 +1,5 @@
 package com.example.go4lunch.repository;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -22,10 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RestaurantDetailRepository {
-    //private Activity mActivity;
-    private Context mContext;
+    private final Context mContext;
 
-    private MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
+    private final MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
 
     public RestaurantDetailRepository(Context context){
         this.mContext = context;
@@ -57,17 +55,12 @@ public class RestaurantDetailRepository {
 
             placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
-                /*Log.i("Places detail", "Place found: " + place.getName()
-                        + " Phone Num: " + place.getPhoneNumber()
-                        + " web: " + place.getWebsiteUri());*/
                 currentRestaurant.setWebsite(place.getWebsiteUri());
                 currentRestaurant.setPhoneNumber(place.getPhoneNumber());
                 currentRestaurantMutableLiveData.postValue(currentRestaurant);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
-                    final ApiException apiException = (ApiException) exception;
                     Log.e("Places detail", "Place not found: " + exception.getMessage());
-                    final int statusCode = apiException.getStatusCode();
                 }
             });
         }else{
@@ -84,7 +77,8 @@ public class RestaurantDetailRepository {
                 currentRestaurant.setName(FormatString.capitalizeEveryWord(place.getName()));
                 currentRestaurant.setPhoneNumber(place.getPhoneNumber());
                 currentRestaurant.setAddress(place.getAddress());
-                currentRestaurant.setRating(place.getRating());
+                if(place.getRating() != null)currentRestaurant.setRating(place.getRating());
+                else currentRestaurant.setRating(0);
                 currentRestaurant.setWebsite(place.getWebsiteUri());
 
 
@@ -106,16 +100,12 @@ public class RestaurantDetailRepository {
                     currentRestaurantMutableLiveData.postValue(currentRestaurant);
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception;
                         Log.e("PlaceImage", "Place not found: " + exception.getMessage());
-                        final int statusCode = apiException.getStatusCode();
                     }
                 });
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
-                    final ApiException apiException = (ApiException) exception;
                     Log.e("Places detail", "Place not found: " + exception.getMessage());
-                    final int statusCode = apiException.getStatusCode();
                 }
             });
         }

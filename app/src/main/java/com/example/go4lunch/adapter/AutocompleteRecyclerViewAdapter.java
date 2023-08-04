@@ -1,5 +1,6 @@
 package com.example.go4lunch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<Autoco
     public int getItemCount() {
         return mRestaurantList.size();
     }
+    @SuppressLint("NotifyDataSetChanged")
     public void setRestaurantList(List<Restaurant> restaurantList){
         this.mRestaurantList = restaurantList;
         notifyDataSetChanged();
@@ -59,15 +61,12 @@ public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<Autoco
             name = itemView.findViewById(R.id.autocomplete_item_name);
             address = itemView.findViewById(R.id.autocomplete_item_address);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(restaurantRecyclerViewInterface!=null){
-                        int pos = getAdapterPosition();
+            itemView.setOnClickListener(view -> {
+                if(restaurantRecyclerViewInterface!=null){
+                    int pos = getAdapterPosition();
 
-                        if(pos != RecyclerView.NO_POSITION){
-                            restaurantRecyclerViewInterface.onItemClick(pos);
-                        }
+                    if(pos != RecyclerView.NO_POSITION){
+                        restaurantRecyclerViewInterface.onItemClick(pos);
                     }
                 }
             });

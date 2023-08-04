@@ -1,9 +1,9 @@
 package com.example.go4lunch.model;
 
 import android.net.Uri;
-import android.util.Log;
+import android.os.Build;
 
-import com.google.firebase.Timestamp;
+import androidx.annotation.RequiresApi;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -93,9 +93,6 @@ public class User {
         return photoUrl;
     }
 
-    /*public void setPhotoUrl(Uri photoUrl) {
-        this.photoUrl = photoUrl;
-    }*/
     public void setPhotoUrl(String photoUrl){
         this.photoUrl = Uri.parse(photoUrl);
     }
@@ -124,6 +121,7 @@ public class User {
         }
         return found;
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean isToday(){
         if(choiceTimeStamp == null) return false;
         else {
@@ -132,10 +130,10 @@ public class User {
             String endOfLunch;
             String startOfLunch;
             if (now.getHour() <= 14) {
-                endOfLunch = now.format(formatter).toString() + "T14:00";
+                endOfLunch = now.format(formatter) + "T14:00";
                 startOfLunch = now.minusDays(1).format(formatter) + "T14:00";
             } else {
-                startOfLunch = now.format(formatter).toString() + "T14:00";
+                startOfLunch = now.format(formatter) + "T14:00";
                 endOfLunch = now.plusDays(1).format(formatter) + "T14:00";
             }
 

@@ -15,8 +15,6 @@ import java.util.List;
 public class ApiService {
     private String googlePlacesData = null;
     private GoogleMap mGoogleMap;
-    //private List<Restaurant> nearbyRestaurants;
-    //private JSONObject mJSONObject;
 
     public List<Restaurant> getGooglePlacesData( String googlePlacesUrl, Location currentLocation){
         try {

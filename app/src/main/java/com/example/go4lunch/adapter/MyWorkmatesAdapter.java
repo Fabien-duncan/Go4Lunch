@@ -1,6 +1,8 @@
 package com.example.go4lunch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
-import com.example.go4lunch.util.FormatString;
 
 import java.util.List;
 
@@ -38,17 +40,19 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         return new MyViewHolder(v,mWorkmatesRecyclerViewInterface);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyWorkmatesAdapter.MyViewHolder holder, int position) {
         User user = workmatesList.get(position);
 
         if(user.getLunchChoiceId().isEmpty() || !user.isToday()){
-            holder.info.setText(user.getDisplayName() + " " + mContext.getString(R.string.not_decided));
+            String text = user.getDisplayName() + " " + mContext.getString(R.string.not_decided);
+            holder.info.setText(text);
             holder.info.setAlpha(0.5f);
         }else{
-            holder.info.setText(user.getDisplayName() + " " + mContext.getString(R.string.eating_at) + " " + user.getLunchChoiceName());
+            String text = user.getDisplayName() + " " + mContext.getString(R.string.eating_at) + " " + user.getLunchChoiceName();
+            holder.info.setText(text);
         }
-        //Glide.with(holder).load(user.).circleCrop().into(holder.profilePic);
         Glide.with(holder.itemView).load(user.getPhotoUrl()).circleCrop().into(holder.profilePic);
 
 
@@ -60,8 +64,8 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         return workmatesList.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setWorkmatesList(List<User> workmatesList){
-        //Log.d("MyWorkmateAdapter", "updating List with: " + workmatesList.get(0).getDisplayName());
         this.workmatesList = workmatesList;
         notifyDataSetChanged();
     }
@@ -75,15 +79,12 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
             info = itemView.findViewById(R.id.workmates_info_tv);
             //extraInfo = itemView.findViewById(R.id.workmates_extra_info_tv);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (workmatesRecyclerViewInterface != null) {
-                        int pos = getAdapterPosition();
+            itemView.setOnClickListener(view -> {
+                if (workmatesRecyclerViewInterface != null) {
+                    int pos = getAdapterPosition();
 
-                        if (pos != RecyclerView.NO_POSITION) {
-                            workmatesRecyclerViewInterface.onItemClicked(pos);
-                        }
+                    if (pos != RecyclerView.NO_POSITION) {
+                        workmatesRecyclerViewInterface.onItemClicked(pos);
                     }
                 }
             });

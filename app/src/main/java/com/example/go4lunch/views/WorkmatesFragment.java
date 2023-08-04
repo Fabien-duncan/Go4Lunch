@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.MyWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
-import com.example.go4lunch.injection.ViewModelFactory;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
