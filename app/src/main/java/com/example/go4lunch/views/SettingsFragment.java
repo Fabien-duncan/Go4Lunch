@@ -23,6 +23,8 @@ import com.example.go4lunch.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class SettingsFragment extends DialogFragment {
     @Nullable
     @Override
@@ -34,27 +36,24 @@ public class SettingsFragment extends DialogFragment {
 
         Button save_btn = view.findViewById(R.id.settings_save_btn);
         CheckBox notification_checkBox = view.findViewById(R.id.settings_notification_checkbox);
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
-        if(sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true"))notification_checkBox.setChecked(true);
-        else notification_checkBox.setChecked(false);
-        save_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("settings", "the value of notifications is: " + notification_checkBox.isChecked());
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        assert user != null;
+        notification_checkBox.setChecked(sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true"));
+        save_btn.setOnClickListener(view1 -> {
+            Log.d("settings", "the value of notifications is: " + notification_checkBox.isChecked());
+            SharedPreferences sharedPreferences1 = requireActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences1.edit();
 
-                editor.putString(user.getEmail()+"notification", String.valueOf(notification_checkBox.isChecked()));
-                editor.apply();
-                dismiss();
-            }
+            editor.putString(user.getEmail()+"notification", String.valueOf(notification_checkBox.isChecked()));
+            editor.apply();
+            dismiss();
         });
         return view;
     }
     @Override
     public void onResume() {
         // Set the width of the dialog proportional to 90% of the screen width
-        Window window = getDialog().getWindow();
+        Window window = Objects.requireNonNull(getDialog()).getWindow();
         Point size = new Point();
         Display display = window.getWindowManager().getDefaultDisplay();
         display.getSize(size);

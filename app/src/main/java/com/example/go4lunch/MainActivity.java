@@ -1,15 +1,13 @@
 package com.example.go4lunch;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
-
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -28,52 +26,35 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener, SignInFragment.SignInListener {
     private MainActivityViewModel mMainActivityViewModel;
-    private AuthenticationRepository mAuthenticationRepository;
-
-    private ActivityMainBinding mActivityMainBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
-        mActivityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
-        View view = mActivityMainBinding.getRoot();
+        com.example.go4lunch.databinding.ActivityMainBinding activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = activityMainBinding.getRoot();
         setContentView(view);
 
-        mAuthenticationRepository = new AuthenticationRepository(this);
-        mMainActivityViewModel = new MainActivityViewModel(mAuthenticationRepository);
+        AuthenticationRepository authenticationRepository = new AuthenticationRepository(this);
+        mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
         mMainActivityViewModel.setupGoogleSignInOptions();
         getNotificationPermission();
 
-        mMainActivityViewModel.getUserData().observe(this, new Observer<FirebaseUser>() {
-            @Override
-            public void onChanged(FirebaseUser firebaseUser) {
-                if(firebaseUser != null) {
-                    System.out.println("Name: " + firebaseUser.getDisplayName());
-                    showMapsActivity(firebaseUser);
-                }
+        mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
+            if(firebaseUser != null) {
+                System.out.println("Name: " + firebaseUser.getDisplayName());
+                showMapsActivity(firebaseUser);
             }
         });
 
-        mActivityMainBinding.gmailSigninBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMainActivityViewModel.signIn();
-            }
+        activityMainBinding.gmailSigninBtn.setOnClickListener(view1 -> mMainActivityViewModel.signIn());
+        activityMainBinding.mainCreateAccountBtn.setOnClickListener(view12 -> {
+            DialogFragment createAccountFragment = new CreateAccountFragment();
+            createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
         });
-        mActivityMainBinding.mainCreateAccountBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment createAccountFragment = new CreateAccountFragment();
-                createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
-            }
-        });
-        mActivityMainBinding.loginSigninBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SignInFragment signInFragment = new SignInFragment();
-                signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
-            }
+        activityMainBinding.loginSigninBtn.setOnClickListener(view13 -> {
+            SignInFragment signInFragment = new SignInFragment();
+            signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
         });
     }
     private void showMapsActivity(FirebaseUser account) {

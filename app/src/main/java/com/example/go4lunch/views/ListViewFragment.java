@@ -1,55 +1,28 @@
 package com.example.go4lunch.views;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.adapter.RestaurantsAdapter;
 import com.example.go4lunch.model.Restaurant;
-import com.example.go4lunch.model.User;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPhotoResponse;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.IsOpenRequest;
-import com.google.android.libraries.places.api.net.IsOpenResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ListViewFragment extends Fragment implements RestaurantRecyclerViewInterface {
-    private RecyclerView restaurantsRecyclerView;
     private RestaurantsAdapter mRestaurantsAdapter;
     private List<Restaurant> restaurantsList;
     private ConnectedActivityViewModel mConnectedActivityViewModel;
@@ -65,9 +38,9 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        restaurantsRecyclerView = view.findViewById(R.id.restaurant_list_rv);
+        RecyclerView restaurantsRecyclerView = view.findViewById(R.id.restaurant_list_rv);
 
-        mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
+        mConnectedActivityViewModel = ((ConnectedActivity) requireActivity()).getConnectedActivityViewModel();
 
         restaurantsRecyclerView.setHasFixedSize(true);
         restaurantsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,23 +55,17 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
 
         TextView noData_tv = view.findViewById(R.id.restaurant_list_no_data);
 
-        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(getActivity(), new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                restaurantsList = restaurants;
-                if(restaurants.size()>0)noData_tv.setVisibility(View.INVISIBLE);
-                else noData_tv.setVisibility(View.VISIBLE);
-                mRestaurantsAdapter.setRestaurantList(restaurants);
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(requireActivity(), restaurants -> {
+            restaurantsList = restaurants;
+            if(restaurants.size()>0)noData_tv.setVisibility(View.INVISIBLE);
+            else noData_tv.setVisibility(View.VISIBLE);
+            mRestaurantsAdapter.setRestaurantList(restaurants);
 
-            }
         });
-        mConnectedActivityViewModel.getAllWorkmates().observe(getActivity(), new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                if(users.size()>0){
+        mConnectedActivityViewModel.getAllWorkmates().observe(requireActivity(), users -> {
+            if(users.size()>0){
 
-                    mConnectedActivityViewModel.updateAttending(users);
-                }
+                mConnectedActivityViewModel.updateAttending(users);
             }
         });
     }
@@ -158,9 +125,9 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
     @Override
     public void onItemClick(int position) {
         Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
-        DialogFragment restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-        ((RestaurantDetailDialogue)restaurantDetailDialogue).setCurrentRestaurant(restaurantsList.get(position));
-        restaurantDetailDialogue.show(getActivity().getSupportFragmentManager(),getString(R.string.restaurant_details));
+        RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+        restaurantDetailDialogue.setCurrentRestaurant(restaurantsList.get(position));
+        restaurantDetailDialogue.show(requireActivity().getSupportFragmentManager(),getString(R.string.restaurant_details));
 
     }
 }

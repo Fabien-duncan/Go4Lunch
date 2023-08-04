@@ -20,6 +20,8 @@ import androidx.fragment.app.Fragment;
 
 import com.example.go4lunch.R;
 
+import java.util.Objects;
+
 public class SignInFragment extends DialogFragment {
     private SignInListener listener;
     @Override
@@ -36,21 +38,18 @@ public class SignInFragment extends DialogFragment {
         Button signIn_btn = view.findViewById(R.id.sign_in_btn);
         EditText email_et = view.findViewById(R.id.sign_in_email);
         EditText password_et = view.findViewById(R.id.sign_in_password);
-        signIn_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = email_et.getText().toString();
-                String password = password_et.getText().toString();
-                listener.userSingInInformation(email,password);
-                dismiss();
-            }
+        signIn_btn.setOnClickListener(view1 -> {
+            String email = email_et.getText().toString();
+            String password = password_et.getText().toString();
+            listener.userSingInInformation(email,password);
+            dismiss();
         });
         return view;
     }
     @Override
     public void onResume() {
         // Set the width of the dialog proportional to 90% of the screen width
-        Window window = getDialog().getWindow();
+        Window window = Objects.requireNonNull(getDialog()).getWindow();
         Point size = new Point();
         Display display = window.getWindowManager().getDefaultDisplay();
         display.getSize(size);
@@ -68,7 +67,7 @@ public class SignInFragment extends DialogFragment {
         try {
             listener = (SignInFragment.SignInListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException((context.toString() + "must implementDialogueListener"));
+            throw new ClassCastException((context + "must implementDialogueListener"));
         }
     }
 

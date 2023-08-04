@@ -1,15 +1,15 @@
 package com.example.go4lunch.views;
 
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,20 +19,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
@@ -40,21 +37,11 @@ import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.RestaurantDetailRepository;
-import com.example.go4lunch.util.FormatString;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RestaurantDetailDialogue extends DialogFragment implements WorkmatesRecyclerViewInterface {
@@ -66,9 +53,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     private User currentUser;
     private boolean isAttending;
     private boolean isFavorite;
-    private RecyclerView attendingWorkmatesRecyclerView;
-    private List<User> attendingWorkmatesList;
-    private AuthenticationRepository mAuthenticationRepository;
     private ImageView restaurantImage, star1, star2, star3;
     private TextView restaurantName,restaurantDetail;
 
@@ -80,14 +64,16 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
-        mConnectedActivityViewModel = ((ConnectedActivity) getActivity()).getConnectedActivityViewModel();
-        mAuthenticationRepository = new AuthenticationRepository(getContext());
+        mConnectedActivityViewModel = ((ConnectedActivity) requireActivity()).getConnectedActivityViewModel();
+        AuthenticationRepository authenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         isFavorite = false;
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, new RestaurantDetailRepository(getContext()));
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext()));
     }
 
 
+    @SuppressLint("UseCompatTextViewDrawableApis")
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -110,10 +96,9 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
 
 
+        List<User> attendingWorkmatesList = mRestaurantDetailViewModel.getAllWorkmates().getValue();
 
-        attendingWorkmatesList = mRestaurantDetailViewModel.getAllWorkmates().getValue();
-
-        attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
+        RecyclerView attendingWorkmatesRecyclerView = view.findViewById(R.id.restaurant_detail_attend_rv);
         attendingWorkmatesRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter = new RestaurantDetailWorkmatesAdapter(getContext(), attendingWorkmatesList, this);
         attendingWorkmatesRecyclerView.setAdapter(restaurantDetailWorkmatesAdapter);
@@ -121,134 +106,99 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
 
 
-        mRestaurantDetailViewModel.getAllWorkmates().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
-                restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
-            }
+        mRestaurantDetailViewModel.getAllWorkmates().observe(this, users -> {
+            if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
+            restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
         });
-        mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().observe(this, new Observer<Restaurant>() {
-            @Override
-            public void onChanged(Restaurant restaurant) {
-                currentRestaurant = restaurant;
-                setRestaurantDetail(view);
-            }
+        mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().observe(this, restaurant -> {
+            currentRestaurant = restaurant;
+            setRestaurantDetail(view);
         });
 
 
-        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                Log.d("User data Rest detail", "id: " + user.getDisplayName());
-                currentUser = user;
+        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, user -> {
+            Log.d("User data Rest detail", "id: " + user.getDisplayName());
+            currentUser = user;
 
-                mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
-                mRestaurantDetailViewModel.setDetail(currentRestaurant);
-                /*if(currentRestaurant!= null){
-                    mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
-                    mRestaurantDetailViewModel.setDetail(currentRestaurant);
-                    //getDetail();
-                    //setRestaurantDetail(view);
-                }
-                else{
-                    mRestaurantDetailViewModel.retrieveFilteredWorkmates(user.getLunchChoiceId());
-                    Restaurant tempRestaurant = new Restaurant();
-                    tempRestaurant.setId(user.getLunchChoiceId());
-                    mRestaurantDetailViewModel.setDetail(tempRestaurant);
+            mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
+            mRestaurantDetailViewModel.setDetail(currentRestaurant);
 
-                    //getAllInformation(currentUser.getLunchChoiceId(), view);
-                    Log.d("restaurantDetail", "there is no restaurant");
-                }*/
-
-                //loadData();//temp
-                if(currentRestaurant != null){
+            if(currentRestaurant != null){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId()) && user.isToday()){
                         attend.setImageResource(R.drawable.baseline_check_circle_24);
                         isAttending = true;
                     }
-                    if(user.isFavorite(currentRestaurant.getId())){
-                        like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                        isFavorite = true;
-                    }
                 }
-                else{
-                    attend.setImageResource(R.drawable.baseline_check_circle_24);
-                    isAttending = true;
+                if(user.isFavorite(currentRestaurant.getId())){
                     like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
                     like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
                     isFavorite = true;
                 }
-
             }
+            else{
+                attend.setImageResource(R.drawable.baseline_check_circle_24);
+                isAttending = true;
+                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                isFavorite = true;
+            }
+
         });
-        websiteLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(currentRestaurant.getWebsite()!=null){
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(currentRestaurant.getWebsite().toString()));
-                    startActivity(i);
-                }
-                else Log.d("RestaurantURL", "there is no website!");
-
+        websiteLink.setOnClickListener(view1 -> {
+            if(currentRestaurant.getWebsite()!=null){
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(currentRestaurant.getWebsite().toString()));
+                startActivity(i);
             }
+            else Log.d("RestaurantURL", "there is no website!");
+
         });
-        phone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(
-                        getContext(), Manifest.permission.CALL_PHONE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                    // You can use the API that requires the permission.
-                    Log.d("calling", "phone num: " + currentRestaurant.getPhoneNumber());
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
-                    startActivity(intent);
+        phone.setOnClickListener(view12 -> {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.CALL_PHONE) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // You can use the API that requires the permission.
+                Log.d("calling", "phone num: " + currentRestaurant.getPhoneNumber());
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
+                startActivity(intent);
 
 
-                } else if (shouldShowRequestPermissionRationale("")) {
-                    // In an educational UI, explain to the user why your app requires this
-                    // permission for a specific feature to behave as expected, and what
-                    // features are disabled if it's declined. In this UI, include a
-                    // "cancel" or "no thanks" button that lets the user continue
-                    // using your app without granting the permission.
+            } else if (shouldShowRequestPermissionRationale("")) {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected, and what
+                // features are disabled if it's declined. In this UI, include a
+                // "cancel" or "no thanks" button that lets the user continue
+                // using your app without granting the permission.
 
-                } else {
-                    // You can directly ask for the permission.
-                    // The registered ActivityResultCallback gets the result of this request.
-                    requestPermissionLauncher.launch(
-                            Manifest.permission.CALL_PHONE);
-                }
-
+            } else {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                        Manifest.permission.CALL_PHONE);
             }
+
         });
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isFavorite){
-                    //like.setAlpha(0.5f);
-                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-                }else {
-                    //like.setAlpha(1.0f);
-                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                }
-                isFavorite = !isFavorite;
+        like.setOnClickListener(view13 -> {
+            if(isFavorite){
+                //like.setAlpha(0.5f);
+                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+            }else {
+                //like.setAlpha(1.0f);
+                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
             }
+            isFavorite = !isFavorite;
         });
-        attend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isAttending){
-                    attend.setImageResource(R.drawable.baseline_check_circle_transparent_24);
-                }else{
-                    attend.setImageResource(R.drawable.baseline_check_circle_24);
-                }
-                isAttending = !isAttending;
+        attend.setOnClickListener(view14 -> {
+            if(isAttending){
+                attend.setImageResource(R.drawable.baseline_check_circle_transparent_24);
+            }else{
+                attend.setImageResource(R.drawable.baseline_check_circle_24);
             }
+            isAttending = !isAttending;
         });
 
         return view;
@@ -256,7 +206,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     public void setCurrentRestaurant(Restaurant currentRestaurant) {
         this.currentRestaurant = currentRestaurant;
     }
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     // Permission is granted. Continue the action or workflow in your
@@ -272,6 +222,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                 }
             });
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onDestroy() {
         LocalDateTime timeChoiceStamp = LocalDateTime.now();
@@ -282,7 +233,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                 mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
                 saveData();
             }
-        }else if(!isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId())&& currentUser.isToday()){
+        }else if(currentUser.getLunchChoiceId().equals(currentRestaurant.getId())&& currentUser.isToday()){
             Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
         }
@@ -298,7 +249,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         super.onDestroy();
     }
     public void saveData(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString(currentUser.getEmail(), currentRestaurant.getAddress());
