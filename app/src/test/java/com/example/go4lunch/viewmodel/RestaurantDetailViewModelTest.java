@@ -37,51 +37,8 @@ public class RestaurantDetailViewModelTest {
         Context context = Mockito.mock(Context.class);
         workmateList = new ArrayList<>();
         generateWorkmates();
-        currentRestaurant = new Restaurant(
-                "01",
-                "Zinc",
-                "16 ch du four",
-                45,26,
-                0,
-                "https://media.istockphoto.com/id/1446478827/fr/photo/un-chef-cuisine-dans-la-cuisine-de-son-restaurant.jpg?s=1024x1024&w=is&k=20&c=_KRkTJnju8zm8pTSs-aOq9J4mdtzlPc31AucwKR54CY=",
-                "french",
-                "23:00",
-                4.5,
-                120,
-                "+33 6 58 32 57 01"
-        );
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                for (Object rawRestaurant : invocation.getArguments()) {
-                    Restaurant newRestaurant=(Restaurant) rawRestaurant;
-                    currentRestaurant = newRestaurant;
-                }
-
-                return(null);
-            }
-        }).when(mRestaurantDetailRepository).setDetail(ArgumentMatchers.any(Restaurant.class));
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                String id = (String)invocation.getArguments()[0];
-                List<User> filteredWorkmates = new ArrayList<>();
-                for(int i =0; i < workmateList.size(); i++){
-                    if(workmateList.get(i).getLunchChoiceId().equals(id)){
-                        filteredWorkmates.add(workmateList.get(i));
-                    }
-                }
-                workmateList = filteredWorkmates;
-
-                return(null);
-            }
-        }).when(mAuthenticationRepository).retrieveFilteredWorkmates(ArgumentMatchers.anyString());
-        MutableLiveData<List<User>> mutableWorkmates = Mockito.spy(new MutableLiveData<>(workmateList));
-        Mockito.doReturn(mutableWorkmates).when(mAuthenticationRepository).getWorkmatesMutableLiveData();
-
-        MutableLiveData<Restaurant> mutableCurrentRestaurant = Mockito.spy(new MutableLiveData<>(currentRestaurant));
-        Mockito.doReturn(mutableCurrentRestaurant).when(mRestaurantDetailRepository).getCurrentRestaurantMutableLiveData();
-
+        generateCurrentRestaurant();
+        setUpRepositoryMethods();
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, mRestaurantDetailRepository);
     }
 
@@ -127,5 +84,53 @@ public class RestaurantDetailViewModelTest {
         /*workmateList.add(new User("Marion Chenus", "marion.chenus@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));
         workmateList.add(new User("Bob", "bob@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));*/
 
+    }
+    private void generateCurrentRestaurant(){
+        currentRestaurant = new Restaurant(
+                "01",
+                "Zinc",
+                "16 ch du four",
+                45,26,
+                0,
+                "https://media.istockphoto.com/id/1446478827/fr/photo/un-chef-cuisine-dans-la-cuisine-de-son-restaurant.jpg?s=1024x1024&w=is&k=20&c=_KRkTJnju8zm8pTSs-aOq9J4mdtzlPc31AucwKR54CY=",
+                "french",
+                "23:00",
+                4.5,
+                120,
+                "+33 6 58 32 57 01"
+        );
+    }
+    private void setUpRepositoryMethods(){
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                for (Object rawRestaurant : invocation.getArguments()) {
+                    Restaurant newRestaurant=(Restaurant) rawRestaurant;
+                    currentRestaurant = newRestaurant;
+                }
+
+                return(null);
+            }
+        }).when(mRestaurantDetailRepository).setDetail(ArgumentMatchers.any(Restaurant.class));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String id = (String)invocation.getArguments()[0];
+                List<User> filteredWorkmates = new ArrayList<>();
+                for(int i =0; i < workmateList.size(); i++){
+                    if(workmateList.get(i).getLunchChoiceId().equals(id)){
+                        filteredWorkmates.add(workmateList.get(i));
+                    }
+                }
+                workmateList = filteredWorkmates;
+
+                return(null);
+            }
+        }).when(mAuthenticationRepository).retrieveFilteredWorkmates(ArgumentMatchers.anyString());
+        MutableLiveData<List<User>> mutableWorkmates = Mockito.spy(new MutableLiveData<>(workmateList));
+        Mockito.doReturn(mutableWorkmates).when(mAuthenticationRepository).getWorkmatesMutableLiveData();
+
+        MutableLiveData<Restaurant> mutableCurrentRestaurant = Mockito.spy(new MutableLiveData<>(currentRestaurant));
+        Mockito.doReturn(mutableCurrentRestaurant).when(mRestaurantDetailRepository).getCurrentRestaurantMutableLiveData();
     }
 }
