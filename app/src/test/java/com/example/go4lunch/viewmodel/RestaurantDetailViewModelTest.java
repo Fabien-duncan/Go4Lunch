@@ -61,8 +61,27 @@ public class RestaurantDetailViewModelTest {
                 return(null);
             }
         }).when(mRestaurantDetailRepository).setDetail(ArgumentMatchers.any(Restaurant.class));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String id = (String)invocation.getArguments()[0];
+                List<User> filteredWorkmates = new ArrayList<>();
+                for(int i =0; i < workmateList.size(); i++){
+                    if(workmateList.get(i).getLunchChoiceId().equals(id)){
+                        filteredWorkmates.add(workmateList.get(i));
+                    }
+                }
+                workmateList = filteredWorkmates;
+
+                return(null);
+            }
+        }).when(mAuthenticationRepository).retrieveFilteredWorkmates(ArgumentMatchers.anyString());
         MutableLiveData<List<User>> mutableWorkmates = Mockito.spy(new MutableLiveData<>(workmateList));
         Mockito.doReturn(mutableWorkmates).when(mAuthenticationRepository).getWorkmatesMutableLiveData();
+
+        MutableLiveData<Restaurant> mutableCurrentRestaurant = Mockito.spy(new MutableLiveData<>(currentRestaurant));
+        Mockito.doReturn(mutableCurrentRestaurant).when(mRestaurantDetailRepository).getCurrentRestaurantMutableLiveData();
+
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(mAuthenticationRepository, mRestaurantDetailRepository);
     }
 
@@ -75,25 +94,35 @@ public class RestaurantDetailViewModelTest {
     @Test
     public void getAllWorkmates() {
         List<User> workmates = mRestaurantDetailViewModel.getAllWorkmates().getValue();
-        assertEquals(workmates.get(0).getDisplayName(), "Fabien Duncan");
-        assertEquals(workmates.get(2).getDisplayName(), "Bob");
+        assertEquals("Fabien Duncan", workmates.get(0).getDisplayName());
+        assertEquals("Bob", workmates.get(2).getDisplayName());
     }
 
     @Test
     public void retrieveFilteredWorkmates() {
+        String restaurantId = "2";
+        mRestaurantDetailViewModel.retrieveFilteredWorkmates(restaurantId);
+        Mockito.verify(mAuthenticationRepository).retrieveFilteredWorkmates(restaurantId);
 
+        assertEquals(2, workmateList.size());
+        assertEquals("Marion Chenus", workmateList.get(0).getDisplayName());
     }
 
     @Test
     public void getCurrentRestaurantMutableLiveDate() {
+        Restaurant restaurant = mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().getValue();
+        assertEquals("01",restaurant.getId());
     }
     private void generateWorkmates(){
         workmateList.add(new User());
         workmateList.get(0).setDisplayName("Fabien Duncan");
+        workmateList.get(0).setLunchChoiceId("1");
         workmateList.add(new User());
         workmateList.get(1).setDisplayName("Marion Chenus");
+        workmateList.get(1).setLunchChoiceId("2");
         workmateList.add(new User());
         workmateList.get(2).setDisplayName("Bob");
+        workmateList.get(2).setLunchChoiceId("2");
 
         /*workmateList.add(new User("Marion Chenus", "marion.chenus@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));
         workmateList.add(new User("Bob", "bob@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));*/
