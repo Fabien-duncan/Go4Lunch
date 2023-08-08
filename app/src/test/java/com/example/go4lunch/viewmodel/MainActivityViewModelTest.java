@@ -1,7 +1,10 @@
 package com.example.go4lunch.viewmodel;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+
+import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -30,7 +33,6 @@ public class MainActivityViewModelTest {
         mFirebaseUser = Mockito.mock(FirebaseUser.class);
         Mockito.doReturn("Fabien").when(mFirebaseUser).getDisplayName();
 
-
         MutableLiveData<FirebaseUser> mutableFirebaseUser= Mockito.spy(new MutableLiveData<>(mFirebaseUser));
         Mockito.doReturn(mutableFirebaseUser).when(mAuthenticationRepository).getFirebaseUserMutableLiveData();
 
@@ -40,20 +42,29 @@ public class MainActivityViewModelTest {
 
     @Test
     public void firebaseCreateUser() {
-        mMainActivityViewModel.firebaseCreateUser("fab@gmail.com", "passwrod123", "Fabien Duncan");
+        mMainActivityViewModel.firebaseCreateUser("fab@gmail.com", "password123", "Fabien Duncan");
+        Mockito.verify(mAuthenticationRepository).firebaseCreateUser(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
         assertEquals("fab@gmail.com", newUser.getEmail());
     }
 
     @Test
     public void signInWithEmail() {
+        mMainActivityViewModel.signInWithEmail("fab@gmail.com", "password123");
+        Mockito.verify(mAuthenticationRepository).firebaseAuthWithEmailAndPassword(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
     @Test
     public void handleSignInResult() {
+        Intent intent = Mockito.mock(Intent.class);
+        mMainActivityViewModel.handleSignInResult(intent);
+        Mockito.verify(mAuthenticationRepository).handleSignInResult(any(Intent.class));
     }
 
     @Test
     public void getGOOGLE_SIGN_IN() {
+        Mockito.doReturn(123).when(mAuthenticationRepository).getGOOGLE_SIGN_IN();
+        int signInCode = mMainActivityViewModel.getGOOGLE_SIGN_IN();
+        assertEquals(123, signInCode);
     }
 
     @Test
@@ -63,11 +74,15 @@ public class MainActivityViewModelTest {
     }
 
     @Test
-    public void signIn() {
+    public void signIn(){
+        mMainActivityViewModel.signIn();
+        Mockito.verify(mAuthenticationRepository).signIn();
     }
 
     @Test
     public void setupGoogleSignInOptions() {
+        mMainActivityViewModel.setupGoogleSignInOptions();
+        Mockito.verify(mAuthenticationRepository).setupGoogleSignInOptions();
     }
 
     private void setUpRepositoryMethods(){

@@ -1,7 +1,7 @@
 package com.example.go4lunch.viewmodel;
 
-import android.content.Context;
 import android.location.Location;
+import android.os.Build;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -27,9 +27,9 @@ public class ConnectedActivityViewModel extends ViewModel {
     private final ConnectedActivityRepository mConnectedActivityRepository;
 
 
-    public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository, Context context){
+    public ConnectedActivityViewModel(AuthenticationRepository authenticationRepository, ConnectedActivityRepository connectedActivityRepository){
         mAuthenticationRepository = authenticationRepository;
-        mConnectedActivityRepository = new ConnectedActivityRepository(context);
+        mConnectedActivityRepository = connectedActivityRepository;
 
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
         isUserSignedIn = authenticationRepository.getIsUserSignedIn();
@@ -78,7 +78,9 @@ public class ConnectedActivityViewModel extends ViewModel {
         mAuthenticationRepository.updateUserRestaurantFavorite(restaurantID, type);
     }
     public void updateAttending(List<User> workmates){
-        mConnectedActivityRepository.updateAttending(workmates);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mConnectedActivityRepository.updateAttending(workmates);
+        }
     }
     public void resetNearbyRestaurants(){
         mConnectedActivityRepository.resetNearbyRestaurants();

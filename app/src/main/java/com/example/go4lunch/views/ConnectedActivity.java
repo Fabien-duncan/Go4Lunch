@@ -42,6 +42,7 @@ import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.repository.ConnectedActivityRepository;
 import com.example.go4lunch.util.ReminderBroadcast;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -166,7 +167,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         });
 
         AuthenticationRepository authenticationRepository = new AuthenticationRepository(this);
-        mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, this);
+        mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, new ConnectedActivityRepository(this));
         mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -224,7 +225,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
-                    System.out.println("Maps");
                     break;
                 case R.id.listView:
                     if (isLocationGranted) {
@@ -235,12 +235,10 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
-                    System.out.println("List");
                     break;
                 case R.id.workmates:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
                     currentFragment = "workmates";
-                    System.out.println("Workmates");
                     searchView.setVisibility(View.INVISIBLE);
 
                     break;
@@ -352,13 +350,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 }
             }
         });
-        System.out.println("finished getting restaurants from json");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("Connected Activity", "resume activity");
     }
 
     public ConnectedActivityViewModel getConnectedActivityViewModel() {
