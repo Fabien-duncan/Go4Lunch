@@ -3,6 +3,7 @@ package com.example.go4lunch.viewmodel;
 import android.location.Location;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -77,10 +78,9 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void updateUserRestaurantFavorite(String restaurantID, String type){
         mAuthenticationRepository.updateUserRestaurantFavorite(restaurantID, type);
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateAttending(List<User> workmates){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mConnectedActivityRepository.updateAttending(workmates);
-        }
     }
     public void resetNearbyRestaurants(){
         mConnectedActivityRepository.resetNearbyRestaurants();

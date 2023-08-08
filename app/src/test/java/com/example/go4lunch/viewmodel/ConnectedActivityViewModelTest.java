@@ -2,10 +2,13 @@ package com.example.go4lunch.viewmodel;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -38,6 +41,7 @@ public class ConnectedActivityViewModelTest {
     private User currentUser;
     private List<User> workmateList;
     private List<Restaurant> restaurantList;
+    private Location currentLocation;
     @Before
     public void setUp() throws Exception {
         mAuthenticationRepository = Mockito.mock(AuthenticationRepository.class);
@@ -46,6 +50,9 @@ public class ConnectedActivityViewModelTest {
         isUserSignedIn = false;
         workmateList = new ArrayList<>();
         restaurantList = new ArrayList<>();
+
+        currentLocation = Mockito.mock(Location.class);
+        Mockito.doReturn(0.0).when(currentLocation).getLongitude();
 
         isUserSignedInMutable = Mockito.spy(new MutableLiveData<>(false));
         Mockito.doReturn("Fabien").when(mFirebaseUser).getDisplayName();
@@ -134,22 +141,38 @@ public class ConnectedActivityViewModelTest {
 
     @Test
     public void updateUserRestaurantFavorite() {
+        mConnectedActivityViewModel.updateUserRestaurantFavorite("01", "add");
+        Mockito.verify(mAuthenticationRepository).updateUserRestaurantFavorite(anyString(), anyString());
     }
 
     @Test
     public void updateAttending() {
+        mConnectedActivityViewModel.updateAttending(workmateList);
+        Mockito.verify(mConnectedActivityRepository).updateAttending(anyList());
     }
 
     @Test
     public void resetNearbyRestaurants() {
+        mConnectedActivityViewModel.resetNearbyRestaurants();
+        Mockito.verify(mConnectedActivityRepository).resetNearbyRestaurants();
     }
 
     @Test
     public void autocomplete() {
+        mConnectedActivityViewModel.autocomplete("rest");
+        Mockito.verify(mConnectedActivityRepository).autocomplete(anyString());
     }
 
     @Test
     public void setCurrentLocation() {
+        assertEquals(0.0, currentLocation.getLongitude(), 0.01);
+
+        Location newLocation = Mockito.mock(Location.class);
+        Mockito.doReturn(5.5).when(newLocation).getLongitude();
+
+        mConnectedActivityViewModel.setCurrentLocation(newLocation);
+        Mockito.verify(mConnectedActivityRepository).setCurrentLocation(any(Location.class));
+        assertEquals(5.5, currentLocation.getLongitude(), 0.01);
     }
 
     private void setUpRepositoryMethods(){
@@ -176,6 +199,13 @@ public class ConnectedActivityViewModelTest {
             }
         }).when(mAuthenticationRepository).updateUserRestaurantChoice(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any(LocalDateTime.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                currentLocation = (Location)invocation.getArguments()[0];
+                return(null);
+            }
+        }).when(mConnectedActivityRepository).setCurrentLocation(any(Location.class));
         Mockito.doReturn(isUserSignedInMutable).when(mAuthenticationRepository).getIsUserSignedIn();
 
         MutableLiveData<User> currentUserMutable= Mockito.spy(new MutableLiveData<>(currentUser));
