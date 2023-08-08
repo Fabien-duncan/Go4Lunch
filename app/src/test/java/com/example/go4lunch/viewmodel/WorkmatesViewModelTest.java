@@ -50,10 +50,6 @@ public class WorkmatesViewModelTest {
         workmateList.get(1).setDisplayName("Marion Chenus");
         workmateList.add(new User());
         workmateList.get(2).setDisplayName("Bob");
-
-        /*workmateList.add(new User("Marion Chenus", "marion.chenus@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));
-        workmateList.add(new User("Bob", "bob@gmail.com", Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg")));*/
-
     }
     private void setUpRepositoryMethods(){
 
