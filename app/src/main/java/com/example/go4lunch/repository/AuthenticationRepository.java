@@ -54,11 +54,27 @@ public class AuthenticationRepository {
         isUserSignedIn = new MutableLiveData<>();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
-        //initAllUsers();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         if(mAuth.getCurrentUser() != null){
-            System.out.println("getCurrentUser() is not null!");
+            mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
+            setCurrentUser();
+        }
+    }
+    //constructor for unit tests
+    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, GoogleSignInClient googleSignInClient, MutableLiveData<Boolean> isUserSignedIn, MutableLiveData<FirebaseUser> firebaseUserMutableLiveData, MutableLiveData<User> currentUserMutableLiveData,MutableLiveData<List<User>> workmatesMutableLiveData){
+        this.mContext = context;
+        this.mActivity = activity;
+        this.mAuth = auth;
+        this.db = db;
+        this.mGoogleSignInClient = googleSignInClient;
+
+        this.currentUserMutableLiveData = currentUserMutableLiveData;
+        this.isUserSignedIn = isUserSignedIn;
+        this.mFirebaseUserMutableLiveData = firebaseUserMutableLiveData;
+        this.workmatesMutableLiveData = workmatesMutableLiveData;
+
+        if(mAuth.getCurrentUser() != null){
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
             setCurrentUser();
         }
@@ -76,20 +92,18 @@ public class AuthenticationRepository {
 
     public void signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        System.out.println("before on activity for result");
         mActivity.startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
-        System.out.println("After on activity for result");
         isUserSignedIn.postValue(true);
     }
     public void signOut(){
-        FirebaseAuth.getInstance().signOut();
+        //FirebaseAuth.getInstance().signOut();
+        mAuth.signOut();
         mGoogleSignInClient.signOut();
         isUserSignedIn.postValue(false);
-        Toast.makeText(mContext, "signed Out", Toast.LENGTH_LONG).show();
+        //Toast.makeText(mContext, "signed Out", Toast.LENGTH_LONG).show();
 
     }
     public void handleSignInResult(Intent data){
-        System.out.println("in handleSignInResult");
         try{
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -101,7 +115,6 @@ public class AuthenticationRepository {
         }
     }
     public void firebaseAuthWithGoogle(String idToken){
-        System.out.println("in FirebaseAuthWithGoogle");
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {

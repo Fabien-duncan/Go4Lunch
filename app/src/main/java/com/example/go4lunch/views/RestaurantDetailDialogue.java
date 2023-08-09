@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
@@ -39,6 +40,8 @@ import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.RestaurantDetailRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
@@ -68,7 +71,12 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         AuthenticationRepository authenticationRepository = new AuthenticationRepository(getContext());
         isAttending = false;
         isFavorite = false;
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext()));
+
+        String key = BuildConfig.GMP_key;
+        Places.initialize(getContext(), key);
+        PlacesClient placesClient = Places.createClient(getContext());
+
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext(),placesClient));
     }
 
 
@@ -121,6 +129,9 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
             currentUser = user;
 
             mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
+
+            /*String key = BuildConfig.GMP_key;
+            Places.initialize(getContext(), key);*/
             mRestaurantDetailViewModel.setDetail(currentRestaurant);
 
             if(currentRestaurant != null){

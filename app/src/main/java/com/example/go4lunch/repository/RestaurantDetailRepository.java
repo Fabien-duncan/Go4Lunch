@@ -25,8 +25,11 @@ public class RestaurantDetailRepository {
 
     private final MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
 
-    public RestaurantDetailRepository(Context context){
+    private PlacesClient placesClient;
+
+    public RestaurantDetailRepository(Context context, PlacesClient placesClient){
         this.mContext = context;
+        this.placesClient = placesClient;
         //this.mActivity = (Activity)context;
 
         currentRestaurantMutableLiveData = new MutableLiveData<>();
@@ -36,13 +39,13 @@ public class RestaurantDetailRepository {
         return currentRestaurantMutableLiveData;
     }
     public void setDetail(Restaurant currentRestaurant){
-        String key = BuildConfig.GMP_key;
+        /*String key = BuildConfig.GMP_key;
 
         // Initialize Places.
-        Places.initialize(mContext.getApplicationContext(), key);
+        Places.initialize(mContext.getApplicationContext(), key);*/
 
         // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(mContext);
+        //PlacesClient placesClient = Places.createClient(mContext);
         // Define a Place ID.
         final String placeId = currentRestaurant.getId();
 
@@ -52,6 +55,7 @@ public class RestaurantDetailRepository {
 
             // Construct a request object, passing the place ID and fields array.
             final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
 
             placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
