@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class ConnectedActivityRepositoryTest {
 
@@ -46,7 +47,8 @@ public class ConnectedActivityRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        mConnectedActivityRepository = new ConnectedActivityRepository(mContext, mGooglePlacesReadTask, restaurantsMutableLiveData);
+        Executor mockExecutor = command -> command.run();
+        mConnectedActivityRepository = new ConnectedActivityRepository(mContext, mGooglePlacesReadTask, restaurantsMutableLiveData, mockExecutor);
         setRestaurantList();
         workmateList = new ArrayList<>();
         generateWorkmates();
@@ -94,12 +96,9 @@ public class ConnectedActivityRepositoryTest {
 
     @Test
     public void resetNearbyRestaurants() {
+        mConnectedActivityRepository.resetNearbyRestaurants();
 
-    }
-
-    @Test
-    public void setCurrentLocation() {
-
+        verify(restaurantsMutableLiveData).postValue(anyList());
     }
     private void setRestaurantList(){
         mRestaurantList = new ArrayList<>();

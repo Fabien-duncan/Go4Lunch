@@ -37,18 +37,19 @@ public class ConnectedActivityRepository {
     private List<Restaurant> nearbyRestaurants;
     private final MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private final ApiService mGooglePlacesReadTask;
+    private Executor executor;
 
     public ConnectedActivityRepository(Context context){
         this.mContext = context;
-
+        this.executor = Executors.newSingleThreadExecutor();
         nearbyRestaurants = new ArrayList<>();
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mGooglePlacesReadTask = new ApiService();
     }
     //constructor for unit tests
-    ConnectedActivityRepository(Context context,ApiService apiService, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData){
+    ConnectedActivityRepository(Context context,ApiService apiService, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.mContext = context;
-
+        this.executor = executor;
         nearbyRestaurants = new ArrayList<>();
         this.restaurantsMutableLiveData = restaurantsMutableLiveData;
         mGooglePlacesReadTask = apiService;
@@ -56,7 +57,7 @@ public class ConnectedActivityRepository {
 
     public void setGooglePlacesData(){
         String key = BuildConfig.GMP_key;
-        Executor executor = Executors.newSingleThreadExecutor();
+        /*Executor executor = Executors.newSingleThreadExecutor();*/
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(currentLocation.getLatitude()).append(",").append(currentLocation.getLongitude());
@@ -72,6 +73,8 @@ public class ConnectedActivityRepository {
             setBounds();
             restaurantsMutableLiveData.postValue(nearbyRestaurants);
         });
+
+        //restaurantsMutableLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation));
 
     }
 
@@ -163,8 +166,8 @@ public class ConnectedActivityRepository {
                 new LatLng(minLat, minLong),
                 new LatLng(maxLat, maxLong));
 
-        Log.d("setBounds", "Min: " + minLat + "," + minLong);
-        Log.d("setBounds", "Max: " + maxLat + "," + maxLong);
+        /*Log.d("setBounds", "Min: " + minLat + "," + minLong);
+        Log.d("setBounds", "Max: " + maxLat + "," + maxLong);*/
     }
     private void filterRestaurantsByIds(List<String> placeIds){
         List<Restaurant> filteredNearbyRestaurants = new ArrayList<>();
