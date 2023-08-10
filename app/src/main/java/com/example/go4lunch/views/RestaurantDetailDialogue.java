@@ -34,6 +34,7 @@ import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
+import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -76,7 +77,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         Places.initialize(getContext(), key);
         PlacesClient placesClient = Places.createClient(getContext());
 
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext(),placesClient));
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext(),placesClient,new GooglePlacesDetailsApi()));
     }
 
 

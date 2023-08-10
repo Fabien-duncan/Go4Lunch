@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
+import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.util.FormatString;
 import com.google.android.gms.common.api.ApiException;
@@ -25,93 +26,32 @@ public class RestaurantDetailRepository {
 
     private final MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
 
-    private PlacesClient placesClient;
+    private final PlacesClient placesClient;
 
-    public RestaurantDetailRepository(Context context, PlacesClient placesClient){
+    private GooglePlacesDetailsApi mGooglePlacesDetailsApi;
+
+    public RestaurantDetailRepository(Context context, PlacesClient placesClient, GooglePlacesDetailsApi googlePlacesDetailsApi){
         this.mContext = context;
         this.placesClient = placesClient;
+        this.mGooglePlacesDetailsApi = googlePlacesDetailsApi;
         //this.mActivity = (Activity)context;
 
-        currentRestaurantMutableLiveData = new MutableLiveData<>();
+
+        currentRestaurantMutableLiveData = mGooglePlacesDetailsApi.getRestaurantDetailMutableLiveData();
     }
 
     public MutableLiveData<Restaurant> getCurrentRestaurantMutableLiveData() {
         return currentRestaurantMutableLiveData;
     }
     public void setDetail(Restaurant currentRestaurant){
-        /*String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(mContext.getApplicationContext(), key);*/
-
-        // Create a new Places client instance.
-        //PlacesClient placesClient = Places.createClient(mContext);
         // Define a Place ID.
         final String placeId = currentRestaurant.getId();
 
         if(currentRestaurant.getName()!=null) {
-            // Specify the fields to return.
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+            mGooglePlacesDetailsApi.setSmallDetail(currentRestaurant, placesClient, placeId);
 
-            // Construct a request object, passing the place ID and fields array.
-            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-
-            placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Place place = response.getPlace();
-                currentRestaurant.setWebsite(place.getWebsiteUri());
-                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
-                currentRestaurantMutableLiveData.postValue(currentRestaurant);
-            }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-                    Log.e("Places detail", "Place not found: " + exception.getMessage());
-                }
-            });
         }else{
-            final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.RATING);
-
-            // Construct a request object, passing the place ID and fields array.
-            final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-            placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Place place = response.getPlace();
-
-
-
-                currentRestaurant.setName(FormatString.capitalizeEveryWord(place.getName()));
-                currentRestaurant.setPhoneNumber(place.getPhoneNumber());
-                currentRestaurant.setAddress(place.getAddress());
-                if(place.getRating() != null)currentRestaurant.setRating(place.getRating());
-                else currentRestaurant.setRating(0);
-                currentRestaurant.setWebsite(place.getWebsiteUri());
-
-
-                final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-                if (metadata == null || metadata.isEmpty()) {
-                    Log.w("PlaceImage", "No photo metadata.");
-                    return;
-                }
-                final PhotoMetadata photoMetadata = metadata.get(0);
-
-                // Create a FetchPhotoRequest.
-                final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(700) // Optional.
-                        .setMaxHeight(500) // Optional.
-                        .build();
-                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                    currentRestaurant.setImageBitmap(bitmap);
-                    currentRestaurantMutableLiveData.postValue(currentRestaurant);
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        Log.e("PlaceImage", "Place not found: " + exception.getMessage());
-                    }
-                });
-            }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-                    Log.e("Places detail", "Place not found: " + exception.getMessage());
-                }
-            });
+            mGooglePlacesDetailsApi.setAllDetails(currentRestaurant, placesClient, placeId);
         }
     }
 }

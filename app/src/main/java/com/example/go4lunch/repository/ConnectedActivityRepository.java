@@ -144,6 +144,13 @@ public class ConnectedActivityRepository {
         });
 
     }
+    public void resetNearbyRestaurants(){
+        restaurantsMutableLiveData.postValue(nearbyRestaurants);
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
     private void setBounds() {
         int mDistanceInMeters = 400;
         double latRadian = Math.toRadians(currentLocation.getLatitude());
@@ -179,12 +186,5 @@ public class ConnectedActivityRepository {
         }
         Log.d("filteredRestaurant", "size: " + filteredNearbyRestaurants.size());
         restaurantsMutableLiveData.postValue(filteredNearbyRestaurants);
-    }
-    public void resetNearbyRestaurants(){
-        restaurantsMutableLiveData.postValue(nearbyRestaurants);
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
     }
 }

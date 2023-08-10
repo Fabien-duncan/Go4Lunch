@@ -14,7 +14,10 @@ import android.content.Intent;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.model.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
@@ -22,9 +25,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +45,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -58,15 +69,15 @@ public class AuthenticationRepositoryTest {
     @Mock
     private GoogleSignInClient mGoogleSignInClient;
     @Mock
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
     @Mock
-    MutableLiveData<Boolean> isSignedIn;
+    private MutableLiveData<Boolean> isSignedIn;
     @Mock
-    MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
+    private MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
     @Mock
-    MutableLiveData<User> mCurrentUserMutableLiveData;
+    private MutableLiveData<User> mCurrentUserMutableLiveData;
     @Mock
-    MutableLiveData<List<User>> workmatesMutableLiveData;
+    private MutableLiveData<List<User>> workmatesMutableLiveData;
 
 
     @Rule //initMocks
@@ -187,21 +198,141 @@ public class AuthenticationRepositoryTest {
 
     @Test
     public void retrieveAllWorkmates() {
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        // Mock Firebase user and authentication
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<QuerySnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.get()).thenReturn(mockTask);
+
+        // Call the method
+        mAuthenticationRepository.retrieveAllWorkmates();
+
+        // Verify interactions and assertions
+        verify(mockCollectionReference).get();
+
     }
 
     @Test
     public void retrieveFilteredWorkmates() {
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        // Mock Firebase user and authentication
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<QuerySnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.get()).thenReturn(mockTask);
+
+        // Call the method
+        mAuthenticationRepository.retrieveFilteredWorkmates("123");
+
+        // Verify interactions and assertions
+        verify(mockCollectionReference).get();
     }
 
     @Test
     public void setCurrentUser() {
+
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        // Mock Firebase user and authentication
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+
+        DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<DocumentSnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(mockUser.getUid()).thenReturn("userID");
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.document(anyString())).thenReturn(mockDocumentReference);
+        when(mockDocumentReference.get()).thenReturn(mockTask);
+
+        // Call the method
+        mAuthenticationRepository.setCurrentUser();
+
+        // Verify interactions and assertions
+        verify(mockDocumentReference).get();
+
     }
 
     @Test
     public void updateUserRestaurantChoice() {
-    }
+        // Mock Firebase user and authentication
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        LocalDateTime choiceTimeStamp = LocalDateTime.now();
 
+        // Mock Firebase user and authentication
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+
+        DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<DocumentSnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(mockUser.getUid()).thenReturn("userID");
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.document(anyString())).thenReturn(mockDocumentReference);
+        when(mockDocumentReference.get()).thenReturn(mockTask);
+
+        // Call the method
+        mAuthenticationRepository.updateUserRestaurantChoice("newChoiceId", "newChoiceName", choiceTimeStamp);
+
+        // Verify interactions
+        verify(mockDocumentReference).update(
+                "lunchChoiceId", "newChoiceId",
+                "lunchChoiceName", "Newchoicename",
+                "choiceTimeStamp", choiceTimeStamp.toString()
+        );
+    }
     @Test
-    public void updateUserRestaurantFavorite() {
+    public void testUpdateUserRestaurantFavoriteAdd() {
+        // Mock Firebase user and authentication
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+        when(mockUser.getUid()).thenReturn("testUserId");
+
+        WriteBatch mockWriteBatch = Mockito.mock(WriteBatch.class);
+        DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<DocumentSnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(mockUser.getUid()).thenReturn("userID");
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.document(anyString())).thenReturn(mockDocumentReference);
+        when(mockDocumentReference.get()).thenReturn(mockTask);
+        when(db.batch()).thenReturn(mockWriteBatch);
+
+        // Call the method to add a favorite restaurant
+        mAuthenticationRepository.updateUserRestaurantFavorite("restaurant123", "add");
+
+        // Verify interactions
+        verify(mockDocumentReference).update(anyString(), any(FieldValue.class));
+    }
+    @Test
+    public void testUpdateUserRestaurantFavoriteRemove() {
+        // Mock Firebase user and authentication
+        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
+        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+        when(mockUser.getUid()).thenReturn("testUserId");
+
+        WriteBatch mockWriteBatch = Mockito.mock(WriteBatch.class);
+        DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
+        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+        Task<DocumentSnapshot> mockTask = Mockito.mock(Task.class);
+        // Mock Firestore collection reference and query snapshot
+        when(mockUser.getUid()).thenReturn("userID");
+        when(db.collection("users")).thenReturn(mockCollectionReference);
+        when(mockCollectionReference.document(anyString())).thenReturn(mockDocumentReference);
+        when(mockDocumentReference.get()).thenReturn(mockTask);
+        when(db.batch()).thenReturn(mockWriteBatch);
+
+        // Call the method to add a favorite restaurant
+        mAuthenticationRepository.updateUserRestaurantFavorite("restaurant123", "remove");
+
+        // Verify interactions
+        verify(mockDocumentReference).update(anyString(), any(FieldValue.class));
     }
 }

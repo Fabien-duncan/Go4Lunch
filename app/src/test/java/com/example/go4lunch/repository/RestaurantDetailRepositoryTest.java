@@ -11,6 +11,9 @@ import android.content.Context;
 import android.net.Uri;
 
 
+import androidx.lifecycle.MutableLiveData;
+
+import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
 import com.example.go4lunch.model.Restaurant;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -23,101 +26,78 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Request;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 public class RestaurantDetailRepositoryTest {
-    private Context mContext;
+
     private Restaurant restaurantDetails;
     private Restaurant currentRestaurant;
     private RestaurantDetailRepository mRestaurantDetailRepository;
+    @Mock
+    private Context mContext;
+    @Mock
     private  PlacesClient placesClient;
+    @Mock
+    private GooglePlacesDetailsApi mGooglePlacesDetailsApi;
+    @Mock
+    private MutableLiveData<Restaurant> mRestaurantMutableLiveData;
+
+    @Rule //initMocks
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Before
     public void setUp() throws Exception {
-        mContext = Mockito.mock(Context.class);
-        MockitoAnnotations.openMocks(this);
-        placesClient = Mockito.mock(PlacesClient.class);
-
         setUpRepositoryMethods();
-        mRestaurantDetailRepository = new RestaurantDetailRepository(mContext, placesClient);
+        when(mGooglePlacesDetailsApi.getRestaurantDetailMutableLiveData()).thenReturn(mRestaurantMutableLiveData);
+
         generateRestaurantDetails();
         generateCurrentRestaurant();
+
+        when(mRestaurantMutableLiveData.getValue()).thenReturn(currentRestaurant);
+
+        mRestaurantDetailRepository = new RestaurantDetailRepository(mContext, placesClient,mGooglePlacesDetailsApi);
+
+
     }
 
     @Test
     public void getCurrentRestaurantMutableLiveData() {
            Restaurant tempRestaurant = mRestaurantDetailRepository.getCurrentRestaurantMutableLiveData().getValue();
-           assertNull(tempRestaurant);
+           assertNotNull(tempRestaurant);
+           assertEquals("Zinc", tempRestaurant.getName());
     }
 
-    /*@Test
-    public void setDetail() {
-        Place mockPlace = Mockito.mock(Place.class);
+    @Test
+    public void setSmallDetail() {
+        Restaurant testRestaurant = new Restaurant();
+        testRestaurant.setName("testRestaurant");
+        testRestaurant.setId("123");
 
-        Task<FetchPlaceResponse> mockTask = Mockito.mock(Task.class);
-        FetchPlaceResponse mockFetch = Mockito.mock(FetchPlaceResponse.class);
+        mRestaurantDetailRepository.setDetail(testRestaurant);
 
-        when(placesClient.fetchPlace(any(FetchPlaceRequest.class))).thenReturn(mockTask);
-        when(mockTask.isSuccessful()).thenReturn(true);
-        when(mockTask.getResult()).thenReturn(mockFetch);
-        when(mockFetch.getPlace()).thenReturn(mockPlace);
+        verify(mGooglePlacesDetailsApi).setSmallDetail(any(Restaurant.class), any(PlacesClient.class), anyString());
+    }
+    @Test
+    public void setAllDetail() {
+        Restaurant testRestaurant = new Restaurant();
+        testRestaurant.setId("123");
 
-        // Call the method
-        mRestaurantDetailRepository.setDetail(currentRestaurant);
+        mRestaurantDetailRepository.setDetail(testRestaurant);
 
-        // Verify interactions
-        verify(mockTask).addOnCompleteListener(any());
-        //verify(mAuth).getCurrentUser();
-
-
-    }*/
-    /*@Test
-    public void testSetDetailWithNonNullName() throws InterruptedException, ExecutionException {
-        // Create a mock Place object
-        Place mockPlace = Mockito.mock(Place.class);
-        //when(mockPlace.getWebsiteUri()).thenReturn(Uri.parse("https://example.com"));
-        when(mockPlace.getPhoneNumber()).thenReturn("+123456789");
-
-        // Create a mock FetchPlaceResponse
-        FetchPlaceResponse mockResponse = Mockito.mock(FetchPlaceResponse.class);
-        when(mockResponse.getPlace()).thenReturn(mockPlace);
-
-        // Create a mock FetchPlaceRequest
-        FetchPlaceRequest mockRequest = Mockito.mock(FetchPlaceRequest.class);
-
-        // Create a TaskCompletionSource for the fetchPlace Task
-        TaskCompletionSource<FetchPlaceResponse> fetchPlaceSource = new TaskCompletionSource<>();
-        Task<FetchPlaceResponse> fetchPlaceTask = fetchPlaceSource.getTask();
-        when(placesClient.fetchPlace(mockRequest)).thenReturn(fetchPlaceTask);
-
-        // Create a mock Restaurant
-        Restaurant mockRestaurant = new Restaurant();
-        mockRestaurant.setName("Test Restaurant");
-        mockRestaurant.setId("testRestaurantId");
-
-        // Call the method
-        mRestaurantDetailRepository.setDetail(mockRestaurant);
-
-        // Complete the fetchPlace Task
-        fetchPlaceSource.setResult(mockResponse);
-
-        // Use Tasks.await to wait for the task to complete
-        Tasks.await(fetchPlaceTask);
-
-        // Verify interactions and assertions
-        verify(placesClient).fetchPlace(mockRequest); // Verify fetchPlace was called
-        //verify(mockCurrentRestaurantMutableLiveData).postValue(mockRestaurant);
-        assertEquals(mockRestaurant.getWebsite(), Uri.parse("https://example.com"));
-        assertEquals(mockRestaurant.getPhoneNumber(), "+123456789");
-    }*/
+        verify(mGooglePlacesDetailsApi).setAllDetails(any(Restaurant.class), any(PlacesClient.class), anyString());
+    }
 
 
     private void generateCurrentRestaurant(){

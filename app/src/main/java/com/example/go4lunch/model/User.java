@@ -139,7 +139,7 @@ public class User {
 
             //Log.d("isTaday", choiceTimeStamp + " compare to " + startOfLunch + " is equal to " + choiceTimeStamp.compareTo(startOfLunch));
 
-            return choiceTimeStamp.compareTo(startOfLunch) > 0 && choiceTimeStamp.compareTo(endOfLunch) < 0;
+            return choiceTimeStamp.compareTo(startOfLunch) >= 0 && choiceTimeStamp.compareTo(endOfLunch) < 0;
         }
     }
 }
