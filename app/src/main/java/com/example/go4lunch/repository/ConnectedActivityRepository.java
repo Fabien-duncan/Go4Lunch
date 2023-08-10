@@ -45,12 +45,18 @@ public class ConnectedActivityRepository {
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mGooglePlacesReadTask = new ApiService();
     }
+    //constructor for unit tests
+    ConnectedActivityRepository(Context context,ApiService apiService, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData){
+        this.mContext = context;
+
+        nearbyRestaurants = new ArrayList<>();
+        this.restaurantsMutableLiveData = restaurantsMutableLiveData;
+        mGooglePlacesReadTask = apiService;
+    }
 
     public void setGooglePlacesData(){
         String key = BuildConfig.GMP_key;
         Executor executor = Executors.newSingleThreadExecutor();
-
-        System.out.println("Map api key: " + key);
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(currentLocation.getLatitude()).append(",").append(currentLocation.getLongitude());
@@ -59,7 +65,7 @@ public class ConnectedActivityRepository {
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=").append(key);
 
-        Log.d("ConnectedActivity", "placesUrl: " + googlePlacesUrl);
+        //Log.d("ConnectedActivity", "placesUrl: " + googlePlacesUrl);
         executor.execute(() -> {
             //googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
             nearbyRestaurants = mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation);
@@ -76,29 +82,17 @@ public class ConnectedActivityRepository {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateAttending(List<User> workmates){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDateTime now = LocalDateTime.now();
-        String endOfLunch;
-        String  startOfLunch;
-        if(now.getHour() <= 14){
-            endOfLunch = now.format(formatter) +"T14:00";
-            startOfLunch = now.minusDays(1).format(formatter) +"T14:00";
-        }else {
-            startOfLunch = now.format(formatter) +"T14:00";
-            endOfLunch = now.plusDays(1).format(formatter) +"T14:00";
-        }
-
-        Log.d("checkTime", "start: " + startOfLunch + " end: " + endOfLunch + " now: " + now + "\n workmate Time: " + workmates.get(5).getChoiceTimeStamp() + " is today " + workmates.get(5).isToday());
+        //Log.d("checkTime", "start: " + startOfLunch + " end: " + endOfLunch + " now: " + now + "\n workmate Time: " + workmates.get(5).getChoiceTimeStamp() + " is today " + workmates.get(5).isToday());
         List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
         List<String> restaurantID = new ArrayList<>();
         for(int i = 0; i<workmates.size();i++){
             if(!workmates.get(i).getLunchChoiceId().isEmpty() && workmates.get(i).isToday()){
                 restaurantID.add(workmates.get(i).getLunchChoiceId()); }
         }
-        Log.d("updateAttending", restaurantID.toString());
+        //Log.d("updateAttending", restaurantID.toString());
         if(nearbyRestaurants != null){
             for(int i = 0; i<nearbyRestaurants.size();i++){
-                Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurance " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
+                //Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurance " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
                 nearbyRestaurants.get(i).setAttendanceNum(Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
             }
         }
