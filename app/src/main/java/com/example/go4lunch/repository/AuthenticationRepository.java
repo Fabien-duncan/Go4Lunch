@@ -52,13 +52,16 @@ public class AuthenticationRepository {
     public AuthenticationRepository(Context context){
         this.mContext = context;
         this.mActivity = (Activity)context;
-        currentUserMutableLiveData = new MutableLiveData<>();
+        //currentUserMutableLiveData = new MutableLiveData<>();
         isUserSignedIn = new MutableLiveData<>();
         //mFirebaseUserMutableLiveData = new MutableLiveData<>();
-        workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
+        //workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mFirebaseApi = new FirebaseApi(mContext);
+
+        workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();
+        currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
         this.mFirebaseUserMutableLiveData = mFirebaseApi.getFirebaseUserMutableLiveData();
         if(mAuth.getCurrentUser() != null){
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
@@ -66,19 +69,21 @@ public class AuthenticationRepository {
         }
     }
     //constructor for unit tests
-    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient, MutableLiveData<Boolean> isUserSignedIn, MutableLiveData<FirebaseUser> firebaseUserMutableLiveData, MutableLiveData<User> currentUserMutableLiveData,MutableLiveData<List<User>> workmatesMutableLiveData){
+    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient, MutableLiveData<Boolean> isUserSignedIn){
         this.mContext = context;
         this.mActivity = activity;
         this.mAuth = auth;
         this.db = db;
         this.mGoogleSignInClient = googleSignInClient;
 
-        this.currentUserMutableLiveData = currentUserMutableLiveData;
+
         this.isUserSignedIn = isUserSignedIn;
         //this.mFirebaseUserMutableLiveData = firebaseUserMutableLiveData;
-        this.workmatesMutableLiveData = workmatesMutableLiveData;
+
 
         mFirebaseApi = firebaseApi;
+        this.currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
+        this.workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();
         this.mFirebaseUserMutableLiveData = mFirebaseApi.getFirebaseUserMutableLiveData();
         if(mAuth.getCurrentUser() != null){
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
@@ -129,17 +134,6 @@ public class AuthenticationRepository {
     public void firebaseCreateUser(String email, String password, String displayName){
         mFirebaseApi.firebaseCreateUser(email,password,displayName);
     }
-    private void createFireStoreUser(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        String userId = user.getUid();
-        DocumentReference documentReference = db.collection("users").document(userId);
-
-        User newUser = new User(user.getDisplayName(),user.getEmail(), user.getPhotoUrl());
-
-        documentReference.set(newUser).addOnSuccessListener(unused -> Log.d("Create User", "onSuccess: user Profile is created for" + userId));
-
-    }
     public int getGOOGLE_SIGN_IN(){
         return GOOGLE_SIGN_IN;
     }
@@ -159,67 +153,13 @@ public class AuthenticationRepository {
         return workmatesMutableLiveData;
     }
     public void retrieveAllWorkmates(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        CollectionReference collectionReference = db.collection("users");
-        collectionReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<User> list = new ArrayList<>();
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    User workmate = document.toObject(User.class);
-                    assert user != null;
-                    if(!workmate.getEmail().equals(user.getEmail())){
-                        System.out.println("adding a workmate");
-                        list.add(workmate);
-                    }
-                }
-                workmatesMutableLiveData.postValue(list);
-                Log.d("workmates", list.get(0).getDisplayName());
-            } else {
-                Log.d("TAG", "Error getting documents: ", task.getException());
-            }
-        });
+        mFirebaseApi.retrieveAllWorkmates();
     }
     public void retrieveFilteredWorkmates(String restaurantId){
-        FirebaseUser user = mAuth.getCurrentUser();
-        CollectionReference collectionReference = db.collection("users");
-        collectionReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<User> list = new ArrayList<>();
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    User workmate = document.toObject(User.class);
-                    assert user != null;
-                    if(!workmate.getEmail().equals(user.getEmail()) && workmate.getLunchChoiceId().equals(restaurantId)){
-                        System.out.println("adding a workmate");
-                        User tempUser = document.toObject(User.class);
-                        if(tempUser.isToday())list.add(tempUser);
-                    }
-                }
-                workmatesMutableLiveData.postValue(list);
-                Log.d("TAG", list.toString());
-            } else {
-                Log.d("TAG", "Error getting documents: ", task.getException());
-            }
-        });
+        mFirebaseApi.retrieveFilteredWorkmates(restaurantId);
     }
     public void setCurrentUser(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        DocumentReference documentReference = db.collection("users").document(user.getUid());
-        documentReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-
-                currentUserMutableLiveData.postValue(document.toObject(User.class));
-
-                if (document.exists()) {
-                    Log.d("setCurrentUser", "DocumentSnapshot data: " + document.getData());
-                } else {
-                    Log.d("setCurrentUser", "No such document");
-                }
-            } else {
-                Log.d("setCurrentUser", "get failed with ", task.getException());
-            }
-        });
+        mFirebaseApi.setCurrentUser();
     }
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
         FirebaseUser user = mAuth.getCurrentUser();

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,33 +16,25 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.dataSource.FirebaseApi;
 import com.example.go4lunch.model.User;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -49,15 +42,6 @@ import org.mockito.stubbing.Answer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import android.hardware.biometrics.BiometricPrompt;
-import android.net.Uri;
-import android.os.Process;
 
 public class AuthenticationRepositoryTest {
     private AuthenticationRepository mAuthenticationRepository;
@@ -80,10 +64,12 @@ public class AuthenticationRepositoryTest {
     @Mock
     private MutableLiveData<User> mCurrentUserMutableLiveData;
     @Mock
-    private MutableLiveData<List<User>> workmatesMutableLiveData;
+    private MutableLiveData<List<User>> mWorkmatesMutableLiveData;
     @Mock
     FirebaseUser firebaseUser;
 
+    private User currentUser;
+    private List<User> workmateList;
 
     @Rule //initMocks
     public MockitoRule rule = MockitoJUnit.rule();
@@ -93,8 +79,14 @@ public class AuthenticationRepositoryTest {
         when(mFirebaseUserMutableLiveData.getValue()).thenReturn(firebaseUser);
         when(firebaseUser.getEmail()).thenReturn("testUser@gmail.com");
         when(mFirebaseApi.getFirebaseUserMutableLiveData()).thenReturn(mFirebaseUserMutableLiveData);
+        generateCurrentUser();
+        when(mFirebaseApi.getCurrentUserMutableLiveData()).thenReturn(mCurrentUserMutableLiveData);
+        when(mCurrentUserMutableLiveData.getValue()).thenReturn(currentUser);
+        generateWorkmates();
+        when(mFirebaseApi.getWorkmatesMutableLiveData()).thenReturn(mWorkmatesMutableLiveData);
+        when(mWorkmatesMutableLiveData.getValue()).thenReturn(workmateList);
 
-        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient, isSignedIn,mFirebaseUserMutableLiveData,mCurrentUserMutableLiveData, workmatesMutableLiveData);
+        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient, isSignedIn);
 
     }
 
@@ -206,70 +198,58 @@ public class AuthenticationRepositoryTest {
 
         // Verify interactions and assertions
         assertNotNull(result);
-        assertEquals(workmatesMutableLiveData, result);
+        assertEquals(mWorkmatesMutableLiveData, result);
     }
 
     @Test
     public void retrieveAllWorkmates() {
-        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
-        // Mock Firebase user and authentication
-        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+        List<User> resultWorkmates;
 
-        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
-        Task<QuerySnapshot> mockTask = Mockito.mock(Task.class);
-        // Mock Firestore collection reference and query snapshot
-        when(db.collection("users")).thenReturn(mockCollectionReference);
-        when(mockCollectionReference.get()).thenReturn(mockTask);
-
-        // Call the method
         mAuthenticationRepository.retrieveAllWorkmates();
+        resultWorkmates = mAuthenticationRepository.getWorkmatesMutableLiveData().getValue();
 
-        // Verify interactions and assertions
-        verify(mockCollectionReference).get();
-
+        verify(mFirebaseApi).retrieveAllWorkmates();
+        assertEquals(3, resultWorkmates.size());
+        assertEquals("Fabien Duncan", resultWorkmates.get(0).getDisplayName());
+        assertEquals("Bob",resultWorkmates.get(2).getDisplayName());
     }
 
     @Test
     public void retrieveFilteredWorkmates() {
-        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
-        // Mock Firebase user and authentication
-        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+        List<User> resultWorkmates;
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                String id = (String)invocation.getArguments()[0];
+                List<User> filteredWorkmates = new ArrayList<>();
+                for(int i =0; i < workmateList.size(); i++){
+                    if(workmateList.get(i).getLunchChoiceId().equals(id)){
+                        filteredWorkmates.add(workmateList.get(i));
+                    }
+                }
+                workmateList = filteredWorkmates;
 
-        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
-        Task<QuerySnapshot> mockTask = Mockito.mock(Task.class);
-        // Mock Firestore collection reference and query snapshot
-        when(db.collection("users")).thenReturn(mockCollectionReference);
-        when(mockCollectionReference.get()).thenReturn(mockTask);
+                return(null);
+            }
+        }).when(mFirebaseApi).retrieveFilteredWorkmates(anyString());
 
-        // Call the method
-        mAuthenticationRepository.retrieveFilteredWorkmates("123");
+        mAuthenticationRepository.retrieveFilteredWorkmates("2");
 
-        // Verify interactions and assertions
-        verify(mockCollectionReference).get();
+        verify(mFirebaseApi).retrieveFilteredWorkmates(anyString());
+        assertEquals(2, workmateList.size());
+        assertEquals("Marion Chenus", workmateList.get(0).getDisplayName());
+        assertEquals("Bob", workmateList.get(1).getDisplayName());
     }
 
     @Test
     public void setCurrentUser() {
+        User resultUser;
 
-        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
-        // Mock Firebase user and authentication
-        when(mAuth.getCurrentUser()).thenReturn(mockUser);
-
-        DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
-        CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
-        Task<DocumentSnapshot> mockTask = Mockito.mock(Task.class);
-        // Mock Firestore collection reference and query snapshot
-        when(mockUser.getUid()).thenReturn("userID");
-        when(db.collection("users")).thenReturn(mockCollectionReference);
-        when(mockCollectionReference.document(anyString())).thenReturn(mockDocumentReference);
-        when(mockDocumentReference.get()).thenReturn(mockTask);
-
-        // Call the method
         mAuthenticationRepository.setCurrentUser();
+        resultUser = mAuthenticationRepository.getCurrentUserMutableLiveData().getValue();
 
-        // Verify interactions and assertions
-        verify(mockDocumentReference).get();
-
+        verify(mFirebaseApi).setCurrentUser();
+        assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
     @Test
@@ -347,5 +327,23 @@ public class AuthenticationRepositoryTest {
 
         // Verify interactions
         verify(mockDocumentReference).update(anyString(), any(FieldValue.class));
+    }
+
+    private void generateCurrentUser(){
+        currentUser = new User();
+        currentUser.setEmail("testUser@gmail.com");
+        currentUser.setDisplayName("testUser");
+    }
+    private void generateWorkmates(){
+        workmateList = new ArrayList<>();
+        workmateList.add(new User());
+        workmateList.get(0).setDisplayName("Fabien Duncan");
+        workmateList.get(0).setLunchChoiceId("1");
+        workmateList.add(new User());
+        workmateList.get(1).setDisplayName("Marion Chenus");
+        workmateList.get(1).setLunchChoiceId("2");
+        workmateList.add(new User());
+        workmateList.get(2).setDisplayName("Bob");
+        workmateList.get(2).setLunchChoiceId("2");
     }
 }
