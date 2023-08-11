@@ -13,6 +13,7 @@ import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.dataSource.FirebaseApi;
 import com.example.go4lunch.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -71,6 +72,8 @@ public class AuthenticationRepositoryTest {
     @Mock
     private FirebaseFirestore db;
     @Mock
+    private FirebaseApi mFirebaseApi;
+    @Mock
     private MutableLiveData<Boolean> isSignedIn;
     @Mock
     private MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
@@ -78,6 +81,8 @@ public class AuthenticationRepositoryTest {
     private MutableLiveData<User> mCurrentUserMutableLiveData;
     @Mock
     private MutableLiveData<List<User>> workmatesMutableLiveData;
+    @Mock
+    FirebaseUser firebaseUser;
 
 
     @Rule //initMocks
@@ -85,7 +90,11 @@ public class AuthenticationRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db,mGoogleSignInClient, isSignedIn,mFirebaseUserMutableLiveData,mCurrentUserMutableLiveData, workmatesMutableLiveData);
+        when(mFirebaseUserMutableLiveData.getValue()).thenReturn(firebaseUser);
+        when(firebaseUser.getEmail()).thenReturn("testUser@gmail.com");
+        when(mFirebaseApi.getFirebaseUserMutableLiveData()).thenReturn(mFirebaseUserMutableLiveData);
+
+        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient, isSignedIn,mFirebaseUserMutableLiveData,mCurrentUserMutableLiveData, workmatesMutableLiveData);
 
     }
 
@@ -132,28 +141,31 @@ public class AuthenticationRepositoryTest {
 
     @Test
     public void firebaseAuthWithGoogle() {
+        mAuthenticationRepository.firebaseAuthWithGoogle("testToken");
+        FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
+
+        verify(mFirebaseApi).firebaseAuthWithGoogle(anyString());
+        assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
     @Test
     public void firebaseAuthWithEmailAndPassword() {
-        FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
-        Task<AuthResult> mockTask = Mockito.mock(Task.class);
+        mAuthenticationRepository.firebaseAuthWithEmailAndPassword("testUser@gmail.com", "password");
 
-        when(mAuth.signInWithEmailAndPassword(anyString(), anyString())).thenReturn(mockTask);
-        when(mockTask.isSuccessful()).thenReturn(true);
-        when(mAuth.getCurrentUser()).thenReturn(mockUser);
+        FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
 
-        // Call the method
-        mAuthenticationRepository.firebaseAuthWithEmailAndPassword("test@example.com", "password");
-
-        // Verify interactions
-        verify(mockTask).addOnCompleteListener(any());
-        verify(mAuth).getCurrentUser();
-
+        verify(mFirebaseApi).firebaseAuthWithEmailAndPassword(anyString(), anyString());
+        assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
     @Test
     public void firebaseCreateUser() {
+        mAuthenticationRepository.firebaseCreateUser("testUser@gmail.com", "password", "testUser");
+
+        FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
+
+        verify(mFirebaseApi).firebaseCreateUser(anyString(), anyString(), anyString());
+        assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
 
