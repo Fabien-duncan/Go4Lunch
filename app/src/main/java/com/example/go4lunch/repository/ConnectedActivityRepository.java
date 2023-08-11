@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.dataSource.ApiService;
+import com.example.go4lunch.dataSource.AutoCompleteApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.google.android.gms.common.api.ApiException;
@@ -35,8 +36,9 @@ public class ConnectedActivityRepository {
     private RectangularBounds bounds;
     //private Activity mActivity;
     private List<Restaurant> nearbyRestaurants;
-    private final MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
+    private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private final ApiService mGooglePlacesReadTask;
+    private final AutoCompleteApi mAutoCompleteApi;
     private Executor executor;
 
     public ConnectedActivityRepository(Context context){
@@ -45,14 +47,16 @@ public class ConnectedActivityRepository {
         nearbyRestaurants = new ArrayList<>();
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         mGooglePlacesReadTask = new ApiService();
+        mAutoCompleteApi = new AutoCompleteApi(mContext);
     }
     //constructor for unit tests
-    ConnectedActivityRepository(Context context,ApiService apiService, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
+    ConnectedActivityRepository(Context context,ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.mContext = context;
         this.executor = executor;
         nearbyRestaurants = new ArrayList<>();
         this.restaurantsMutableLiveData = restaurantsMutableLiveData;
         mGooglePlacesReadTask = apiService;
+        mAutoCompleteApi = autoCompleteApi;
     }
 
     public void setGooglePlacesData(){
@@ -103,43 +107,9 @@ public class ConnectedActivityRepository {
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
     }
     public void autocomplete(String text){
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-        // Create a RectangularBounds object.
-        // Use the builder to create a FindAutocompletePredictionsRequest.
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                // Call either setLocationBias() OR setLocationRestriction().
-                //.setLocationBias(bounds)
-                .setLocationRestriction(bounds)
-                .setOrigin(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                .setCountries("FR")
-                .setTypesFilter(Collections.singletonList("restaurant"))
-                .setSessionToken(token)
-                .setQuery(text)
-                .build();
-
-        String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(mContext.getApplicationContext(), key);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(mContext);
-        List<String> placeIds = new ArrayList<>();
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                placeIds.add(prediction.getPlaceId());
-                Log.i("autocomplete", prediction.getPlaceId());
-                Log.i("autocomplete", prediction.getPrimaryText(null).toString());
-            }
-            filterRestaurantsByIds(placeIds);
-
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e("autocomplete", "Place not found: " + apiException.getStatusCode());
-            }
-        });
-
+        if(bounds==null)setBounds();
+        mAutoCompleteApi.autocomplete(text, nearbyRestaurants, bounds, currentLocation);
+        restaurantsMutableLiveData.postValue(mAutoCompleteApi.getRestaurantsMutableLiveData().getValue());
     }
     public void resetNearbyRestaurants(){
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
@@ -165,23 +135,5 @@ public class ConnectedActivityRepository {
         bounds = RectangularBounds.newInstance(
                 new LatLng(minLat, minLong),
                 new LatLng(maxLat, maxLong));
-
-        /*Log.d("setBounds", "Min: " + minLat + "," + minLong);
-        Log.d("setBounds", "Max: " + maxLat + "," + maxLong);*/
-    }
-    private void filterRestaurantsByIds(List<String> placeIds){
-        List<Restaurant> filteredNearbyRestaurants = new ArrayList<>();
-        for(int i = 0; i < placeIds.size(); i++){
-            int j = 0;
-            while(j<nearbyRestaurants.size()){
-                if(placeIds.get(i).equals(nearbyRestaurants.get(j).getId())){
-                    filteredNearbyRestaurants.add(nearbyRestaurants.get(j));
-                    j=nearbyRestaurants.size();
-                }
-                j++;
-            }
-        }
-        Log.d("filteredRestaurant", "size: " + filteredNearbyRestaurants.size());
-        restaurantsMutableLiveData.postValue(filteredNearbyRestaurants);
     }
 }

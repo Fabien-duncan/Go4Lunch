@@ -4,6 +4,7 @@ import static net.bytebuddy.matcher.ElementMatchers.any;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,8 +14,10 @@ import android.location.Location;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.dataSource.ApiService;
+import com.example.go4lunch.dataSource.AutoCompleteApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +40,8 @@ public class ConnectedActivityRepositoryTest {
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     @Mock
     private ApiService mGooglePlacesReadTask;
+    @Mock
+    private AutoCompleteApi mAutoCompleteApi;
 
     private List<Restaurant> mRestaurantList;
     private ConnectedActivityRepository mConnectedActivityRepository;
@@ -48,7 +53,7 @@ public class ConnectedActivityRepositoryTest {
     @Before
     public void setUp() throws Exception {
         Executor mockExecutor = command -> command.run();
-        mConnectedActivityRepository = new ConnectedActivityRepository(mContext, mGooglePlacesReadTask, restaurantsMutableLiveData, mockExecutor);
+        mConnectedActivityRepository = new ConnectedActivityRepository(mContext, mGooglePlacesReadTask, mAutoCompleteApi, restaurantsMutableLiveData, mockExecutor);
         setRestaurantList();
         workmateList = new ArrayList<>();
         generateWorkmates();
@@ -91,7 +96,22 @@ public class ConnectedActivityRepositoryTest {
 
     @Test
     public void autocomplete() {
+        List<Restaurant> restaurants = new ArrayList<>();
+        restaurants.add(mRestaurantList.get(2));
+        MutableLiveData<List<Restaurant>> restaurantsMutableLiveData = Mockito.mock(MutableLiveData.class);
+        List<Restaurant> restaurantsResult;
+        Location location = mock(Location.class);
+        when(mAutoCompleteApi.getRestaurantsMutableLiveData()).thenReturn(restaurantsMutableLiveData);
+        when(restaurantsMutableLiveData.getValue()).thenReturn(restaurants);
+        when(this.restaurantsMutableLiveData.getValue()).thenReturn(restaurants);
 
+        mConnectedActivityRepository.setCurrentLocation(location);
+        mConnectedActivityRepository.autocomplete("tav");
+        restaurantsResult = mConnectedActivityRepository.getRestaurantsMutableLiveData().getValue();
+
+        verify(mAutoCompleteApi).autocomplete(anyString(), anyList(), ArgumentMatchers.any(RectangularBounds.class), ArgumentMatchers.any(Location.class));
+        verify(this.restaurantsMutableLiveData).postValue(anyList());
+        assertEquals("La Taverne", restaurantsResult.get(0).getName());
     }
 
     @Test
