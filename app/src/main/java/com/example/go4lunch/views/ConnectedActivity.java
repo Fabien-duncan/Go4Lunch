@@ -168,7 +168,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         });
 
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this, this);
-        mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, new ConnectedActivityRepository(this));
+        ConnectedActivityRepository connectedActivityRepository = Injection.createConnectedActivityRepository(this);
+        mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, connectedActivityRepository);
        //mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

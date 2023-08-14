@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.MyWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
+import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -43,7 +44,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
         super.onViewCreated(view, savedInstanceState);
         RecyclerView workmatesRecyclerView = view.findViewById(R.id.workmates_rv);
 
-        AuthenticationRepository authenticationRepository = new AuthenticationRepository(getContext());
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext(), this.getActivity());
         WorkmatesViewModel workmatesViewModel = new WorkmatesViewModel(authenticationRepository);
         workmatesViewModel.setCurrentWorkmates();
         //mWorkmatesViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(MainActivityViewModel.class);

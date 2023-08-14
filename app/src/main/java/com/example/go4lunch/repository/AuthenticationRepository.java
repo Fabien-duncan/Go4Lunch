@@ -49,26 +49,6 @@ public class AuthenticationRepository {
     private final FirebaseFirestore db;
     private FirebaseApi mFirebaseApi;
 
-    public AuthenticationRepository(Context context){
-        this.mContext = context;
-        this.mActivity = (Activity)context;
-        //currentUserMutableLiveData = new MutableLiveData<>();
-        isUserSignedIn = new MutableLiveData<>();
-        //mFirebaseUserMutableLiveData = new MutableLiveData<>();
-        //workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        mFirebaseApi = new FirebaseApi(mContext);
-
-        workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();
-        currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
-        this.mFirebaseUserMutableLiveData = mFirebaseApi.getFirebaseUserMutableLiveData();
-        if(mAuth.getCurrentUser() != null){
-            mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
-            setCurrentUser();
-        }
-    }
-    //constructor for unit tests
     public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient, MutableLiveData<Boolean> isUserSignedIn){
         this.mContext = context;
         this.mActivity = activity;

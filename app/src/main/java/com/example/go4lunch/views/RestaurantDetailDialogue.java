@@ -35,6 +35,7 @@ import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
 import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
+import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -69,15 +70,16 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
         mConnectedActivityViewModel = ((ConnectedActivity) requireActivity()).getConnectedActivityViewModel();
-        AuthenticationRepository authenticationRepository = new AuthenticationRepository(getContext());
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext(), this.getActivity());
         isAttending = false;
         isFavorite = false;
 
-        String key = BuildConfig.GMP_key;
+        /*String key = BuildConfig.GMP_key;
         Places.initialize(getContext(), key);
-        PlacesClient placesClient = Places.createClient(getContext());
+        PlacesClient placesClient = Places.createClient(getContext());*/
 
-        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, new RestaurantDetailRepository(getContext(),placesClient,new GooglePlacesDetailsApi()));
+        RestaurantDetailRepository restaurantDetailRepository = Injection.createRestaurantDetailRepository(getContext());
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, restaurantDetailRepository);
     }
 
 

@@ -41,16 +41,7 @@ public class ConnectedActivityRepository {
     private final AutoCompleteApi mAutoCompleteApi;
     private Executor executor;
 
-    public ConnectedActivityRepository(Context context){
-        this.mContext = context;
-        this.executor = Executors.newSingleThreadExecutor();
-        nearbyRestaurants = new ArrayList<>();
-        restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
-        mGooglePlacesReadTask = new ApiService();
-        mAutoCompleteApi = new AutoCompleteApi(mContext);
-    }
-    //constructor for unit tests
-    ConnectedActivityRepository(Context context,ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
+    public ConnectedActivityRepository(Context context,ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.mContext = context;
         this.executor = executor;
         nearbyRestaurants = new ArrayList<>();
