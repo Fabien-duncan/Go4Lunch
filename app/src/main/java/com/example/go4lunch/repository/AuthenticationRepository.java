@@ -78,17 +78,6 @@ public class AuthenticationRepository {
         //isUserSignedIn.postValue(false);
 
     }
-    public void handleSignInResult(Intent data){
-        try{
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            GoogleSignInAccount account = task.getResult(ApiException.class);
-            firebaseAuthWithGoogle(account.getIdToken());
-        } catch (ApiException e){
-            Log.w("TAG","SignInResult: failed code=" + e.getStatusCode());
-            Toast.makeText(mContext, "SignIn Failed!", Toast.LENGTH_LONG).show();
-            Log.d("TAG", "SignIn Failed.");
-        }
-    }
     public void firebaseAuthWithGoogle(String idToken){
         mFirebaseApi.firebaseAuthWithGoogle(idToken);
     }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -19,6 +20,10 @@ import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.ConnectedActivity;
 import com.example.go4lunch.views.CreateAccountFragment;
 import com.example.go4lunch.views.SignInFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -57,7 +62,17 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                 result -> {
                     Log.d("signInLauncher", "loggin code: " + result.getResultCode());
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        mMainActivityViewModel.handleSignInResult(result.getData());
+                        try{
+                            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            mMainActivityViewModel.firebaseAuthWithGoogle(account.getIdToken());
+                        } catch (ApiException e){
+                            Log.w("TAG","SignInResult: failed code=" + e.getStatusCode());
+                            Toast.makeText(this, "SignIn Failed!", Toast.LENGTH_LONG).show();
+                            Log.d("TAG", "SignIn Failed.");
+                        }
+
+                        //mMainActivityViewModel.handleSignInResult(result.getData());
                         Log.d("signInLauncher", "has launched");
                     } else {
                         Log.d("signInLauncher", "failed to launch");

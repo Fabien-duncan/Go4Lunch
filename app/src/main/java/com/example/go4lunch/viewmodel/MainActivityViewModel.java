@@ -22,9 +22,6 @@ public class MainActivityViewModel extends ViewModel {
     public void signInWithEmail(String email, String password){
         mAuthenticationRepository.firebaseAuthWithEmailAndPassword(email,password);
     }
-    public void handleSignInResult(Intent data){
-        mAuthenticationRepository.handleSignInResult(data);
-    }
     public int getGOOGLE_SIGN_IN(){
         return mAuthenticationRepository.getGOOGLE_SIGN_IN();
     }
@@ -34,5 +31,9 @@ public class MainActivityViewModel extends ViewModel {
     }
     public Intent signIn() {
         return mAuthenticationRepository.signIn();
+    }
+
+    public void firebaseAuthWithGoogle(String idToken) {
+        mAuthenticationRepository.firebaseAuthWithGoogle(idToken);
     }
 }

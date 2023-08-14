@@ -53,12 +53,6 @@ public class MainActivityViewModelTest {
         Mockito.verify(mAuthenticationRepository).firebaseAuthWithEmailAndPassword(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
-    @Test
-    public void handleSignInResult() {
-        Intent intent = Mockito.mock(Intent.class);
-        mMainActivityViewModel.handleSignInResult(intent);
-        Mockito.verify(mAuthenticationRepository).handleSignInResult(any(Intent.class));
-    }
 
     @Test
     public void getGOOGLE_SIGN_IN() {
