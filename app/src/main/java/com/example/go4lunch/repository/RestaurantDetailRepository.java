@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RestaurantDetailRepository {
-    private final Context mContext;
 
     private final MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
 
@@ -30,8 +29,7 @@ public class RestaurantDetailRepository {
 
     private GooglePlacesDetailsApi mGooglePlacesDetailsApi;
 
-    public RestaurantDetailRepository(Context context, PlacesClient placesClient, GooglePlacesDetailsApi googlePlacesDetailsApi){
-        this.mContext = context;
+    public RestaurantDetailRepository( PlacesClient placesClient, GooglePlacesDetailsApi googlePlacesDetailsApi){
         this.placesClient = placesClient;
         this.mGooglePlacesDetailsApi = googlePlacesDetailsApi;
         //this.mActivity = (Activity)context;

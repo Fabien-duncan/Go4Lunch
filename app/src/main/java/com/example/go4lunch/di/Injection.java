@@ -35,21 +35,21 @@ public class Injection {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         FirebaseApi firebaseApi = new FirebaseApi(context);
         GoogleSignInClient googleSignInClient = setupGoogleSignInOptions(context);
-        return new AuthenticationRepository(context,activity, firebaseAuth, firebaseFirestore, firebaseApi, googleSignInClient);
+        return new AuthenticationRepository(firebaseAuth, firebaseFirestore, firebaseApi, googleSignInClient);
     }
     public static ConnectedActivityRepository createConnectedActivityRepository(Context context){
         Executor executor = Executors.newSingleThreadExecutor();
         MutableLiveData<List<Restaurant>> restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         ApiService apiService = new ApiService();
         AutoCompleteApi autoCompleteApi = new AutoCompleteApi(context);
-        return new ConnectedActivityRepository(context, apiService, autoCompleteApi, restaurantsMutableLiveData, executor);
+        return new ConnectedActivityRepository(apiService, autoCompleteApi, restaurantsMutableLiveData, executor);
     }
     public static RestaurantDetailRepository createRestaurantDetailRepository(Context context){
         String key = BuildConfig.GMP_key;
         Places.initialize(context, key);
         PlacesClient placesClient = Places.createClient(context);
         GooglePlacesDetailsApi googlePlacesDetailsApi = new GooglePlacesDetailsApi();
-        return new RestaurantDetailRepository(context, placesClient, googlePlacesDetailsApi);
+        return new RestaurantDetailRepository(placesClient, googlePlacesDetailsApi);
 
     }
 

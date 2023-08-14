@@ -47,11 +47,7 @@ import java.util.List;
 public class AuthenticationRepositoryTest {
     private AuthenticationRepository mAuthenticationRepository;
     @Mock
-    private Context mContext;
-    @Mock
     private FirebaseAuth mAuth;
-    @Mock
-    private Activity mActivity;
     @Mock
     private GoogleSignInClient mGoogleSignInClient;
     @Mock
@@ -85,7 +81,7 @@ public class AuthenticationRepositoryTest {
         when(mFirebaseApi.getWorkmatesMutableLiveData()).thenReturn(mWorkmatesMutableLiveData);
         when(mWorkmatesMutableLiveData.getValue()).thenReturn(workmateList);
 
-        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient);
+        mAuthenticationRepository = new AuthenticationRepository(mAuth,db, mFirebaseApi, mGoogleSignInClient);
     }
 
     @Test

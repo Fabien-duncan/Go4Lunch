@@ -35,8 +35,6 @@ import java.util.concurrent.Executor;
 public class ConnectedActivityRepositoryTest {
 
     @Mock
-    private Context mContext;
-    @Mock
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     @Mock
     private ApiService mGooglePlacesReadTask;
@@ -53,7 +51,7 @@ public class ConnectedActivityRepositoryTest {
     @Before
     public void setUp() throws Exception {
         Executor mockExecutor = command -> command.run();
-        mConnectedActivityRepository = new ConnectedActivityRepository(mContext, mGooglePlacesReadTask, mAutoCompleteApi, restaurantsMutableLiveData, mockExecutor);
+        mConnectedActivityRepository = new ConnectedActivityRepository(mGooglePlacesReadTask, mAutoCompleteApi, restaurantsMutableLiveData, mockExecutor);
         setRestaurantList();
         workmateList = new ArrayList<>();
         generateWorkmates();

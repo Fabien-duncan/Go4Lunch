@@ -46,8 +46,6 @@ public class RestaurantDetailRepositoryTest {
     private Restaurant currentRestaurant;
     private RestaurantDetailRepository mRestaurantDetailRepository;
     @Mock
-    private Context mContext;
-    @Mock
     private  PlacesClient placesClient;
     @Mock
     private GooglePlacesDetailsApi mGooglePlacesDetailsApi;
@@ -67,7 +65,7 @@ public class RestaurantDetailRepositoryTest {
 
         when(mRestaurantMutableLiveData.getValue()).thenReturn(currentRestaurant);
 
-        mRestaurantDetailRepository = new RestaurantDetailRepository(mContext, placesClient,mGooglePlacesDetailsApi);
+        mRestaurantDetailRepository = new RestaurantDetailRepository(placesClient,mGooglePlacesDetailsApi);
 
 
     }

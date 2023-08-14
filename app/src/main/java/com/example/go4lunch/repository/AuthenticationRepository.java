@@ -1,43 +1,24 @@
 package com.example.go4lunch.repository;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.R;
 import com.example.go4lunch.dataSource.FirebaseApi;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.FormatString;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AuthenticationRepository {
-    private final Context mContext;
     private GoogleSignInClient mGoogleSignInClient;
-    private final Activity mActivity;
     private final int GOOGLE_SIGN_IN = 100;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
 
@@ -48,9 +29,7 @@ public class AuthenticationRepository {
     private final FirebaseFirestore db;
     private FirebaseApi mFirebaseApi;
 
-    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient){
-        this.mContext = context;
-        this.mActivity = activity;
+    public AuthenticationRepository(FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient){
         this.mAuth = auth;
         this.db = db;
         this.mGoogleSignInClient = googleSignInClient;

@@ -31,7 +31,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ConnectedActivityRepository {
-    private final Context mContext;
     private Location currentLocation;
     private RectangularBounds bounds;
     //private Activity mActivity;
@@ -41,8 +40,7 @@ public class ConnectedActivityRepository {
     private final AutoCompleteApi mAutoCompleteApi;
     private Executor executor;
 
-    public ConnectedActivityRepository(Context context,ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
-        this.mContext = context;
+    public ConnectedActivityRepository(ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.executor = executor;
         nearbyRestaurants = new ArrayList<>();
         this.restaurantsMutableLiveData = restaurantsMutableLiveData;
