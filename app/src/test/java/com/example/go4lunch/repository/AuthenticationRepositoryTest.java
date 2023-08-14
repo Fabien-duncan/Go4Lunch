@@ -59,8 +59,6 @@ public class AuthenticationRepositoryTest {
     @Mock
     private FirebaseApi mFirebaseApi;
     @Mock
-    private MutableLiveData<Boolean> isSignedIn;
-    @Mock
     private MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
     @Mock
     private MutableLiveData<User> mCurrentUserMutableLiveData;
@@ -87,7 +85,7 @@ public class AuthenticationRepositoryTest {
         when(mFirebaseApi.getWorkmatesMutableLiveData()).thenReturn(mWorkmatesMutableLiveData);
         when(mWorkmatesMutableLiveData.getValue()).thenReturn(workmateList);
 
-        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient, isSignedIn);
+        mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient);
     }
 
     @Test
@@ -101,10 +99,7 @@ public class AuthenticationRepositoryTest {
         Intent mockSignInIntent = Mockito.mock(Intent.class);
         when(mGoogleSignInClient.getSignInIntent()).thenReturn(mockSignInIntent);
 
-
-        mAuthenticationRepository.signIn();
-
-        verify(isSignedIn).setValue(anyBoolean());
+        assertNotNull(mAuthenticationRepository.signIn());
 
     }
 
@@ -120,7 +115,6 @@ public class AuthenticationRepositoryTest {
         // Verify interactions
         verify(mGoogleSignInClient).signOut();
         verify(mAuth).signOut();
-        verify(isSignedIn).postValue(any());
     }
 
     @Test
@@ -169,15 +163,6 @@ public class AuthenticationRepositoryTest {
         // Verify interactions and assertions
         assertNotNull(result);
         assertEquals(mFirebaseUserMutableLiveData, result);
-    }
-
-    @Test
-    public void getIsUserSignedIn() {
-        MutableLiveData<Boolean> result = mAuthenticationRepository.getIsUserSignedIn();
-
-        // Verify interactions and assertions
-        assertNotNull(result);
-        assertEquals(isSignedIn, result);
     }
 
     @Test

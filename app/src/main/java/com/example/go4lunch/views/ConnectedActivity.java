@@ -186,9 +186,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(this);
-        mConnectedActivityViewModel.getIsUserSignedIn().observe(this, aBoolean -> {
-            if (!aBoolean) showMainActivity();
-        });
         mConnectedActivityViewModel.getUserData().observe(this, firebaseUser -> {
             name.setText(firebaseUser.getDisplayName());
             email.setText(firebaseUser.getEmail());
@@ -293,8 +290,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 break;
             case R.id.side_bar_logout:
                 mConnectedActivityViewModel.signOut();
-
-
+                showMainActivity();
                 break;
         }
         return true;

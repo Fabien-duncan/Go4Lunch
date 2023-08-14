@@ -35,8 +35,7 @@ public class Injection {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         FirebaseApi firebaseApi = new FirebaseApi(context);
         GoogleSignInClient googleSignInClient = setupGoogleSignInOptions(context);
-        MutableLiveData<Boolean> isUserSignedIn = new MutableLiveData<>();
-        return new AuthenticationRepository(context,activity, firebaseAuth, firebaseFirestore, firebaseApi, googleSignInClient, isUserSignedIn);
+        return new AuthenticationRepository(context,activity, firebaseAuth, firebaseFirestore, firebaseApi, googleSignInClient);
     }
     public static ConnectedActivityRepository createConnectedActivityRepository(Context context){
         Executor executor = Executors.newSingleThreadExecutor();

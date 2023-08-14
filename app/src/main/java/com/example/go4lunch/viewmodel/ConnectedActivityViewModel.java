@@ -19,7 +19,6 @@ import java.util.List;
 public class ConnectedActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private final MutableLiveData<FirebaseUser> userData;
-    private final MutableLiveData<Boolean> isUserSignedIn;
     private final MutableLiveData<User> currentUserMutableLiveData;
 
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
@@ -33,7 +32,6 @@ public class ConnectedActivityViewModel extends ViewModel {
         mConnectedActivityRepository = connectedActivityRepository;
 
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
-        isUserSignedIn = authenticationRepository.getIsUserSignedIn();
         currentUserMutableLiveData = authenticationRepository.getCurrentUserMutableLiveData();
         workmatesMutableLiveData = authenticationRepository.getWorkmatesMutableLiveData();
         restaurantsMutableLiveData = mConnectedActivityRepository.getRestaurantsMutableLiveData();
@@ -48,9 +46,6 @@ public class ConnectedActivityViewModel extends ViewModel {
         return userData;
     }
 
-    public MutableLiveData<Boolean> getIsUserSignedIn() {
-        return isUserSignedIn;
-    }
 
     public MutableLiveData<User> getCurrentUserMutableLiveData() {
         return currentUserMutableLiveData;

@@ -82,12 +82,6 @@ public class ConnectedActivityViewModelTest {
         assertEquals("Fabien", tempUser.getDisplayName());
     }
 
-    @Test
-    public void getIsUserSignedIn() {
-        boolean isSignedIn = mConnectedActivityViewModel.getIsUserSignedIn().getValue();
-        Mockito.verify(mAuthenticationRepository).getIsUserSignedIn();
-        assertEquals(false, isSignedIn);
-    }
 
     @Test
     public void getCurrentUserMutableLiveData() {
@@ -201,7 +195,6 @@ public class ConnectedActivityViewModelTest {
                 return(null);
             }
         }).when(mConnectedActivityRepository).setCurrentLocation(any(Location.class));
-        Mockito.doReturn(isUserSignedInMutable).when(mAuthenticationRepository).getIsUserSignedIn();
 
         MutableLiveData<User> currentUserMutable= Mockito.spy(new MutableLiveData<>(currentUser));
         Mockito.doReturn((currentUserMutable)).when(mAuthenticationRepository).getCurrentUserMutableLiveData();

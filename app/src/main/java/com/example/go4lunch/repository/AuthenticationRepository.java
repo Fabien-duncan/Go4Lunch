@@ -40,7 +40,6 @@ public class AuthenticationRepository {
     private final Activity mActivity;
     private final int GOOGLE_SIGN_IN = 100;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
-    private final MutableLiveData<Boolean> isUserSignedIn;
 
     private final MutableLiveData<User> currentUserMutableLiveData;
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
@@ -49,15 +48,13 @@ public class AuthenticationRepository {
     private final FirebaseFirestore db;
     private FirebaseApi mFirebaseApi;
 
-    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient, MutableLiveData<Boolean> isUserSignedIn){
+    public AuthenticationRepository(Context context, Activity activity, FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient){
         this.mContext = context;
         this.mActivity = activity;
         this.mAuth = auth;
         this.db = db;
         this.mGoogleSignInClient = googleSignInClient;
 
-
-        this.isUserSignedIn = isUserSignedIn;
         //this.mFirebaseUserMutableLiveData = firebaseUserMutableLiveData;
 
 
@@ -73,13 +70,12 @@ public class AuthenticationRepository {
 
     public Intent signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        isUserSignedIn.setValue(true);
         return signInIntent;
     }
     public void signOut(){
         mAuth.signOut();
         mGoogleSignInClient.signOut();
-        isUserSignedIn.postValue(false);
+        //isUserSignedIn.postValue(false);
 
     }
     public void handleSignInResult(Intent data){
@@ -110,9 +106,6 @@ public class AuthenticationRepository {
         return mFirebaseUserMutableLiveData;
     }
 
-    public MutableLiveData<Boolean> getIsUserSignedIn() {
-        return isUserSignedIn;
-    }
     public MutableLiveData<User> getCurrentUserMutableLiveData() {
         return currentUserMutableLiveData;
     }
