@@ -71,10 +71,10 @@ public class AuthenticationRepository {
         }
     }
 
-    public void signIn(){
+    public Intent signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        mActivity.startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
-        isUserSignedIn.postValue(true);
+        isUserSignedIn.setValue(true);
+        return signInIntent;
     }
     public void signOut(){
         mAuth.signOut();

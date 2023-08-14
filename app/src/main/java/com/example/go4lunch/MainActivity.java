@@ -1,11 +1,14 @@
 package com.example.go4lunch;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -27,6 +30,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener, SignInFragment.SignInListener {
     private MainActivityViewModel mMainActivityViewModel;
+    private ActivityResultLauncher<Intent> signInLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,22 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             }
         });
 
-        activityMainBinding.gmailSigninBtn.setOnClickListener(view1 -> mMainActivityViewModel.signIn());
+        signInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    Log.d("signInLauncher", "loggin code: " + result.getResultCode());
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        mMainActivityViewModel.handleSignInResult(result.getData());
+                        Log.d("signInLauncher", "has launched");
+                    } else {
+                        Log.d("signInLauncher", "failed to launch");
+                    }
+                });
+
+        activityMainBinding.gmailSigninBtn.setOnClickListener(view1 -> {
+            Intent intent = mMainActivityViewModel.signIn();
+            signInLauncher.launch(intent);
+        });
         activityMainBinding.mainCreateAccountBtn.setOnClickListener(view12 -> {
             DialogFragment createAccountFragment = new CreateAccountFragment();
             createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
@@ -63,14 +82,6 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         intent.putExtra("name", account.getDisplayName());
         startActivity(intent);
         finish();
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode,data);
-
-        if(requestCode == mMainActivityViewModel.getGOOGLE_SIGN_IN()){
-            mMainActivityViewModel.handleSignInResult(data);
-        }
     }
     private void getNotificationPermission(){
         Dexter.withContext(this).withPermissions(Manifest.permission.POST_NOTIFICATIONS).withListener(new MultiplePermissionsListener() {

@@ -32,7 +32,7 @@ public class MainActivityViewModel extends ViewModel {
     public MutableLiveData<FirebaseUser> getUserData() {
         return userData;
     }
-    public void signIn() {
-        mAuthenticationRepository.signIn();
+    public Intent signIn() {
+        return mAuthenticationRepository.signIn();
     }
 }

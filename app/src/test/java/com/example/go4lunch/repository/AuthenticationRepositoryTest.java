@@ -2,6 +2,7 @@ package com.example.go4lunch.repository;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -98,15 +99,12 @@ public class AuthenticationRepositoryTest {
     @Test
     public void signIn() {
         Intent mockSignInIntent = Mockito.mock(Intent.class);
-
         when(mGoogleSignInClient.getSignInIntent()).thenReturn(mockSignInIntent);
 
-        // Call the method
+
         mAuthenticationRepository.signIn();
 
-        // Verify interactions
-        verify(mActivity).startActivityForResult(eq(mockSignInIntent), eq(mAuthenticationRepository.getGOOGLE_SIGN_IN()));
-        verify(isSignedIn).postValue(any());
+        verify(isSignedIn).setValue(anyBoolean());
 
     }
 
