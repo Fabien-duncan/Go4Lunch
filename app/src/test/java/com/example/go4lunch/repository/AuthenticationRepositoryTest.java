@@ -87,7 +87,6 @@ public class AuthenticationRepositoryTest {
         when(mWorkmatesMutableLiveData.getValue()).thenReturn(workmateList);
 
         mAuthenticationRepository = new AuthenticationRepository(mContext,mActivity,mAuth,db, mFirebaseApi, mGoogleSignInClient, isSignedIn);
-
     }
 
     @Test

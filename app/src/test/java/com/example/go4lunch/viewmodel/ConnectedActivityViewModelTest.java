@@ -67,11 +67,6 @@ public class ConnectedActivityViewModelTest {
 
         mConnectedActivityViewModel = new ConnectedActivityViewModel(mAuthenticationRepository, mConnectedActivityRepository);
     }
-    @Test
-    public void setupGoogleSignInOptions() {
-        mConnectedActivityViewModel.setupGoogleSignInOptions();
-        Mockito.verify(mAuthenticationRepository).setupGoogleSignInOptions();
-    }
 
     @Test
     public void signOut() {

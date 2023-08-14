@@ -39,6 +39,7 @@ import com.example.go4lunch.MainActivity;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.AutocompleteRecyclerViewAdapter;
 import com.example.go4lunch.adapter.RestaurantRecyclerViewInterface;
+import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
@@ -166,9 +167,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             return false;
         });
 
-        AuthenticationRepository authenticationRepository = new AuthenticationRepository(this);
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this, this);
         mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, new ConnectedActivityRepository(this));
-        mConnectedActivityViewModel.setupGoogleSignInOptions();
+       //mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel();

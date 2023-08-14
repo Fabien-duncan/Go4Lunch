@@ -40,9 +40,6 @@ public class ConnectedActivityViewModel extends ViewModel {
     }
 
 
-    public void setupGoogleSignInOptions(){
-        mAuthenticationRepository.setupGoogleSignInOptions();
-    }
     public void signOut() {
         mAuthenticationRepository.signOut();
     }

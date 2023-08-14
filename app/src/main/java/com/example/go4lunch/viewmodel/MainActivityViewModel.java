@@ -35,7 +35,4 @@ public class MainActivityViewModel extends ViewModel {
     public void signIn() {
         mAuthenticationRepository.signIn();
     }
-    public void setupGoogleSignInOptions(){
-        mAuthenticationRepository.setupGoogleSignInOptions();
-    }
 }

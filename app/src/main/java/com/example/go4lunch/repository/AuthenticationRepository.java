@@ -91,27 +91,15 @@ public class AuthenticationRepository {
         }
     }
 
-
-    public void setupGoogleSignInOptions(){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(mContext.getResources().getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(mContext,gso);
-        mAuth = FirebaseAuth.getInstance();
-    }
-
     public void signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         mActivity.startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
         isUserSignedIn.postValue(true);
     }
     public void signOut(){
-        //FirebaseAuth.getInstance().signOut();
         mAuth.signOut();
         mGoogleSignInClient.signOut();
         isUserSignedIn.postValue(false);
-        //Toast.makeText(mContext, "signed Out", Toast.LENGTH_LONG).show();
 
     }
     public void handleSignInResult(Intent data){

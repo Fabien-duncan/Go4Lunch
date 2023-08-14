@@ -79,11 +79,6 @@ public class MainActivityViewModelTest {
         Mockito.verify(mAuthenticationRepository).signIn();
     }
 
-    @Test
-    public void setupGoogleSignInOptions() {
-        mMainActivityViewModel.setupGoogleSignInOptions();
-        Mockito.verify(mAuthenticationRepository).setupGoogleSignInOptions();
-    }
 
     private void setUpRepositoryMethods(){
         doAnswer(new Answer() {

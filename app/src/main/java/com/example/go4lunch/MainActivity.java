@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.go4lunch.databinding.ActivityMainBinding;
+import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.ConnectedActivity;
@@ -35,9 +36,9 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         View view = activityMainBinding.getRoot();
         setContentView(view);
 
-        AuthenticationRepository authenticationRepository = new AuthenticationRepository(this);
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this, this);
         mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
-        mMainActivityViewModel.setupGoogleSignInOptions();
+        //mMainActivityViewModel.setupGoogleSignInOptions();
         getNotificationPermission();
 
         mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
@@ -67,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode,data);
 
-        System.out.println("an activity result");
         if(requestCode == mMainActivityViewModel.getGOOGLE_SIGN_IN()){
             mMainActivityViewModel.handleSignInResult(data);
         }
