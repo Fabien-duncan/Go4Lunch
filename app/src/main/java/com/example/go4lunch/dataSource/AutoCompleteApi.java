@@ -26,9 +26,10 @@ public class AutoCompleteApi {
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private List<Restaurant> nearbyRestaurants;
     private Context mContext;
+    PlacesClient placesClient;
 
-    public AutoCompleteApi(Context context){
-        mContext = context;
+    public AutoCompleteApi(PlacesClient placesClient){
+        this.placesClient = placesClient;
         restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
     }
 
@@ -46,14 +47,6 @@ public class AutoCompleteApi {
                 .setSessionToken(token)
                 .setQuery(text)
                 .build();
-
-        String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
-        Places.initialize(mContext.getApplicationContext(), key);
-
-        // Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(mContext);
         List<String> placeIds = new ArrayList<>();
         placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
             for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {

@@ -44,7 +44,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
         super.onViewCreated(view, savedInstanceState);
         RecyclerView workmatesRecyclerView = view.findViewById(R.id.workmates_rv);
 
-        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext(), this.getActivity());
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext());
         WorkmatesViewModel workmatesViewModel = new WorkmatesViewModel(authenticationRepository);
         workmatesViewModel.setCurrentWorkmates();
         //mWorkmatesViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(MainActivityViewModel.class);

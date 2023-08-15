@@ -70,7 +70,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogueTheme);
         mConnectedActivityViewModel = ((ConnectedActivity) requireActivity()).getConnectedActivityViewModel();
-        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext(), this.getActivity());
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext());
         isAttending = false;
         isFavorite = false;
 

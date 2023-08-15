@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
 
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.di.Injection;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         View view = activityMainBinding.getRoot();
         setContentView(view);
 
-        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this, this);
+        AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this);
         mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
         //mMainActivityViewModel.setupGoogleSignInOptions();
         getNotificationPermission();
@@ -54,6 +55,15 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             if(firebaseUser != null) {
                 System.out.println("Name: " + firebaseUser.getDisplayName());
                 showMapsActivity(firebaseUser);
+            }
+        });
+        mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(s!=null){
+                    Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

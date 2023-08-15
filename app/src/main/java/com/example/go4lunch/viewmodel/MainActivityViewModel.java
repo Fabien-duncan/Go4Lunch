@@ -11,10 +11,12 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivityViewModel extends ViewModel {
     private final AuthenticationRepository mAuthenticationRepository;
     private final MutableLiveData<FirebaseUser> userData;
+    private final MutableLiveData<String> authMessageMutableLiveData;
 
     public MainActivityViewModel(AuthenticationRepository authenticationRepository){
         mAuthenticationRepository = authenticationRepository;
         userData = authenticationRepository.getFirebaseUserMutableLiveData();
+        authMessageMutableLiveData = mAuthenticationRepository.getAuthMessageMutableLiveData();
     }
     public void firebaseCreateUser(String email, String password, String displayName){
         mAuthenticationRepository.firebaseCreateUser(email,password,displayName);
@@ -35,5 +37,8 @@ public class MainActivityViewModel extends ViewModel {
 
     public void firebaseAuthWithGoogle(String idToken) {
         mAuthenticationRepository.firebaseAuthWithGoogle(idToken);
+    }
+    public MutableLiveData<String> getAuthMessageMutableLiveData() {
+        return authMessageMutableLiveData;
     }
 }

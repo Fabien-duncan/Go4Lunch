@@ -30,10 +30,10 @@ import java.util.concurrent.Executors;
 
 public class Injection {
 
-    public static AuthenticationRepository createAuthenticationRepository(Context context, Activity activity){
+    public static AuthenticationRepository createAuthenticationRepository(Context context){
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        FirebaseApi firebaseApi = new FirebaseApi(context);
+        FirebaseApi firebaseApi = new FirebaseApi();
         GoogleSignInClient googleSignInClient = setupGoogleSignInOptions(context);
         return new AuthenticationRepository(firebaseAuth, firebaseFirestore, firebaseApi, googleSignInClient);
     }
@@ -41,7 +41,14 @@ public class Injection {
         Executor executor = Executors.newSingleThreadExecutor();
         MutableLiveData<List<Restaurant>> restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         ApiService apiService = new ApiService();
-        AutoCompleteApi autoCompleteApi = new AutoCompleteApi(context);
+        String key = BuildConfig.GMP_key;
+
+        // Initialize Places.
+        Places.initialize(context.getApplicationContext(), key);
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(context);
+        AutoCompleteApi autoCompleteApi = new AutoCompleteApi(placesClient);
         return new ConnectedActivityRepository(apiService, autoCompleteApi, restaurantsMutableLiveData, executor);
     }
     public static RestaurantDetailRepository createRestaurantDetailRepository(Context context){

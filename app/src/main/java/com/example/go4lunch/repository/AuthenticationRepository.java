@@ -24,6 +24,7 @@ public class AuthenticationRepository {
 
     private final MutableLiveData<User> currentUserMutableLiveData;
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
+    private final MutableLiveData<String> authMessageMutableLiveData;
     private FirebaseAuth mAuth;
 
     private final FirebaseFirestore db;
@@ -38,6 +39,7 @@ public class AuthenticationRepository {
 
 
         mFirebaseApi = firebaseApi;
+        this.authMessageMutableLiveData = mFirebaseApi.getAuthMessageMutableLiveData();
         this.currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
         this.workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();
         this.mFirebaseUserMutableLiveData = mFirebaseApi.getFirebaseUserMutableLiveData();
@@ -45,6 +47,10 @@ public class AuthenticationRepository {
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
             setCurrentUser();
         }
+    }
+
+    public MutableLiveData<String> getAuthMessageMutableLiveData() {
+        return authMessageMutableLiveData;
     }
 
     public Intent signIn(){

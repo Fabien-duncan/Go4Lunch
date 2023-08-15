@@ -28,14 +28,19 @@ public class FirebaseApi{
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
     private final MutableLiveData<User> currentUserMutableLiveData;
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
+    private final MutableLiveData<String> authMessageMutableLiveData;
 
-    public FirebaseApi(Context context){
-        this.mContext = context;
+    public FirebaseApi(){
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mFirebaseUserMutableLiveData = new MutableLiveData<>();
         currentUserMutableLiveData = new MutableLiveData<>();
         workmatesMutableLiveData = new MutableLiveData<>(new ArrayList<>());
+        authMessageMutableLiveData = new MutableLiveData<>();
+    }
+
+    public MutableLiveData<String> getAuthMessageMutableLiveData() {
+        return authMessageMutableLiveData;
     }
 
     public MutableLiveData<FirebaseUser> getFirebaseUserMutableLiveData() {
@@ -77,9 +82,9 @@ public class FirebaseApi{
                         });
 
                         mFirebaseUserMutableLiveData.postValue(user);
-                        Toast.makeText(mContext, "SignIn successfully!", Toast.LENGTH_LONG).show();
+                        authMessageMutableLiveData.postValue("SignIn successfully!");
                     }else{
-                        Toast.makeText(mContext, "SignIn Failed!", Toast.LENGTH_LONG).show();
+                        authMessageMutableLiveData.postValue("SignIn failed!");
                         Log.w("TAG", "signInWithCredential:failure", task.getException());
                     }
                 });
@@ -93,13 +98,11 @@ public class FirebaseApi{
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         mFirebaseUserMutableLiveData.postValue(user);
-                        //isUserSignedIn.postValue(true);
+                        authMessageMutableLiveData.postValue("SignIn successfully!");
 
                     } else {
-                        // If sign in fails, display a message to the user.
+                        authMessageMutableLiveData.postValue("SignIn failed!");
                         Log.w("SignInWithPassword", "signInWithEmail:failure", task.getException());
-                        Toast.makeText(mContext, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -114,9 +117,9 @@ public class FirebaseApi{
                         User newUser = new User(displayName,email, Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg"));
                         documentReference.set(newUser).addOnSuccessListener(unused -> Log.d("Create User", "onSuccess: user Profile is created for" + userId));
                         mFirebaseUserMutableLiveData.postValue(user);
-                        //isUserSignedIn.postValue(true);
+                        authMessageMutableLiveData.postValue("SignIn successfully!");
                     } else {
-                        Toast.makeText(mContext, "Authentication failed!!!", Toast.LENGTH_LONG).show();
+                        authMessageMutableLiveData.postValue("SignIn failed!");
 
                     }
                 });
