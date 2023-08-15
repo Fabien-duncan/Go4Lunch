@@ -19,7 +19,6 @@ import java.util.List;
 
 public class AuthenticationRepository {
     private GoogleSignInClient mGoogleSignInClient;
-    private final int GOOGLE_SIGN_IN = 100;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
 
     private final MutableLiveData<User> currentUserMutableLiveData;
@@ -71,9 +70,6 @@ public class AuthenticationRepository {
     }
     public void firebaseCreateUser(String email, String password, String displayName){
         mFirebaseApi.firebaseCreateUser(email,password,displayName);
-    }
-    public int getGOOGLE_SIGN_IN(){
-        return GOOGLE_SIGN_IN;
     }
 
     public MutableLiveData<FirebaseUser> getFirebaseUserMutableLiveData() {

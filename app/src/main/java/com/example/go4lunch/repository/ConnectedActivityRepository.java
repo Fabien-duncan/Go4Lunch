@@ -50,7 +50,6 @@ public class ConnectedActivityRepository {
 
     public void setGooglePlacesData(){
         String key = BuildConfig.GMP_key;
-        /*Executor executor = Executors.newSingleThreadExecutor();*/
 
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(currentLocation.getLatitude()).append(",").append(currentLocation.getLongitude());
@@ -59,16 +58,11 @@ public class ConnectedActivityRepository {
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=").append(key);
 
-        //Log.d("ConnectedActivity", "placesUrl: " + googlePlacesUrl);
         executor.execute(() -> {
-            //googlePlacesLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString()));
             nearbyRestaurants = mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation);
             setBounds();
             restaurantsMutableLiveData.postValue(nearbyRestaurants);
         });
-
-        //restaurantsMutableLiveData.postValue(mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation));
-
     }
 
 
@@ -78,17 +72,14 @@ public class ConnectedActivityRepository {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateAttending(List<User> workmates){
-        //Log.d("checkTime", "start: " + startOfLunch + " end: " + endOfLunch + " now: " + now + "\n workmate Time: " + workmates.get(5).getChoiceTimeStamp() + " is today " + workmates.get(5).isToday());
         List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
         List<String> restaurantID = new ArrayList<>();
         for(int i = 0; i<workmates.size();i++){
             if(!workmates.get(i).getLunchChoiceId().isEmpty() && workmates.get(i).isToday()){
                 restaurantID.add(workmates.get(i).getLunchChoiceId()); }
         }
-        //Log.d("updateAttending", restaurantID.toString());
         if(nearbyRestaurants != null){
             for(int i = 0; i<nearbyRestaurants.size();i++){
-                //Log.d("updateAttending", "Restaurant Id " + nearbyRestaurants.get(i).getId() + " number of occurance " + Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
                 nearbyRestaurants.get(i).setAttendanceNum(Collections.frequency(restaurantID, nearbyRestaurants.get(i).getId()));
             }
         }

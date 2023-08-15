@@ -61,6 +61,8 @@ public class AuthenticationRepositoryTest {
     @Mock
     private MutableLiveData<List<User>> mWorkmatesMutableLiveData;
     @Mock
+    private MutableLiveData<String> mAuthMessageMutableLiveData;
+    @Mock
     FirebaseUser firebaseUser;
 
     private User currentUser;
@@ -80,15 +82,12 @@ public class AuthenticationRepositoryTest {
         generateWorkmates();
         when(mFirebaseApi.getWorkmatesMutableLiveData()).thenReturn(mWorkmatesMutableLiveData);
         when(mWorkmatesMutableLiveData.getValue()).thenReturn(workmateList);
+        when(mFirebaseApi.getAuthMessageMutableLiveData()).thenReturn(mAuthMessageMutableLiveData);
+        when(mAuthMessageMutableLiveData.getValue()).thenReturn("test message");
 
         mAuthenticationRepository = new AuthenticationRepository(mAuth,db, mFirebaseApi, mGoogleSignInClient);
     }
 
-    @Test
-    public void setupGoogleSignInOptions() {
-
-
-    }
 
     @Test
     public void signIn() {
@@ -147,11 +146,13 @@ public class AuthenticationRepositoryTest {
         assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
-
     @Test
-    public void getGOOGLE_SIGN_IN() {
-    }
+    public void getAuthMessageMutableLiveData(){
+        MutableLiveData<String> result = mAuthenticationRepository.getAuthMessageMutableLiveData();
 
+        assertNotNull(result);
+        assertEquals(mAuthMessageMutableLiveData, result);
+    }
     @Test
     public void getFirebaseUserMutableLiveData() {
         MutableLiveData<FirebaseUser> result = mAuthenticationRepository.getFirebaseUserMutableLiveData();

@@ -2,7 +2,10 @@ package com.example.go4lunch.viewmodel;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 
@@ -13,24 +16,32 @@ import com.example.go4lunch.repository.AuthenticationRepository;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivityViewModelTest {
+    @Mock
     private AuthenticationRepository mAuthenticationRepository;
+    @Mock
     private FirebaseUser mFirebaseUser;
     private MainActivityViewModel mMainActivityViewModel;
+    @Mock
+    private MutableLiveData<String> mAuthMessageMutableLiveData;
     private User newUser;
+    @Rule //initMocks
+    public MockitoRule rule = MockitoJUnit.rule();
     @Before
     public void setUp() throws Exception {
-        mAuthenticationRepository = Mockito.mock(AuthenticationRepository.class);
-        mFirebaseUser = Mockito.mock(FirebaseUser.class);
         Mockito.doReturn("Fabien").when(mFirebaseUser).getDisplayName();
 
         MutableLiveData<FirebaseUser> mutableFirebaseUser= Mockito.spy(new MutableLiveData<>(mFirebaseUser));
@@ -53,14 +64,6 @@ public class MainActivityViewModelTest {
         Mockito.verify(mAuthenticationRepository).firebaseAuthWithEmailAndPassword(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
     }
 
-
-    @Test
-    public void getGOOGLE_SIGN_IN() {
-        Mockito.doReturn(123).when(mAuthenticationRepository).getGOOGLE_SIGN_IN();
-        int signInCode = mMainActivityViewModel.getGOOGLE_SIGN_IN();
-        assertEquals(123, signInCode);
-    }
-
     @Test
     public void getUserData() {
         FirebaseUser tempUser =  mMainActivityViewModel.getUserData().getValue();
@@ -68,9 +71,25 @@ public class MainActivityViewModelTest {
     }
 
     @Test
+    public void getAuthMessageMutableLiveData(){
+        MutableLiveData<String> result = mMainActivityViewModel.getAuthMessageMutableLiveData();
+        String message = result.getValue();
+
+        assertNotNull(result);
+        assertEquals(mAuthMessageMutableLiveData, result);
+        assertEquals("test message", message);
+    }
+
+    @Test
     public void signIn(){
         mMainActivityViewModel.signIn();
         Mockito.verify(mAuthenticationRepository).signIn();
+    }
+    @Test
+    public void firebaseAuthWithGoogle(){
+        mMainActivityViewModel.firebaseAuthWithGoogle("testToken");
+
+        verify(mAuthenticationRepository).firebaseAuthWithGoogle(anyString());
     }
 
 
@@ -84,5 +103,8 @@ public class MainActivityViewModelTest {
                 return(null);
             }
         }).when(mAuthenticationRepository).firebaseCreateUser(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+
+        when(mAuthenticationRepository.getAuthMessageMutableLiveData()).thenReturn(mAuthMessageMutableLiveData);
+        when(mAuthMessageMutableLiveData.getValue()).thenReturn("test message");
     }
 }

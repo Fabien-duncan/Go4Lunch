@@ -24,9 +24,6 @@ public class MainActivityViewModel extends ViewModel {
     public void signInWithEmail(String email, String password){
         mAuthenticationRepository.firebaseAuthWithEmailAndPassword(email,password);
     }
-    public int getGOOGLE_SIGN_IN(){
-        return mAuthenticationRepository.getGOOGLE_SIGN_IN();
-    }
 
     public MutableLiveData<FirebaseUser> getUserData() {
         return userData;
