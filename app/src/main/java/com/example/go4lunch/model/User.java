@@ -5,10 +5,15 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class User {
     private String displayName;
@@ -121,8 +126,7 @@ public class User {
         }
         return found;
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public boolean isToday(){
+    /*public boolean isToday(){
         if(choiceTimeStamp == null) return false;
         else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -141,5 +145,31 @@ public class User {
 
             return choiceTimeStamp.compareTo(startOfLunch) >= 0 && choiceTimeStamp.compareTo(endOfLunch) < 0;
         }
+    }*/
+    public boolean isToday() {
+        if (choiceTimeStamp == null) return false;
+        else {
+            Calendar now = Calendar.getInstance();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+
+            String endOfLunch;
+            String startOfLunch;
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+            if (calendar.get(Calendar.HOUR_OF_DAY) <= 14) {
+                endOfLunch = dateFormatter.format(new Date()) + "T14:00";
+                calendar.setTimeInMillis(calendar.getTimeInMillis() - TimeUnit.DAYS.toMillis(1));
+                startOfLunch = dateFormatter.format(calendar.getTime()) + "T14:00";
+            } else {
+                startOfLunch = dateFormatter.format(new Date()) + "T14:00";
+                calendar.setTimeInMillis(calendar.getTimeInMillis() + TimeUnit.DAYS.toMillis(1));
+                endOfLunch = dateFormatter.format(calendar.getTime()) + "T14:00";
+            }
+
+            return choiceTimeStamp.compareTo(startOfLunch) >= 0 && choiceTimeStamp.compareTo(endOfLunch) < 0;
+        }
     }
+
 }

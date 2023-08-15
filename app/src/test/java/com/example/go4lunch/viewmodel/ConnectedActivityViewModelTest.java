@@ -122,8 +122,8 @@ public class ConnectedActivityViewModelTest {
         assertEquals("123", currentUser.getLunchChoiceId());
         assertEquals("Restaurant1", currentUser.getLunchChoiceName());
 
-        mConnectedActivityViewModel.updateUserRestaurantChoice("04", "Restaurant5", LocalDateTime.now());
-        Mockito.verify(mAuthenticationRepository).updateUserRestaurantChoice(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any(LocalDateTime.class));
+        mConnectedActivityViewModel.updateUserRestaurantChoice("04", "Restaurant5", "2023-08-15T16:00");
+        Mockito.verify(mAuthenticationRepository).updateUserRestaurantChoice(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), anyString());
         assertEquals("04", currentUser.getLunchChoiceId());
         assertEquals("Restaurant5", currentUser.getLunchChoiceName());
     }
@@ -178,7 +178,7 @@ public class ConnectedActivityViewModelTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 String newId = (String)invocation.getArguments()[0];
                 String newChoiceName = (String)invocation.getArguments()[1];
-                LocalDateTime timeStamp = (LocalDateTime)invocation.getArguments()[2];
+                String timeStamp = (String)invocation.getArguments()[2];
 
                 currentUser.setChoiceTimeStamp(timeStamp.toString());
                 currentUser.setLunchChoiceId(newId);
@@ -186,7 +186,7 @@ public class ConnectedActivityViewModelTest {
 
                 return(null);
             }
-        }).when(mAuthenticationRepository).updateUserRestaurantChoice(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any(LocalDateTime.class));
+        }).when(mAuthenticationRepository).updateUserRestaurantChoice(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), anyString());
 
         doAnswer(new Answer() {
             @Override

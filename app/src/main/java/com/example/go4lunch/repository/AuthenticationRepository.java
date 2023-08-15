@@ -92,10 +92,10 @@ public class AuthenticationRepository {
     public void setCurrentUser(){
         mFirebaseApi.setCurrentUser();
     }
-    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
+    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, String choiceTimeStamp){
         FirebaseUser user = mAuth.getCurrentUser();
         assert user != null;
-        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoiceId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp.toString());
+        db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoiceId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp);
         setCurrentUser();
     }
     public void updateUserRestaurantFavorite(String restaurantID, String type){

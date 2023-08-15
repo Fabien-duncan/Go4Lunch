@@ -46,8 +46,11 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class RestaurantDetailDialogue extends DialogFragment implements WorkmatesRecyclerViewInterface {
     private Restaurant currentRestaurant;
@@ -84,7 +87,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
 
     @SuppressLint("UseCompatTextViewDrawableApis")
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -100,8 +102,9 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         Button phone = view.findViewById(R.id.restaurant_detail_call_btn);
         FloatingActionButton attend = view.findViewById(R.id.restaurant_detail_attend_fb);
 
-        like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+        like.setAlpha(0.5f);
+        /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));*/
 
         restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
         restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
@@ -145,16 +148,18 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                     }
                 }
                 if(user.isFavorite(currentRestaurant.getId())){
-                    like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                    like.setAlpha(1f);
+                    /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
                     isFavorite = true;
                 }
             }
             else{
                 attend.setImageResource(R.drawable.baseline_check_circle_24);
                 isAttending = true;
-                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setAlpha(0.5f);
+                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
                 isFavorite = true;
             }
 
@@ -196,13 +201,13 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         });
         like.setOnClickListener(view13 -> {
             if(isFavorite){
-                //like.setAlpha(0.5f);
-                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+                like.setAlpha(0.5f);
+                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));*/
             }else {
-                //like.setAlpha(1.0f);
-                like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setAlpha(1.0f);
+                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
+                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
             }
             isFavorite = !isFavorite;
         });
@@ -236,20 +241,24 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                 }
             });
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onDestroy() {
-        LocalDateTime timeChoiceStamp = LocalDateTime.now();
+
+        Calendar timeChoiceStamp = Calendar.getInstance();
+        timeChoiceStamp.setTimeInMillis(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+        String formattedDate = sdf.format(timeChoiceStamp.getTime());
+
         //Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
         if(isAttending ){
             if(!currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) || (isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) && !currentUser.isToday())){
                 Log.d("Restaurant details", "updating choice...");
-                mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), timeChoiceStamp);
+                mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), formattedDate);
                 saveData();
             }
         }else if(currentUser.getLunchChoiceId().equals(currentRestaurant.getId())&& currentUser.isToday()){
             Log.d("Restaurant details", "clearing current choice...");
-            mConnectedActivityViewModel.updateUserRestaurantChoice("", "", timeChoiceStamp);
+            mConnectedActivityViewModel.updateUserRestaurantChoice("", "", formattedDate);
         }
 
         if(isFavorite && !currentUser.isFavorite(currentRestaurant.getId())){

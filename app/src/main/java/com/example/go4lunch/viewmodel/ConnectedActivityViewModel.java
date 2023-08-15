@@ -64,7 +64,7 @@ public class ConnectedActivityViewModel extends ViewModel {
         return restaurantsMutableLiveData;
     }
 
-    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, LocalDateTime choiceTimeStamp){
+    public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, String choiceTimeStamp){
         mAuthenticationRepository.updateUserRestaurantChoice(newChoiceId, newChoiceName, choiceTimeStamp);
     }
     public void updateUserRestaurantFavorite(String restaurantID, String type){

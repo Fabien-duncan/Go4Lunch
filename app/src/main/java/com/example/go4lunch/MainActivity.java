@@ -3,6 +3,8 @@ package com.example.go4lunch;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,9 +12,12 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
 
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.di.Injection;
@@ -26,15 +31,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CreateAccountFragment.CreateAccountListener, SignInFragment.SignInListener {
+    private static final int REQUEST_CODE = 1;
     private MainActivityViewModel mMainActivityViewModel;
     private ActivityResultLauncher<Intent> signInLauncher;
 
@@ -49,22 +48,19 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this);
         mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
         //mMainActivityViewModel.setupGoogleSignInOptions();
-        getNotificationPermission();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)getNotificationPermission();
 
         mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
             if(firebaseUser != null) {
-                System.out.println("Name: " + firebaseUser.getDisplayName());
+                Log.d("mainActivity", "Name: " + firebaseUser.getDisplayName());
                 showMapsActivity(firebaseUser);
             }
         });
-        mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                if(s!=null){
-                    Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
-                }
-
+        mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, s -> {
+            if(s!=null){
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
             }
+
         });
 
         signInLauncher = registerForActivityResult(
@@ -108,28 +104,34 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         startActivity(intent);
         finish();
     }
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void getNotificationPermission(){
-        Dexter.withContext(this).withPermissions(Manifest.permission.POST_NOTIFICATIONS).withListener(new MultiplePermissionsListener() {
-            @Override
-            public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
-                if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                    Log.d("mainActicity", "message permissions granted");
 
-                }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    REQUEST_CODE);
+            Log.d("mainActicity", "message NOT permissions granted");
+        } else {
+            Log.d("mainActicity", "message permissions granted");
+            // Permission is already granted
+        }
 
-                // check for permanent decline of any permission
-                if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
-                    Log.d("mainActicity", "message NOT permissions granted");
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-                }
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                Log.d("mainActicity", "permission granted");
+            } else {
+                Log.d("mainActicity", "permission denied");
+                // Permission denied
             }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
-                permissionToken.continuePermissionRequest();
-            }
-        }).onSameThread().check();
-
+        }
     }
 
     @Override

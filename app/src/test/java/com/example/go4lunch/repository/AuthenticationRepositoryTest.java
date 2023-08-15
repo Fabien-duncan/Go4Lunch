@@ -235,7 +235,7 @@ public class AuthenticationRepositoryTest {
     public void updateUserRestaurantChoice() {
         // Mock Firebase user and authentication
         FirebaseUser mockUser = Mockito.mock(FirebaseUser.class);
-        LocalDateTime choiceTimeStamp = LocalDateTime.now();
+        String choiceTimeStamp = "2023-08-15T16:00";
 
         // Mock Firebase user and authentication
         when(mAuth.getCurrentUser()).thenReturn(mockUser);
