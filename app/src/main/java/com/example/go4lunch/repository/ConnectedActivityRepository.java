@@ -70,7 +70,7 @@ public class ConnectedActivityRepository {
         return restaurantsMutableLiveData;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     public void updateAttending(List<User> workmates){
         List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
         List<String> restaurantID = new ArrayList<>();

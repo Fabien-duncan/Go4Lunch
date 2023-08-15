@@ -70,7 +70,6 @@ public class ConnectedActivityViewModel extends ViewModel {
     public void updateUserRestaurantFavorite(String restaurantID, String type){
         mAuthenticationRepository.updateUserRestaurantFavorite(restaurantID, type);
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateAttending(List<User> workmates){
             mConnectedActivityRepository.updateAttending(workmates);
     }

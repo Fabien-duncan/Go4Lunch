@@ -141,11 +141,9 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
             mRestaurantDetailViewModel.setDetail(currentRestaurant);
 
             if(currentRestaurant != null){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId()) && user.isToday()){
-                        attend.setImageResource(R.drawable.baseline_check_circle_24);
-                        isAttending = true;
-                    }
+                if(user.getLunchChoiceId()!= null && user.getLunchChoiceId().equals(currentRestaurant.getId()) && user.isToday()){
+                    attend.setImageResource(R.drawable.baseline_check_circle_24);
+                    isAttending = true;
                 }
                 if(user.isFavorite(currentRestaurant.getId())){
                     like.setAlpha(1f);

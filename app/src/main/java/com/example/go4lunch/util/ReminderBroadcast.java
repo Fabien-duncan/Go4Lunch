@@ -30,7 +30,6 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
     public static String text;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "UnsafeProtectedBroadcastReceiver"})
     @Override
     public void onReceive(Context context, Intent intent) {

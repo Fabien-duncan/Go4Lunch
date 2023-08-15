@@ -66,16 +66,14 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     @Override
     public void onItemClicked(int position) {
         Log.d("workmateClicked", "you have clicked on " + workmatesList.get(position).getDisplayName());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if(!workmatesList.get(position).isToday() || workmatesList.get(position).getLunchChoiceId().isEmpty()){
-                Toast.makeText(getActivity(), "Workmate has not decided on a lunch choice yet!", Toast.LENGTH_LONG).show();
-            }else{
-                Restaurant tempRestaurant = new Restaurant();
-                tempRestaurant.setId(workmatesList.get(position).getLunchChoiceId());
-                RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
-                restaurantDetailDialogue.setCurrentRestaurant(tempRestaurant);
-                restaurantDetailDialogue.show(this.requireActivity().getSupportFragmentManager(), getString(R.string.restaurant_details));
-            }
+        if(!workmatesList.get(position).isToday() || workmatesList.get(position).getLunchChoiceId().isEmpty()){
+            Toast.makeText(getActivity(), "Workmate has not decided on a lunch choice yet!", Toast.LENGTH_LONG).show();
+        }else{
+            Restaurant tempRestaurant = new Restaurant();
+            tempRestaurant.setId(workmatesList.get(position).getLunchChoiceId());
+            RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+            restaurantDetailDialogue.setCurrentRestaurant(tempRestaurant);
+            restaurantDetailDialogue.show(this.requireActivity().getSupportFragmentManager(), getString(R.string.restaurant_details));
         }
     }
 }

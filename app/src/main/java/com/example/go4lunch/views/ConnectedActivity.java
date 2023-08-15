@@ -90,7 +90,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,7 +264,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

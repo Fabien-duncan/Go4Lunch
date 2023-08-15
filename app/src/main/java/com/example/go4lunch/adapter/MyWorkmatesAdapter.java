@@ -40,7 +40,6 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
         return new MyViewHolder(v,mWorkmatesRecyclerViewInterface);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MyWorkmatesAdapter.MyViewHolder holder, int position) {
         User user = workmatesList.get(position);
