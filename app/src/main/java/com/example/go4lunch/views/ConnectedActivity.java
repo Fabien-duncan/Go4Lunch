@@ -174,9 +174,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel();
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setCalendar();
-        }
+
+        setCalendar();
+
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -361,7 +361,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
     public void setCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 12);
@@ -379,7 +378,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }else{
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
