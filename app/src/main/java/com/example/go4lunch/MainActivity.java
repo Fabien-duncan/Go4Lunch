@@ -58,7 +58,10 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         });
         mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, s -> {
             if(s!=null){
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                String msg = "";
+                if(s.equals("success")) msg = getString(R.string.auth_success);
+                else if(s.equals("fail")) msg = getString(R.string.auth_failed);
+                if(!msg.isEmpty())Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         signInLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    Log.d("signInLauncher", "loggin code: " + result.getResultCode());
+                    Log.d("signInLauncher", "login code: " + result.getResultCode());
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         try{
                             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
@@ -74,11 +77,8 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                             mMainActivityViewModel.firebaseAuthWithGoogle(account.getIdToken());
                         } catch (ApiException e){
                             Log.w("TAG","SignInResult: failed code=" + e.getStatusCode());
-                            Toast.makeText(this, "SignIn Failed!", Toast.LENGTH_LONG).show();
                             Log.d("TAG", "SignIn Failed.");
                         }
-
-                        //mMainActivityViewModel.handleSignInResult(result.getData());
                         Log.d("signInLauncher", "has launched");
                     } else {
                         Log.d("signInLauncher", "failed to launch");

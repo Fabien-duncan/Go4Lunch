@@ -3,6 +3,7 @@ package com.example.go4lunch.views;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,8 +45,17 @@ public class CreateAccountFragment extends DialogFragment {
             String displayName = displayName_et.getText().toString();
             String email = email_et.getText().toString();
             String password = password_et.getText().toString();
-            listener.userInformation(displayName,email,password);
-            dismiss();
+            if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                if(password.length() >= 6){
+                    listener.userInformation(displayName,email,password);
+                    dismiss();
+                }else {
+                    Toast.makeText(getContext(), "password is not long enough, it needs to be at least 6 characters long",Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getContext(), "email is no formatted correctly", Toast.LENGTH_SHORT).show();
+            }
+
         });
         return view;
     }

@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseApi{
-    private Context mContext;
     private FirebaseAuth mAuth;
     private final FirebaseFirestore db;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
@@ -82,9 +82,9 @@ public class FirebaseApi{
                         });
 
                         mFirebaseUserMutableLiveData.postValue(user);
-                        authMessageMutableLiveData.postValue("SignIn successfully!");
+                        authMessageMutableLiveData.postValue("success");
                     }else{
-                        authMessageMutableLiveData.postValue("SignIn failed!");
+                        authMessageMutableLiveData.postValue("fail");
                         Log.w("TAG", "signInWithCredential:failure", task.getException());
                     }
                 });
@@ -98,10 +98,10 @@ public class FirebaseApi{
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         mFirebaseUserMutableLiveData.postValue(user);
-                        authMessageMutableLiveData.postValue("SignIn successfully!");
+                        authMessageMutableLiveData.postValue("success");
 
                     } else {
-                        authMessageMutableLiveData.postValue("SignIn failed!");
+                        authMessageMutableLiveData.postValue("fail");
                         Log.w("SignInWithPassword", "signInWithEmail:failure", task.getException());
                     }
                 });
@@ -117,9 +117,10 @@ public class FirebaseApi{
                         User newUser = new User(displayName,email, Uri.parse("https://img.freepik.com/free-icon/user_318-563642.jpg"));
                         documentReference.set(newUser).addOnSuccessListener(unused -> Log.d("Create User", "onSuccess: user Profile is created for" + userId));
                         mFirebaseUserMutableLiveData.postValue(user);
-                        authMessageMutableLiveData.postValue("SignIn successfully!");
+                        authMessageMutableLiveData.postValue("success");
                     } else {
-                        authMessageMutableLiveData.postValue("SignIn failed!");
+                        Log.d("createAccount", "message" + task.getException().getMessage());
+                        authMessageMutableLiveData.postValue("fail");
 
                     }
                 });
@@ -155,14 +156,12 @@ public class FirebaseApi{
                     User workmate = document.toObject(User.class);
                     assert user != null;
                     if(!workmate.getEmail().equals(user.getEmail())){
-                        System.out.println("adding a workmate");
                         list.add(workmate);
                     }
                 }
                 workmatesMutableLiveData.postValue(list);
-                Log.d("workmates", list.get(0).getDisplayName());
             } else {
-                Log.d("TAG", "Error getting documents: ", task.getException());
+                Log.d("FirebaseApi", "Error getting documents: ", task.getException());
             }
         });
     }
@@ -176,15 +175,13 @@ public class FirebaseApi{
                     User workmate = document.toObject(User.class);
                     assert user != null;
                     if(!workmate.getEmail().equals(user.getEmail()) && workmate.getLunchChoiceId().equals(restaurantId)){
-                        System.out.println("adding a workmate");
                         User tempUser = document.toObject(User.class);
                         if(tempUser.isToday())list.add(tempUser);
                     }
                 }
                 workmatesMutableLiveData.postValue(list);
-                Log.d("TAG", list.toString());
             } else {
-                Log.d("TAG", "Error getting documents: ", task.getException());
+                Log.d("FirebaseApi", "Error getting documents: ", task.getException());
             }
         });
     }

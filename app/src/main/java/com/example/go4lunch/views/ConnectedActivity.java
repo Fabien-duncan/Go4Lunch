@@ -120,6 +120,8 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         mListViewFragment = new ListViewFragment();
         mWorkmatesFragment = new WorkmatesFragment();
 
+        toolbar.setTitle(R.string.map_view);
+
         setSupportActionBar(toolbar);
 
         locationCallback = new LocationCallback() {
@@ -148,7 +150,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 1) {
                     Log.d("searchView", "text is " + newText);
-                    if (currentFragment.equals("map"))
+                    if (currentFragment.equals("Map"))
                         autocompleteDisplay.setVisibility(View.VISIBLE);
                     mConnectedActivityViewModel.autocomplete(newText);
                 } else {
@@ -169,7 +171,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this);
         ConnectedActivityRepository connectedActivityRepository = Injection.createConnectedActivityRepository(this);
         mConnectedActivityViewModel = new ConnectedActivityViewModel(authenticationRepository, connectedActivityRepository);
-       //mConnectedActivityViewModel.setupGoogleSignInOptions();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel();
@@ -198,8 +199,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             autocompleteAdapter.setRestaurantList(restaurants);
             if (restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) {
                 mConnectedActivityViewModel.setCurrentWorkmates();
-
-                //nearbyRestaurants = restaurants;
             }
         });
         mConnectedActivityViewModel.getAllWorkmates().observe(this, users -> {
@@ -210,7 +209,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             currentUser = user;
             name.setText(user.getDisplayName());
             Glide.with(sideBarView).load(currentUser.getPhotoUrl()).circleCrop().into(profilePic);
-            //Log.d("currentUser", "size of favorite List: " + currentUser.getFavoriteRestaurants().size());
         });
 
         menu.setOnItemSelectedListener(item -> {
@@ -218,7 +216,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 case R.id.mapView:
                     if (isLocationGranted) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
-                        currentFragment = "map";
+                        currentFragment = getString(R.string.map_view);
                         searchView.setVisibility(View.VISIBLE);
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
@@ -227,7 +225,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 case R.id.listView:
                     if (isLocationGranted) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mListViewFragment).commit();
-                        currentFragment = "list";
+                        currentFragment = getString(R.string.list_view);
                         searchView.setVisibility(View.VISIBLE);
 
                     } else {
@@ -236,11 +234,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     break;
                 case R.id.workmates:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
-                    currentFragment = "workmates";
+                    currentFragment =getString(R.string.workmates);
                     searchView.setVisibility(View.INVISIBLE);
 
                     break;
             }
+            toolbar.setTitle(currentFragment);
             return true;
         });
 
@@ -282,7 +281,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 }
                 break;
             case R.id.side_bar_settings:
-                //Toast.makeText(this, "view Settings!", Toast.LENGTH_SHORT).show();
                 SettingsFragment settingsFragment = new SettingsFragment();
                 settingsFragment.show(getSupportFragmentManager(), getString(R.string.settings));
                 break;
@@ -309,7 +307,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
                 // check for permanent decline of any permission
                 if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
-                    Toast.makeText(ConnectedActivity.this, "permission NOT granted!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConnectedActivity.this, getString(R.string.location_permission_rejected), Toast.LENGTH_SHORT).show();
                     isLocationGranted = false;
                     showSettingsDialog();
                 }
@@ -402,10 +400,10 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         AlertDialog.Builder builder = new AlertDialog.Builder(ConnectedActivity.this);
 
         // below line is the title for our alert dialog.
-        builder.setTitle("Need Permissions");
+        builder.setTitle(R.string.need_permissions);
 
         // below line is our message for our dialog
-        builder.setMessage("This app needs to use location permissions this feature. You can grant them in app settings.");
+        builder.setMessage(R.string.location_permission_warning_msg);
         builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
             // this method is called on click on positive button and on clicking shit button
             // we are redirecting our user from our app to the settings page of our app.
@@ -416,7 +414,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             intent.setData(uri);
             startActivity(intent);
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> {
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
             // this method is called when user click on negative button.
             dialog.cancel();
         });

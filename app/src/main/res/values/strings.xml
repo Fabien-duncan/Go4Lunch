@@ -29,7 +29,7 @@
     <string name="restaurant_details">Restaurant Details</string>
     <string name="restaurant_choice">Restaurant Choice</string>
     <string name="notification_description">contains the name of the restaurants, the address and the attending workmates</string>
-    <string name="location_permission_rejected">you have not granted permissions!</string>
+    <string name="location_permission_rejected">you have not granted locatio permissions!</string>
     <string name="workmates_attending">Workmate attending: </string>
     <string name="no_address_found">No address found</string>
     <string name="open">Open</string>
@@ -41,11 +41,17 @@
     <string name="your_lunch">YOUR LUNCH</string>
     <string name="settings_caps">SETTINGS</string>
     <string name="logout">LOGOUT</string>
-    <string name="map_view">Map view</string>
-    <string name="list_view">List View</string>
+    <string name="map_view">Map</string>
+    <string name="list_view">Restaurants</string>
     <string name="workmates">Workmates</string>
     <string name="no_restaurants">There are no restaurants!</string>
     <string name="need_location_permission_msg">Location permissions have not been granted, please update your settings.</string>
     <string name="no_lunch_choice_msg">You have not selected a lunch choice yet!</string>
+    <string name="need_permissions">Need Permissions</string>
+    <string name="location_permission_warning_msg">This app needs to use location permissions. You can grant them in the application settings.</string>
+    <string name="cancel">Cancel</string>
+    <string name="workmate_no_lunch_choice_msg">Workmate has not decided on a lunch choice yet!</string>
+    <string name="auth_failed">Authentication failed!</string>
+    <string name="auth_success">Authenticated successfully!</string>
 
 </resources>

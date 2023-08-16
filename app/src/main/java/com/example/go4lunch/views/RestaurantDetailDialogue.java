@@ -147,8 +147,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                 }
                 if(user.isFavorite(currentRestaurant.getId())){
                     like.setAlpha(1f);
-                    /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                    like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
                     isFavorite = true;
                 }
             }
@@ -156,8 +154,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                 attend.setImageResource(R.drawable.baseline_check_circle_24);
                 isAttending = true;
                 like.setAlpha(0.5f);
-                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
                 isFavorite = true;
             }
 
@@ -176,7 +172,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
                     requireContext(), Manifest.permission.CALL_PHONE) ==
                     PackageManager.PERMISSION_GRANTED) {
                 // You can use the API that requires the permission.
-                Log.d("calling", "phone num: " + currentRestaurant.getPhoneNumber());
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
                 startActivity(intent);
@@ -200,12 +195,8 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         like.setOnClickListener(view13 -> {
             if(isFavorite){
                 like.setAlpha(0.5f);
-                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));*/
             }else {
                 like.setAlpha(1.0f);
-                /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#FB7540")));
-                like.setTextColor(ColorStateList.valueOf(Color.parseColor("#FB7540")));*/
             }
             isFavorite = !isFavorite;
         });
@@ -247,7 +238,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
         String formattedDate = sdf.format(timeChoiceStamp.getTime());
 
-        //Log.d("Restaurant Details", "closing page. Status of attend: " + isAttending);
         if(isAttending ){
             if(!currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) || (isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) && !currentUser.isToday())){
                 Log.d("Restaurant details", "updating choice...");

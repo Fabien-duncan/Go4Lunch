@@ -47,15 +47,15 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this.getContext());
         WorkmatesViewModel workmatesViewModel = new WorkmatesViewModel(authenticationRepository);
         workmatesViewModel.setCurrentWorkmates();
-        //mWorkmatesViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(MainActivityViewModel.class);
+
         workmatesRecyclerView.setHasFixedSize(true);
         workmatesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //workmatesList = mMainActivityViewModel.getWorkmatesMutableLiveData().getValue();
+
         workmatesList = workmatesViewModel.getAllWorkmates().getValue();
-        //System.out.println("workmate 1: " + workmatesList.get(0).getDisplayName());
+
         mMyWorkmatesAdapter = new MyWorkmatesAdapter(getContext(), workmatesList, this);
         workmatesRecyclerView.setAdapter(mMyWorkmatesAdapter);
-        //mMyWorkmatesAdapter.notifyDataSetChanged();
+
         workmatesViewModel.getAllWorkmates().observe((LifecycleOwner) requireContext(), users -> {
             workmatesList = users;
             mMyWorkmatesAdapter.setWorkmatesList(users);
@@ -67,7 +67,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     public void onItemClicked(int position) {
         Log.d("workmateClicked", "you have clicked on " + workmatesList.get(position).getDisplayName());
         if(!workmatesList.get(position).isToday() || workmatesList.get(position).getLunchChoiceId().isEmpty()){
-            Toast.makeText(getActivity(), "Workmate has not decided on a lunch choice yet!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.workmate_no_lunch_choice_msg, Toast.LENGTH_LONG).show();
         }else{
             Restaurant tempRestaurant = new Restaurant();
             tempRestaurant.setId(workmatesList.get(position).getLunchChoiceId());
