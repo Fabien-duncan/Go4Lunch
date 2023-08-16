@@ -121,7 +121,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
 
         mRestaurantDetailViewModel.getAllWorkmates().observe(this, users -> {
-            if(users.size()>0)Log.d("attending workmates", users.get(0).getDisplayName() + " is attending");
             restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
         });
         mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().observe(this, restaurant -> {

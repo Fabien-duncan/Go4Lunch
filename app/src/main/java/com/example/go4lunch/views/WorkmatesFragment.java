@@ -65,7 +65,6 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
 
     @Override
     public void onItemClicked(int position) {
-        Log.d("workmateClicked", "you have clicked on " + workmatesList.get(position).getDisplayName());
         if(!workmatesList.get(position).isToday() || workmatesList.get(position).getLunchChoiceId().isEmpty()){
             Toast.makeText(getActivity(), R.string.workmate_no_lunch_choice_msg, Toast.LENGTH_LONG).show();
         }else{

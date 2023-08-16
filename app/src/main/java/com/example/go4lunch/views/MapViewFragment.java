@@ -36,7 +36,6 @@ public class MapViewFragment extends SupportMapFragment{
             mMap.clear();
             if(currentLocation!=null) {
                 LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                //mMap.addMarker(new MarkerOptions().position(myLocation).title("My location").icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(getContext(),R.drawable.restaurant_marker_green))));
                 mMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
             }

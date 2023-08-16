@@ -42,4 +42,14 @@
     <string name="no_restaurants">Il n\'y a pas de restaurants!</string>
     <string name="need_location_permission_msg">Les permissions de localisation n\'ont pas été accordées, veuillez modifier vos paramètres s\'il vous plaît.</string>
     <string name="no_lunch_choice_msg">Vous n\'avez pas encore sélectionné de restaurants pour déjeûner!</string>
+    <string name="need_permissions">Besoin de permissions</string>
+    <string name="location_permission_warning_msg">Cette application a besoin des permissions de localisation. Vous pouvez modifier les permissions dans les options de l\'application.</string>
+    <string name="cancel">Anuler</string>
+    <string name="workmate_no_lunch_choice_msg">Votre collègue n\'a pas encore décidait ou il allait pour déjeuner</string>
+    <string name="auth_failed">l\'authentification a échoué!</string>
+    <string name="auth_success">l\'authentification a réussi!</string>
+    <string name="no_lunch_choice_notification_msg">Vous n\'avez fait encore fait votre choix pour le déjeuné, vous avez encore un peu de temps.</string>
+    <string name="no_workmates_msg">. Il n\'y a pas de collègue présent ce restaurant.</string>
+    <string name="password_short_msg">mot de pass trop court, il doit contenir au moins 6 caractères</string>
+    <string name="email_format_msg">l\'adress mail n\'est pas formatée correctement</string>
 </resources>

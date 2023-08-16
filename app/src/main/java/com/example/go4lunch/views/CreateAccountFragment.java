@@ -50,10 +50,10 @@ public class CreateAccountFragment extends DialogFragment {
                     listener.userInformation(displayName,email,password);
                     dismiss();
                 }else {
-                    Toast.makeText(getContext(), "password is not long enough, it needs to be at least 6 characters long",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.password_short_msg),Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getContext(), "email is no formatted correctly", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.email_format_msg), Toast.LENGTH_SHORT).show();
             }
 
         });
