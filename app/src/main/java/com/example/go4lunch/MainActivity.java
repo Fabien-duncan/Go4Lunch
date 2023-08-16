@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
 
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this);
         mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
-        //mMainActivityViewModel.setupGoogleSignInOptions();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)getNotificationPermission();
 
         mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
@@ -59,9 +58,14 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, s -> {
             if(s!=null){
                 String msg = "";
-                if(s.equals("success")) msg = getString(R.string.auth_success);
-                else if(s.equals("fail")) msg = getString(R.string.auth_failed);
-                if(!msg.isEmpty())Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                if(s.equals("success")){
+                    msg = getString(R.string.auth_success);
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    msg = getString(R.string.auth_failed) + ": " + s;
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                }
             }
 
         });

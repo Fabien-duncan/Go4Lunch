@@ -27,14 +27,6 @@ public class User {
     private List<String> favoriteRestaurants;
 
 
-    public User(String displayName,String firstName, String lastName, String email, Uri photoUrl) {
-        this.displayName = displayName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.photoUrl = photoUrl;
-        favoriteRestaurants = new ArrayList<>();
-    }
     public User(String displayName, String email, Uri photoUrl) {
         this.displayName = displayName;
         this.email = email;

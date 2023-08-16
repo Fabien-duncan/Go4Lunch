@@ -371,7 +371,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         //ReminderBroadcast.text="Fabien";
         Intent intent = new Intent(ConnectedActivity.this, ReminderBroadcast.class);
-        intent.putExtra("Name", "bob");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

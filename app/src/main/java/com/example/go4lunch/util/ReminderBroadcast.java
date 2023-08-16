@@ -1,15 +1,18 @@
 package com.example.go4lunch.util;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -30,7 +33,6 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
     public static String text;
 
-    @SuppressLint({"MissingPermission", "UnsafeProtectedBroadcastReceiver"})
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -43,7 +45,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         assert user != null;
-        if(sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true")) {
+        if (sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true")) {
 
             CollectionReference collectionReference = db.collection("users");
             collectionReference.get().addOnCompleteListener(task -> {
@@ -63,7 +65,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
                         }
                     }
                     for (int i = 0; i < list.size(); i++) {
-                        if (list.get(i).getLunchChoiceId().equals(currentUser.getLunchChoiceId()))
+                        if (list.get(i).getLunchChoiceId().equals(currentUser.getLunchChoiceId())&& list.get(i).isToday())
                             workmates.append(" ").append(list.get(i).getDisplayName()).append(",");
                     }
                     if (workmates.toString().endsWith(",")) {
@@ -72,21 +74,29 @@ public class ReminderBroadcast extends BroadcastReceiver {
                     }
                     String address = loadAddress(context, currentUser.getEmail());
 
-                    Log.d("broadcast", "in broadcast");
-                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
+                    PendingIntent pendingIntent = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        pendingIntent = PendingIntent.getActivity(context, 0, repeating_intent, PendingIntent.FLAG_IMMUTABLE);
+                    }
+
+                    String msg;
+                    if(!currentUser.isToday() || currentUser.getLunchChoiceId().isEmpty()) msg = context.getString(R.string.no_lunch_choice_notification_msg);
+                    else if(workmates.toString().isEmpty()) msg = currentUser.getLunchChoiceName() + context.getString(R.string.no_workmates_msg);
+                    else msg = currentUser.getLunchChoiceName() + ", " + address + "\n" + context.getString(R.string.workmates_attending) + workmates;
 
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyRestaurant")
                             .setContentIntent(pendingIntent)
                             .setSmallIcon(R.drawable.baseline_notifications_active_24)
                             .setContentTitle(context.getString(R.string.restaurant_choice))
-                            //.setContentText("You are attending " + currentUser.getLunchChoiceName() +", " + address + " \n Workmate: " + workmates)
                             .setStyle(new NotificationCompat.BigTextStyle()
-                                    .bigText(currentUser.getLunchChoiceName() + ", " + address + "\n"+ context.getString(R.string.workmates_attending) + workmates))
+                                    .bigText(msg))
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                             .setAutoCancel(true);
 
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-                    notificationManagerCompat.notify(200, builder.build());
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                        notificationManagerCompat.notify(200, builder.build());
+                    }
                 } else {
                     Log.d("TAG", "Error getting documents: ", task.getException());
                 }

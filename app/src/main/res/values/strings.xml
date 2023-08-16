@@ -53,5 +53,7 @@
     <string name="workmate_no_lunch_choice_msg">Workmate has not decided on a lunch choice yet!</string>
     <string name="auth_failed">Authentication failed!</string>
     <string name="auth_success">Authenticated successfully!</string>
+    <string name="no_lunch_choice_notification_msg">You have not selected a lunch for today, however you still have a bit of time!</string>
+    <string name="no_workmates_msg">. There are no workmates attending!</string>
 
 </resources>

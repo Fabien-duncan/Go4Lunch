@@ -120,7 +120,7 @@ public class FirebaseApi{
                         authMessageMutableLiveData.postValue("success");
                     } else {
                         Log.d("createAccount", "message" + task.getException().getMessage());
-                        authMessageMutableLiveData.postValue("fail");
+                        authMessageMutableLiveData.postValue(task.getException().getMessage());
 
                     }
                 });
