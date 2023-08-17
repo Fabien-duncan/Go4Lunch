@@ -6,9 +6,11 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,6 +88,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private LocationCallback locationCallback;
     private LocationRequest locationRequest;
     private User currentUser;
+    private boolean isGpsEnabled;
     //private ActivityConnectedBinding mActivityConnectedBinding;
 
 
@@ -136,6 +139,10 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         };
 
         isLocationGranted = false;
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
         getLocationPermission();
 
         SearchView searchView = findViewById(R.id.toolbar_search);
@@ -178,8 +185,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         setCalendar();
 
-
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -221,6 +226,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
+                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, "Gps is not activated, if you wish to see results please turn it on!", Toast.LENGTH_LONG).show();
                     break;
                 case R.id.listView:
                     if (isLocationGranted) {
@@ -231,6 +237,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
+                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, "Gps is not activated, if you wish to see results please turn it on!", Toast.LENGTH_LONG).show();
                     break;
                 case R.id.workmates:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
@@ -322,7 +329,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     @SuppressLint("MissingPermission")
     private void getLocation() {
-        //Toast.makeText(this,"permission granted", Toast.LENGTH_SHORT).show();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         locationRequest = new com.google.android.gms.location.LocationRequest.Builder(8000).setMinUpdateDistanceMeters(100).build();
@@ -396,29 +402,38 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     }
 
     private void showSettingsDialog() {
-        // we are displaying an alert dialog for permissions
         AlertDialog.Builder builder = new AlertDialog.Builder(ConnectedActivity.this);
 
-        // below line is the title for our alert dialog.
         builder.setTitle(R.string.need_permissions);
 
-        // below line is our message for our dialog
         builder.setMessage(R.string.location_permission_warning_msg);
         builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
-            // this method is called on click on positive button and on clicking shit button
-            // we are redirecting our user from our app to the settings page of our app.
             dialog.cancel();
-            // below is the intent from which we are redirecting our user.
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             Uri uri = Uri.fromParts("package", getPackageName(), null);
             intent.setData(uri);
             startActivity(intent);
         });
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-            // this method is called when user click on negative button.
             dialog.cancel();
         });
-        // below line is used to display our dialog
         builder.show();
+    }
+
+    @Override
+    protected void onResume() {
+        //checks if the GPS settings have changed from off to on, if first checks if it is off
+        if(!isGpsEnabled){
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Boolean tempIsGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+
+            if(tempIsGpsEnabled){
+                Log.d("gpsChanged", "the gps settings have changed!");
+                isGpsEnabled = true;
+                getLocationPermission();
+            }
+        }
+        super.onResume();
     }
 }
