@@ -2,6 +2,7 @@ package com.example.go4lunch.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +68,7 @@ public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<Autoco
 
                     if(pos != RecyclerView.NO_POSITION){
                         restaurantRecyclerViewInterface.onItemClick(pos);
+                        //Log.d("autocompleteList", "clicked on position: "+ pos);
                     }
                 }
             });

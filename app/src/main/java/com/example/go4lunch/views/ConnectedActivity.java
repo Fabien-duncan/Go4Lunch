@@ -192,11 +192,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             Log.d("User data", "id: " + firebaseUser.getUid());
             Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
         });
-        /* ******************************************
-            I don't think this is the best approach...
-         */
+
         mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, restaurants -> {
             autocompleteAdapter.setRestaurantList(restaurants);
+            nearbyRestaurants = restaurants;
+            //checks that this is the first time the restaurants are retrieved, and if so retrieve the workmates
             if (restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) {
                 mConnectedActivityViewModel.setCurrentWorkmates();
             }
@@ -297,7 +297,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                    //Toast.makeText(ConnectedActivity.this,"permission granted", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
                     currentFragment = "map";
                     isLocationGranted = true;
@@ -356,7 +355,9 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public void onItemClick(int position) {
-
+        RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
+        restaurantDetailDialogue.setCurrentRestaurant(nearbyRestaurants.get(position));
+        restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
     }
 
     public void setCalendar() {
