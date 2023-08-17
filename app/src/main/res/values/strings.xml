@@ -44,7 +44,7 @@
     <string name="map_view">Map</string>
     <string name="list_view">Restaurants</string>
     <string name="workmates">Workmates</string>
-    <string name="no_restaurants">There are no restaurants!</string>
+    <string name="no_restaurants">There are no restaurants nearb!</string>
     <string name="need_location_permission_msg">Location permissions have not been granted, please update your settings.</string>
     <string name="no_lunch_choice_msg">You have not selected a lunch choice yet!</string>
     <string name="need_permissions">Need Permissions</string>

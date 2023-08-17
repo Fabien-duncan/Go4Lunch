@@ -22,6 +22,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.go4lunch.databinding.ActivityMainBinding;
 import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.repository.AuthenticationRepository;
+import com.example.go4lunch.util.NetworkUtils;
 import com.example.go4lunch.viewmodel.MainActivityViewModel;
 import com.example.go4lunch.views.ConnectedActivity;
 import com.example.go4lunch.views.CreateAccountFragment;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
     private static final int REQUEST_CODE = 1;
     private MainActivityViewModel mMainActivityViewModel;
     private ActivityResultLauncher<Intent> signInLauncher;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,13 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         mMainActivityViewModel = new MainActivityViewModel(authenticationRepository);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)getNotificationPermission();
 
+        isConnected = NetworkUtils.isNetworkAvailable(this);
+        if (!isConnected){
+            Toast.makeText(getApplicationContext(), "no internet! The app can not function", Toast.LENGTH_SHORT).show();
+        }
+
         mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
-            if(firebaseUser != null) {
+            if(firebaseUser != null && isConnected) {
                 Log.d("mainActivity", "Name: " + firebaseUser.getDisplayName());
                 showMapsActivity(firebaseUser);
             }
@@ -85,23 +92,36 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                         }
                         Log.d("signInLauncher", "has launched");
                     } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.auth_failed), Toast.LENGTH_SHORT).show();
                         Log.d("signInLauncher", "failed to launch");
                     }
                 });
 
+        setButtonsClickListeners(activityMainBinding);
+    }
+
+    private void setButtonsClickListeners(ActivityMainBinding activityMainBinding) {
         activityMainBinding.gmailSigninBtn.setOnClickListener(view1 -> {
-            Intent intent = mMainActivityViewModel.signIn();
-            signInLauncher.launch(intent);
+            if(isConnected){
+                Intent intent = mMainActivityViewModel.signIn();
+                signInLauncher.launch(intent);
+            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
+
         });
         activityMainBinding.mainCreateAccountBtn.setOnClickListener(view12 -> {
-            DialogFragment createAccountFragment = new CreateAccountFragment();
-            createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
+            if (isConnected){
+                DialogFragment createAccountFragment = new CreateAccountFragment();
+                createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
+            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
         });
         activityMainBinding.loginSigninBtn.setOnClickListener(view13 -> {
-            SignInFragment signInFragment = new SignInFragment();
-            signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
+            if (isConnected) {
+                SignInFragment signInFragment = new SignInFragment();
+                signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
+            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
         });
     }
+
     private void showMapsActivity(FirebaseUser account) {
         Intent intent = new Intent(this, ConnectedActivity.class);
         intent.putExtra("name", account.getDisplayName());

@@ -39,7 +39,7 @@
     <string name="map_view">Carte</string>
     <string name="list_view">Liste</string>
     <string name="workmates">Collègues</string>
-    <string name="no_restaurants">Il n\'y a pas de restaurants!</string>
+    <string name="no_restaurants">Il n\'y a pas de restaurants au alentour!</string>
     <string name="need_location_permission_msg">Les permissions de localisation n\'ont pas été accordées, veuillez modifier vos paramètres s\'il vous plaît.</string>
     <string name="no_lunch_choice_msg">Vous n\'avez pas encore sélectionné de restaurants pour déjeûner!</string>
     <string name="need_permissions">Besoin de permissions</string>

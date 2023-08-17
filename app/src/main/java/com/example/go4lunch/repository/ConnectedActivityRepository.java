@@ -60,7 +60,7 @@ public class ConnectedActivityRepository {
 
         executor.execute(() -> {
             nearbyRestaurants = mGooglePlacesReadTask.getGooglePlacesData(googlePlacesUrl.toString(), currentLocation);
-            setBounds();
+            //setBounds();
             restaurantsMutableLiveData.postValue(nearbyRestaurants);
         });
     }
@@ -97,6 +97,7 @@ public class ConnectedActivityRepository {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+        setBounds();
     }
     private void setBounds() {
         int mDistanceInMeters = 400;

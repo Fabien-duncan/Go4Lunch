@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.dataSource.FirebaseApi;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.FormatString;
+import com.example.go4lunch.util.NetworkUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,7 +43,8 @@ public class AuthenticationRepository {
         this.currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
         this.workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();
         this.mFirebaseUserMutableLiveData = mFirebaseApi.getFirebaseUserMutableLiveData();
-        if(mAuth.getCurrentUser() != null){
+
+        if(mAuth.getCurrentUser() != null && mGoogleSignInClient != null){
             mFirebaseUserMutableLiveData.postValue(mAuth.getCurrentUser());
             setCurrentUser();
         }
