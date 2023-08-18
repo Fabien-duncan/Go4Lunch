@@ -89,6 +89,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
     private LocationRequest locationRequest;
     private User currentUser;
     private boolean isGpsEnabled;
+    private SearchView searchView;
     //private ActivityConnectedBinding mActivityConnectedBinding;
 
 
@@ -112,68 +113,28 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         autocompleteDisplay = findViewById(R.id.autocomplete_layout);
         RecyclerView autocompleteRV = findViewById(R.id.autocomplete_rv);
+
+        searchView = findViewById(R.id.toolbar_search);
+
         autocompleteRV.setLayoutManager(new LinearLayoutManager(this));
         autocompleteAdapter = new AutocompleteRecyclerViewAdapter(this, filteredNearbyRestaurants, this);
         autocompleteRV.setAdapter(autocompleteAdapter);
 
         autocompleteDisplay.setVisibility(View.INVISIBLE);
 
-
         mMapViewFragment = new MapViewFragment();
         mListViewFragment = new ListViewFragment();
         mWorkmatesFragment = new WorkmatesFragment();
 
         toolbar.setTitle(R.string.map_view);
-
         setSupportActionBar(toolbar);
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                currentLocation = locationResult.getLastLocation();
-                mConnectedActivityViewModel.setCurrentLocation(currentLocation);
-                mConnectedActivityViewModel.setGooglePlacesData();
-                Log.d("locationChanged", "onLocationResult " + locationResult);
-
-            }
-        };
-
+        setLocationCallback();
         isLocationGranted = false;
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         getLocationPermission();
-
-        SearchView searchView = findViewById(R.id.toolbar_search);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                autocompleteDisplay.setVisibility(View.INVISIBLE);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.length() > 1) {
-                    Log.d("searchView", "text is " + newText);
-                    if (currentFragment.equals("Map"))
-                        autocompleteDisplay.setVisibility(View.VISIBLE);
-                    mConnectedActivityViewModel.autocomplete(newText);
-                } else {
-                    Log.d("searView", "retrievingNearbyPlaces");
-                    autocompleteDisplay.setVisibility(View.INVISIBLE);
-                    mConnectedActivityViewModel.resetNearbyRestaurants();
-                }
-                return true;
-
-            }
-        });
-        searchView.setOnCloseListener(() -> {
-            autocompleteDisplay.setVisibility(View.INVISIBLE);
-            mConnectedActivityViewModel.resetNearbyRestaurants();
-            return false;
-        });
+        setSearchViewListeners();
 
         AuthenticationRepository authenticationRepository = Injection.createAuthenticationRepository(this);
         ConnectedActivityRepository connectedActivityRepository = Injection.createConnectedActivityRepository(this);
@@ -191,31 +152,14 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(this);
-        mConnectedActivityViewModel.getUserData().observe(this, firebaseUser -> {
-            name.setText(firebaseUser.getDisplayName());
-            email.setText(firebaseUser.getEmail());
-            Log.d("User data", "id: " + firebaseUser.getUid());
-            Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
-        });
 
-        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, restaurants -> {
-            autocompleteAdapter.setRestaurantList(restaurants);
-            nearbyRestaurants = restaurants;
-            //checks that this is the first time the restaurants are retrieved, and if so retrieve the workmates
-            if (restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) {
-                mConnectedActivityViewModel.setCurrentWorkmates();
-            }
-        });
-        mConnectedActivityViewModel.getAllWorkmates().observe(this, users -> {
-            Log.d("getAllWorkmates", "updating attending workmates");
-            if (users.size() > 0) mConnectedActivityViewModel.updateAttending(users);
-        });
-        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, user -> {
-            currentUser = user;
-            name.setText(user.getDisplayName());
-            Glide.with(sideBarView).load(currentUser.getPhotoUrl()).circleCrop().into(profilePic);
-        });
+        setObservers(sideBarView);
 
+        setUpBottomMenu(menu, toolbar);
+
+    }
+
+    private void setUpBottomMenu(BottomNavigationView menu, Toolbar toolbar) {
         menu.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mapView:
@@ -249,7 +193,78 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             toolbar.setTitle(currentFragment);
             return true;
         });
+    }
 
+    private void setObservers(View sideBarView) {
+        mConnectedActivityViewModel.getUserData().observe(this, firebaseUser -> {
+            name.setText(firebaseUser.getDisplayName());
+            email.setText(firebaseUser.getEmail());
+            Log.d("User data", "id: " + firebaseUser.getUid());
+            Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
+        });
+
+        mConnectedActivityViewModel.getRestaurantsMutableLiveData().observe(this, restaurants -> {
+            autocompleteAdapter.setRestaurantList(restaurants);
+            nearbyRestaurants = restaurants;
+            //checks that this is the first time the restaurants are retrieved, and if so retrieve the workmates
+            if (restaurants != null && restaurants.size() > 0 && restaurants.get(0).getAttendanceNum() < 0) {
+                mConnectedActivityViewModel.setCurrentWorkmates();
+            }
+        });
+        mConnectedActivityViewModel.getAllWorkmates().observe(this, users -> {
+            Log.d("getAllWorkmates", "updating attending workmates");
+            if (users.size() > 0) mConnectedActivityViewModel.updateAttending(users);
+        });
+        mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, user -> {
+            currentUser = user;
+            name.setText(user.getDisplayName());
+            Glide.with(sideBarView).load(currentUser.getPhotoUrl()).circleCrop().into(profilePic);
+        });
+    }
+
+    private void setSearchViewListeners() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                autocompleteDisplay.setVisibility(View.INVISIBLE);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.length() > 1) {
+                    Log.d("searchView", "text is " + newText);
+                    if (currentFragment.equals("Map"))
+                        autocompleteDisplay.setVisibility(View.VISIBLE);
+                    mConnectedActivityViewModel.autocomplete(newText);
+                } else {
+                    Log.d("searView", "retrievingNearbyPlaces");
+                    autocompleteDisplay.setVisibility(View.INVISIBLE);
+                    mConnectedActivityViewModel.resetNearbyRestaurants();
+                }
+                return true;
+
+            }
+        });
+        searchView.setOnCloseListener(() -> {
+            autocompleteDisplay.setVisibility(View.INVISIBLE);
+            mConnectedActivityViewModel.resetNearbyRestaurants();
+            return false;
+        });
+    }
+
+    private void setLocationCallback() {
+        locationCallback = new LocationCallback() {
+            @Override
+
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                currentLocation = locationResult.getLastLocation();
+                mConnectedActivityViewModel.setCurrentLocation(currentLocation);
+                mConnectedActivityViewModel.setGooglePlacesData();
+                Log.d("locationChanged", "onLocationResult " + locationResult);
+
+            }
+        };
     }
 
     private void showMainActivity() {
@@ -376,9 +391,11 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        //ReminderBroadcast.text="Fabien";
         Intent intent = new Intent(ConnectedActivity.this, ReminderBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
+        }
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -414,9 +431,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             intent.setData(uri);
             startActivity(intent);
         });
-        builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-            dialog.cancel();
-        });
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -425,7 +440,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         //checks if the GPS settings have changed from off to on, if first checks if it is off
         if(!isGpsEnabled){
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Boolean tempIsGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean tempIsGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 
             if(tempIsGpsEnabled){

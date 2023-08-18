@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -56,26 +57,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             Toast.makeText(getApplicationContext(), "no internet! The app can not function", Toast.LENGTH_SHORT).show();
         }
 
-        mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
-            if(firebaseUser != null && isConnected) {
-                Log.d("mainActivity", "Name: " + firebaseUser.getDisplayName());
-                showMapsActivity(firebaseUser);
-            }
-        });
-        mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, s -> {
-            if(s!=null){
-                String msg = "";
-                if(s.equals("success")){
-                    msg = getString(R.string.auth_success);
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    msg = getString(R.string.auth_failed) + ": " + s;
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                }
-            }
-
-        });
+        setUpObservers();
 
         signInLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -88,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                             mMainActivityViewModel.firebaseAuthWithGoogle(account.getIdToken());
                         } catch (ApiException e){
                             Log.w("TAG","SignInResult: failed code=" + e.getStatusCode());
-                            Log.d("TAG", "SignIn Failed.");
+                            Toast.makeText(getApplicationContext(), getString(R.string.auth_failed), Toast.LENGTH_SHORT).show();
                         }
                         Log.d("signInLauncher", "has launched");
                     } else {
@@ -98,6 +80,29 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                 });
 
         setButtonsClickListeners(activityMainBinding);
+    }
+
+    private void setUpObservers() {
+        mMainActivityViewModel.getUserData().observe(this, firebaseUser -> {
+            if(firebaseUser != null && isConnected) {
+                Log.d("mainActivity", "Name: " + firebaseUser.getDisplayName());
+                showMapsActivity(firebaseUser);
+            }
+        });
+        mMainActivityViewModel.getAuthMessageMutableLiveData().observe(this, s -> {
+            if(s!=null){
+                String msg;
+                if(s.equals("success")){
+                    msg = getString(R.string.auth_success);
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    msg = getString(R.string.auth_failed) + ": " + s;
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                }
+            }
+
+        });
     }
 
     private void setButtonsClickListeners(ActivityMainBinding activityMainBinding) {
@@ -138,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                     REQUEST_CODE);
             Log.d("mainActicity", "message NOT permissions granted");
         } else {
-            Log.d("mainActicity", "message permissions granted");
             // Permission is already granted
+            Log.d("mainActicity", "message permissions granted");
         }
 
     }
@@ -152,8 +157,10 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
                 // Permission granted
                 Log.d("mainActicity", "permission granted");
             } else {
-                Log.d("mainActicity", "permission denied");
-                // Permission denied
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+                this.startActivity(intent);
             }
         }
     }

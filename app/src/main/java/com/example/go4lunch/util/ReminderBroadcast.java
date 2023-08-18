@@ -1,17 +1,14 @@
 package com.example.go4lunch.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -29,9 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Broadcast receiver to handle sending reminder notifications.
+ */
 public class ReminderBroadcast extends BroadcastReceiver {
-
-    public static String text;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -94,6 +92,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
                             .setAutoCancel(true);
 
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+                    //checks permission
                     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                         notificationManagerCompat.notify(200, builder.build());
                     }
@@ -105,7 +104,8 @@ public class ReminderBroadcast extends BroadcastReceiver {
             Log.d("broadcast", "notification turned off");
         }
     }
-    public String loadAddress(Context context, String email){
+    //Load the address from SharedPreferences
+    private String loadAddress(Context context, String email){
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getString(email, context.getString(R.string.no_address_found));
     }

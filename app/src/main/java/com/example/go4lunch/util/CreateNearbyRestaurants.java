@@ -12,8 +12,17 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Utility class responsible for parsing JSON data to create a list of nearby restaurants.
+ */
 public class CreateNearbyRestaurants {
+    /**
+     * Parses the provided JSON data to create a list of nearby restaurants.
+     *
+     * @param jsonObject      The JSON data to be parsed.
+     * @param currentLocation The current location to calculate distances.
+     * @return A list of Restaurant objects representing nearby restaurants.
+     */
     public List<Restaurant> parse(JSONObject jsonObject, Location currentLocation) {
         JSONArray jsonArray = null;
         try {
@@ -25,6 +34,7 @@ public class CreateNearbyRestaurants {
         return getRestaurants(jsonArray, currentLocation);
     }
 
+    //Extracts restaurant details from the provided JSON array and creates a list of nearby restaurants.
     private List<Restaurant> getRestaurants(JSONArray jsonArray, Location currentLocation) {
         int placesCount = jsonArray.length();
         List<Restaurant> restaurantsList = new ArrayList<>();
@@ -41,7 +51,7 @@ public class CreateNearbyRestaurants {
         }
         return restaurantsList;
     }
-
+    //Parses a JSON object representing a restaurant and creates a Restaurant object.
     private Restaurant getRestaurant(JSONObject googlePlaceJson, Location currentLocation) {
         Restaurant restaurant = null;
         String name = "-NA-";
@@ -53,11 +63,11 @@ public class CreateNearbyRestaurants {
         String photo_reference = "";
         String openNow = "Unknown open status";
 
-
         String latitude;
         String longitude;
 
         try {
+            //checks that the values exist
             if (!googlePlaceJson.isNull("name")) {
                 name = googlePlaceJson.getString("name");
             }
@@ -103,7 +113,6 @@ public class CreateNearbyRestaurants {
                 restaurant.setImageUrl(photoUrl);
             }
             restaurant.setOpeningHours(openNow);
-            Log.d("createRestaurant","restaurant " + restaurant.getName());
         } catch (JSONException e) {
             e.printStackTrace();
         }

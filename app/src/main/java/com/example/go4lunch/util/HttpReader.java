@@ -8,8 +8,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+/**
+ * Utility class for reading data line by line from an HTTP URL.
+ */
 public class HttpReader {
+    /**
+     * Reads data from the given HTTP URL and returns it as a string.
+     *
+     * @param httpUrl The URL to read data from.
+     * @return The data retrieved from the URL as a string.
+     * @throws IOException If an I/O error occurs while reading the URL.
+     */
     public String read(String httpUrl) throws IOException {
         String httpData = "";
         InputStream inputStream = null;
@@ -27,7 +36,6 @@ public class HttpReader {
             }
             httpData = stringBuffer.toString();
             bufferedReader.close();
-            //System.out.println(httpData);
         } catch (Exception e) {
             Log.d("ExceptionReadingHttpUrl", e.toString());
         } finally {
