@@ -17,6 +17,9 @@ import com.example.go4lunch.util.FormatString;
 
 import java.util.List;
 
+/**
+ * Used for the recyclerView that appears when a search is performed
+ */
 public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<AutocompleteRecyclerViewAdapter.MyViewHolder>{
     private final RestaurantRecyclerViewInterface mRestaurantRecyclerViewInterface;
     Context mContext;
@@ -68,7 +71,6 @@ public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<Autoco
 
                     if(pos != RecyclerView.NO_POSITION){
                         restaurantRecyclerViewInterface.onItemClick(pos);
-                        //Log.d("autocompleteList", "clicked on position: "+ pos);
                     }
                 }
             });

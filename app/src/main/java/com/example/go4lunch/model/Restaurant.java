@@ -4,13 +4,14 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.go4lunch.util.FormatString;
-
+/**
+ * Represents a restaurant with various attributes such as name, distance, image URL, etc.
+ */
 public class Restaurant {
     private String name;
     private int distance;
     private String imageUrl;
     private Bitmap imageBitmap;
-    private String type;
     private String address;
     private int attendanceNum;
     private String openingHours;
@@ -20,22 +21,21 @@ public class Restaurant {
     private String id;
     private String phoneNumber;
     private Uri website;
-
+    /**
+     * Default constructor for the Restaurant class.
+     */
     public Restaurant(){}
-    public Restaurant(String id, String name, String address, double lat, double lng, int attendanceNum,String imageUrl, String type, String openingHours, double rating, int distance, String number) {
-        this.id = id;
-        this.name = FormatString.capitalizeEveryWord(name);
-        this.imageUrl = imageUrl;
-        this.type = type;
-        this.address = FormatString.capitalizeEveryWord(address);
-        this.attendanceNum = attendanceNum;
-        this.openingHours = openingHours;
-        this.rating = rating;
-        this.distance = distance;
-        this.phoneNumber = number;
-        this.lat = lat;
-        this.lng = lng;
-    }
+    /**
+     * Constructs a Restaurant object with provided attributes.
+     *
+     * @param id         The unique identifier of the restaurant.
+     * @param name       The name of the restaurant.
+     * @param address    The address of the restaurant.
+     * @param lat        The latitude coordinate of the restaurant's location.
+     * @param lng        The longitude coordinate of the restaurant's location.
+     * @param rating     The rating of the restaurant.
+     * @param distance   The distance to the restaurant.
+     */
     public Restaurant(String id, String name, String address, double lat, double lng,double rating, int distance) {
         this.id = id;
         this.name = FormatString.capitalizeEveryWord(name);
@@ -45,7 +45,6 @@ public class Restaurant {
         this.rating = rating;
         this.distance = distance;
         //temp extra
-        this.type = "french";
         this.attendanceNum = -1;
         this.openingHours = "23:00";
         this.phoneNumber = "+33 6 58 32 57 01";
@@ -77,13 +76,6 @@ public class Restaurant {
         this.imageUrl = imageUrl;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getAddress() {
         return address;
@@ -110,8 +102,9 @@ public class Restaurant {
     }
 
     /**
-     * turns a rating out of 5 to out of 3 rounded to the closest integer
-     * @return the converted rating
+     * Converts the rating out of 5 to a rating out of 3 rounded to the closest integer.
+     *
+     * @return The converted rating.
      */
     public int getRating() {
         return (int)Math.round((rating/5.0) * 3);

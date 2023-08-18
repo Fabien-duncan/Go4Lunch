@@ -18,14 +18,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * GooglePlacesDetailsApi to allow the RestaurantDetailRepository to retrieving detailed information about a restaurant from Google Places API.
+ */
 public class GooglePlacesDetailsApi {
     public Restaurant currentRestaurant;
     public MutableLiveData<Restaurant> mRestaurantDetailMutableLiveData;
 
+    /**
+     * Constructs an instance of GooglePlacesDetailsApi.
+     */
     public GooglePlacesDetailsApi(){
         mRestaurantDetailMutableLiveData = new MutableLiveData<>();
     }
 
+    /**
+     * Used for when less details need to be retrieved as the rest is already available.
+     *
+     * @param restaurant   The Restaurant object to update with small details.
+     * @param placesClient The PlacesClient instance to fetch place details.
+     * @param placeId      The place ID of the restaurant.
+     */
     public void setSmallDetail(Restaurant restaurant, PlacesClient placesClient, String placeId){
         currentRestaurant = restaurant;
         final List<Place.Field> placeFields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
@@ -38,7 +51,6 @@ public class GooglePlacesDetailsApi {
             currentRestaurant.setWebsite(place.getWebsiteUri());
             currentRestaurant.setPhoneNumber(place.getPhoneNumber());
             mRestaurantDetailMutableLiveData.postValue(currentRestaurant);
-            Log.d("PlacesDetail", "webSite: " + currentRestaurant.getWebsite());
 
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
@@ -46,6 +58,13 @@ public class GooglePlacesDetailsApi {
             }
         });
     }
+    /**
+     * Retrieves all required details of the restaurant.
+     *
+     * @param restaurant   The Restaurant object to update with all details.
+     * @param placesClient The PlacesClient instance to fetch place details.
+     * @param placeId      The place ID of the restaurant.
+     */
     public void setAllDetails(Restaurant restaurant, PlacesClient placesClient, String placeId){
         currentRestaurant = restaurant;
         final List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.RATING);
@@ -56,8 +75,6 @@ public class GooglePlacesDetailsApi {
         placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
             Place place = response.getPlace();
 
-
-
             currentRestaurant.setName(FormatString.capitalizeEveryWord(place.getName()));
             currentRestaurant.setPhoneNumber(place.getPhoneNumber());
             currentRestaurant.setAddress(place.getAddress());
@@ -67,6 +84,7 @@ public class GooglePlacesDetailsApi {
 
 
             final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+            //if there is no photo data return
             if (metadata == null || metadata.isEmpty()) {
                 Log.w("PlaceImage", "No photo metadata.");
                 return;
@@ -75,8 +93,8 @@ public class GooglePlacesDetailsApi {
 
             // Create a FetchPhotoRequest.
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(700) // Optional.
-                    .setMaxHeight(500) // Optional.
+                    .setMaxWidth(700)
+                    .setMaxHeight(500)
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();

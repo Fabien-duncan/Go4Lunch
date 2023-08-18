@@ -12,10 +12,20 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class ApiService {
+/**
+ * NearbyPlacesApi is allow the ConnectedActivityRepository to retrieve nearby restaurant information using Google Places API.
+ */
+public class NearbyPlacesApi {
     private String googlePlacesData = null;
     private GoogleMap mGoogleMap;
 
+    /**
+     * Retrieves nearby restaurant data from the provided Google Places URL.
+     *
+     * @param googlePlacesUrl  The URL for retrieving nearby restaurant data.
+     * @param currentLocation  The current location of the device.
+     * @return List of Restaurant objects representing nearby restaurants.
+     */
     public List<Restaurant> getGooglePlacesData( String googlePlacesUrl, Location currentLocation){
         try {
             HttpReader http = new HttpReader();
@@ -25,6 +35,13 @@ public class ApiService {
         }
         return getGooglePlacesRestaurants(googlePlacesData, currentLocation);
     }
+    /**
+     * Parses the provided Google Places JSON data to create a list of nearby Restaurant objects.
+     *
+     * @param googlePlacesJson The JSON data containing nearby restaurant information.
+     * @param currentLocation  The current location of the device.
+     * @return List of Restaurant objects representing nearby restaurants.
+     */
     public List<Restaurant> getGooglePlacesRestaurants(String googlePlacesJson, Location currentLocation){
         List<Restaurant> nearbyRestaurants = null;
         CreateNearbyRestaurants placeJsonParser = new CreateNearbyRestaurants();

@@ -18,6 +18,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Repository class that deals with Authentication and creation of User accounts both in the FirebaseAuth and the Firestore db
+ */
 public class AuthenticationRepository {
     private GoogleSignInClient mGoogleSignInClient;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
@@ -34,11 +37,7 @@ public class AuthenticationRepository {
         this.mAuth = auth;
         this.db = db;
         this.mGoogleSignInClient = googleSignInClient;
-
-        //this.mFirebaseUserMutableLiveData = firebaseUserMutableLiveData;
-
-
-        mFirebaseApi = firebaseApi;
+        this.mFirebaseApi = firebaseApi;
         this.authMessageMutableLiveData = mFirebaseApi.getAuthMessageMutableLiveData();
         this.currentUserMutableLiveData = mFirebaseApi.getCurrentUserMutableLiveData();
         this.workmatesMutableLiveData = mFirebaseApi.getWorkmatesMutableLiveData();

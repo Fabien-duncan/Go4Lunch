@@ -14,7 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * Represents a user with various attributes such as display name, email, lunch choice, etc.
+ */
 public class User {
     private String displayName;
     private String firstName;
@@ -26,7 +28,13 @@ public class User {
     private Uri photoUrl;
     private List<String> favoriteRestaurants;
 
-
+    /**
+     * Constructs a User object with the provided display name, email, and photo URL.
+     *
+     * @param displayName The display name of the user.
+     * @param email       The email address of the user.
+     * @param photoUrl    The URL of the user's profile photo.
+     */
     public User(String displayName, String email, Uri photoUrl) {
         this.displayName = displayName;
         this.email = email;
@@ -35,6 +43,9 @@ public class User {
         this.lunchChoiceName="";
         favoriteRestaurants = new ArrayList<>();
     }
+    /**
+     * Default constructor for the User class. Needed for when the User information is retrieved from Firestore
+     */
     public User(){
 
     }
@@ -109,6 +120,12 @@ public class User {
     public void setFavoriteRestaurants(List<String> favoriteRestaurants) {
         this.favoriteRestaurants = favoriteRestaurants;
     }
+    /**
+     * Checks if the user has marked a given restaurant as a favorite.
+     *
+     * @param restaurantID The ID of the restaurant to check.
+     * @return True if the restaurant is a favorite of the user, false otherwise.
+     */
     public boolean isFavorite(String restaurantID){
         boolean found = false;
         int i = 0;
@@ -118,6 +135,11 @@ public class User {
         }
         return found;
     }
+    /**
+     * Checks if the user's lunch choice timestamp is within the range of today.
+     *
+     * @return True if the lunch choice is within today's range, false otherwise.
+     */
     public boolean isToday() {
         if (choiceTimeStamp == null) return false;
         else {

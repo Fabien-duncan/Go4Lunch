@@ -91,13 +91,8 @@ public class RestaurantDetailViewModelTest {
                 "Zinc",
                 "16 ch du four",
                 45,26,
-                0,
-                "https://media.istockphoto.com/id/1446478827/fr/photo/un-chef-cuisine-dans-la-cuisine-de-son-restaurant.jpg?s=1024x1024&w=is&k=20&c=_KRkTJnju8zm8pTSs-aOq9J4mdtzlPc31AucwKR54CY=",
-                "french",
-                "23:00",
                 4.5,
-                120,
-                "+33 6 58 32 57 01"
+                120
         );
     }
     private void setUpRepositoryMethods(){

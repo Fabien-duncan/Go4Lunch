@@ -1,6 +1,5 @@
 package com.example.go4lunch.repository;
 
-import static net.bytebuddy.matcher.ElementMatchers.any;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -8,12 +7,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.dataSource.ApiService;
+import com.example.go4lunch.dataSource.NearbyPlacesApi;
 import com.example.go4lunch.dataSource.AutoCompleteApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
@@ -37,7 +35,7 @@ public class ConnectedActivityRepositoryTest {
     @Mock
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     @Mock
-    private ApiService mGooglePlacesReadTask;
+    private NearbyPlacesApi mGooglePlacesReadTask;
     @Mock
     private AutoCompleteApi mAutoCompleteApi;
 
@@ -125,37 +123,27 @@ public class ConnectedActivityRepositoryTest {
                 "01",
                 "Zinc",
                 "16 ch du four",
-                45,26,
-                0,
-                "https://media.istockphoto.com/id/1446478827/fr/photo/un-chef-cuisine-dans-la-cuisine-de-son-restaurant.jpg?s=1024x1024&w=is&k=20&c=_KRkTJnju8zm8pTSs-aOq9J4mdtzlPc31AucwKR54CY=",
-                "french",
-                "23:00",
+                45,
+                26,
                 4.5,
-                120,
-                "+33 6 58 32 57 01"
+                120
         ));
         mRestaurantList.add(new Restaurant(
                 "01",
                 "Les deux Roch",
                 "14 impasse, Les bas plans",
                 45,20,
-                2,
-                "https://media.istockphoto.com/id/1446375027/fr/photo/r%C3%A9union-daffaires-dans-le-restaurant.jpg?s=1024x1024&w=is&k=20&c=fypbQnbN5F2zEI81FWLSHSA3EH5cpQXyHZDiSaWEQBY=",
-                "french",
-                "23:00",
                 3.2,
-                152,
-                "+33 6 58 32 57 01"
+                152
         ));
         mRestaurantList.add(new Restaurant(
-                "03", "La Taverne", "144 ch de Bargemon", 46,25,
-                1,
-                "https://media.istockphoto.com/id/1268553744/fr/photo/couples-asiatiques-de-sup%C3%A9rieur-commandant-la-nourriture-dans-un-restaurant-pendant.jpg?s=1024x1024&w=is&k=20&c=3OiKrP-4HweCQ404BjtzibMM9ji-ILQzFgkxWftJrus=",
-                "french",
-                "23:00",
+                "03",
+                "La Taverne",
+                "144 ch de Bargemon",
+                46,
+                25,
                 0.8,
-                230,
-                "+33 6 58 32 57 01"
+                230
         ));
     }
     private void generateWorkmates(){

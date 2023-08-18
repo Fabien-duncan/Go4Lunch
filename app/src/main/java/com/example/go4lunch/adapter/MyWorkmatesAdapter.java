@@ -20,6 +20,9 @@ import com.example.go4lunch.model.User;
 
 import java.util.List;
 
+/**
+ * Used for the recyclerView in the Workmates Fragment
+ */
 public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.MyViewHolder> {
     private final WorkmatesRecyclerViewInterface mWorkmatesRecyclerViewInterface;
     Context mContext;
@@ -76,7 +79,6 @@ public class MyWorkmatesAdapter extends RecyclerView.Adapter<MyWorkmatesAdapter.
             super(itemView);
             profilePic = itemView.findViewById(R.id.workmates_profile_picture_img);
             info = itemView.findViewById(R.id.workmates_info_tv);
-            //extraInfo = itemView.findViewById(R.id.workmates_extra_info_tv);
 
             itemView.setOnClickListener(view -> {
                 if (workmatesRecyclerViewInterface != null) {

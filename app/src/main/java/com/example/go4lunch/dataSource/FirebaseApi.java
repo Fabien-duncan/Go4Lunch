@@ -22,6 +22,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FirebaseApi is a class used to allow the repositories to communicate with Firebase for authentication and
+ * access to the firestore db.
+ */
 public class FirebaseApi{
     private FirebaseAuth mAuth;
     private final FirebaseFirestore db;
@@ -29,7 +33,9 @@ public class FirebaseApi{
     private final MutableLiveData<User> currentUserMutableLiveData;
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
     private final MutableLiveData<String> authMessageMutableLiveData;
-
+    /**
+     * Constructs an instance of FirebaseApi.
+     */
     public FirebaseApi(){
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -54,19 +60,22 @@ public class FirebaseApi{
     public MutableLiveData<List<User>> getWorkmatesMutableLiveData() {
         return workmatesMutableLiveData;
     }
-
+    /**
+     * Authenticates a user with Google credentials and checks if that user exists in the firestore db.
+     * If they don't a User is created.
+     *
+     * @param idToken The Google ID token to authenticate the user.
+     */
     public void firebaseAuthWithGoogle(String idToken){
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        Log.d("TAG","signInWithCredential:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         assert user != null;
                         String userId = user.getUid();
                         DocumentReference documentReference = db.collection("users").document(userId);
 
-                        Log.d("get user info", "about to get user info");
                         documentReference.get().addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 DocumentSnapshot document = task1.getResult();
@@ -84,11 +93,16 @@ public class FirebaseApi{
                         mFirebaseUserMutableLiveData.postValue(user);
                         authMessageMutableLiveData.postValue("success");
                     }else{
-                        authMessageMutableLiveData.postValue("fail");
-                        Log.w("TAG", "signInWithCredential:failure", task.getException());
+                        authMessageMutableLiveData.postValue(task.getException().getMessage());
                     }
                 });
     }
+    /**
+     * Authenticates a user with email and password.
+     *
+     * @param email    The email of the user.
+     * @param password The password of the user.
+     */
     public void firebaseAuthWithEmailAndPassword(String email, String password){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -106,6 +120,13 @@ public class FirebaseApi{
                     }
                 });
     }
+    /**
+     * Creates a new user with email, password, and display name.
+     *
+     * @param email       The email of the user to be created.
+     * @param password    The password of the user to be created.
+     * @param displayName The display name of the user to be created.
+     */
     public void firebaseCreateUser(String email, String password, String displayName){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -125,6 +146,9 @@ public class FirebaseApi{
                     }
                 });
     }
+    /**
+     * Sets the current user's data in LiveData.
+     */
     public void setCurrentUser(){
         FirebaseUser user = mAuth.getCurrentUser();
         assert user != null;
@@ -145,7 +169,9 @@ public class FirebaseApi{
             }
         });
     }
-
+    /**
+     * Retrieves all workmates from the Firestore and updates the LiveData.
+     */
     public void retrieveAllWorkmates(){
         FirebaseUser user = mAuth.getCurrentUser();
         CollectionReference collectionReference = db.collection("users");
@@ -165,6 +191,12 @@ public class FirebaseApi{
             }
         });
     }
+
+    /**
+     * Retrieves filtered workmates based on a restaurant choice and updates the liveData.
+     *
+     * @param restaurantId The ID of the chosen restaurant.
+     */
     public void retrieveFilteredWorkmates(String restaurantId){
         FirebaseUser user = mAuth.getCurrentUser();
         CollectionReference collectionReference = db.collection("users");
@@ -185,6 +217,9 @@ public class FirebaseApi{
             }
         });
     }
+    /**
+     * Creates a Firestore user if it does not exist, by retrieving the data from the FirebaseUser.
+     */
     private void createFireStoreUser(){
         FirebaseUser user = mAuth.getCurrentUser();
         assert user != null;
@@ -196,7 +231,4 @@ public class FirebaseApi{
         documentReference.set(newUser).addOnSuccessListener(unused -> Log.d("Create User", "onSuccess: user Profile is created for" + userId));
 
     }
-
-
-
 }

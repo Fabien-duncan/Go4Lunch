@@ -1,53 +1,48 @@
 package com.example.go4lunch.repository;
 
-import android.content.Context;
 import android.location.Location;
-import android.os.Build;
-import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
-import com.example.go4lunch.dataSource.ApiService;
+import com.example.go4lunch.dataSource.NearbyPlacesApi;
 import com.example.go4lunch.dataSource.AutoCompleteApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
-import com.google.android.gms.common.api.ApiException;
+import com.example.go4lunch.util.AutoCompleteBounds;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
+/**
+ * ConnectedActivityRepository is responsible for managing data related to nearby restaurants and user actions
+ * when a User is connected.
+ */
 public class ConnectedActivityRepository {
     private Location currentLocation;
     private RectangularBounds bounds;
     //private Activity mActivity;
     private List<Restaurant> nearbyRestaurants;
     private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
-    private final ApiService mGooglePlacesReadTask;
+    private final NearbyPlacesApi mGooglePlacesReadTask;
     private final AutoCompleteApi mAutoCompleteApi;
     private Executor executor;
 
-    public ConnectedActivityRepository(ApiService apiService, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
+    public ConnectedActivityRepository(NearbyPlacesApi nearbyPlacesApi, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.executor = executor;
         nearbyRestaurants = new ArrayList<>();
         this.restaurantsMutableLiveData = restaurantsMutableLiveData;
-        mGooglePlacesReadTask = apiService;
+        mGooglePlacesReadTask = nearbyPlacesApi;
         mAutoCompleteApi = autoCompleteApi;
     }
 
+    /**
+     * Fetches Google Places data and updates the MutableLiveData with the retrieved restaurants.
+     */
     public void setGooglePlacesData(){
         String key = BuildConfig.GMP_key;
 
@@ -65,12 +60,15 @@ public class ConnectedActivityRepository {
         });
     }
 
-
     public MutableLiveData<List<Restaurant>> getRestaurantsMutableLiveData() {
         return restaurantsMutableLiveData;
     }
 
-
+    /**
+     * Updates the attendance number for nearby restaurants based on workmates' choices.
+     *
+     * @param workmates List of User objects representing workmates and their choices.
+     */
     public void updateAttending(List<User> workmates){
         List<Restaurant> nearbyRestaurants = restaurantsMutableLiveData.getValue();
         List<String> restaurantID = new ArrayList<>();
@@ -86,35 +84,31 @@ public class ConnectedActivityRepository {
 
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
     }
+    /**
+     * Initiates an autocomplete request for the given text and updates the MutableLiveData with the resulting restaurant data.
+     *
+     * @param text The text to be used for autocomplete suggestions.
+     */
     public void autocomplete(String text){
-        if(bounds==null)setBounds();
+        if(bounds==null) bounds = AutoCompleteBounds.setBounds(currentLocation);
         mAutoCompleteApi.autocomplete(text, nearbyRestaurants, bounds, currentLocation);
         restaurantsMutableLiveData.postValue(mAutoCompleteApi.getRestaurantsMutableLiveData().getValue());
     }
+
+    /**
+     * When Autocomplete search is stopped it will reset the Nearby restaurants in the activity,
+     * this avoids doing a new call to the Nearby Places Api
+     */
     public void resetNearbyRestaurants(){
         restaurantsMutableLiveData.postValue(nearbyRestaurants);
     }
 
+    /**
+     * Updates the current location
+     * @param currentLocation the new current location
+     */
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
-        setBounds();
-    }
-    private void setBounds() {
-        int mDistanceInMeters = 400;
-        double latRadian = Math.toRadians(currentLocation.getLatitude());
-
-        double degLatKm = 110.574235;
-        double degLongKm = 110.572833 * Math.cos(latRadian);
-        double deltaLat = mDistanceInMeters / 1000.0 / degLatKm;
-        double deltaLong = mDistanceInMeters / 1000.0 / degLongKm;
-
-        double minLat = currentLocation.getLatitude() - deltaLat;
-        double minLong = currentLocation.getLongitude() - deltaLong;
-        double maxLat = currentLocation.getLatitude() + deltaLat;
-        double maxLong = currentLocation.getLongitude() + deltaLong;
-
-        bounds = RectangularBounds.newInstance(
-                new LatLng(minLat, minLong),
-                new LatLng(maxLat, maxLong));
+        bounds = AutoCompleteBounds.setBounds(currentLocation);
     }
 }

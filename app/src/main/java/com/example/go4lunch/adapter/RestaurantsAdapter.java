@@ -19,7 +19,9 @@ import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.util.FormatString;
 
 import java.util.List;
-
+/**
+ * Used for the restaurant recyclerView
+ */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.MyViewHolder> {
     private final RestaurantRecyclerViewInterface mRestaurantRecyclerViewInterface;
     Context mContext;

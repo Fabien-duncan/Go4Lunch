@@ -21,6 +21,9 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Repository class responsible for managing the details of a restaurant.
+ */
 public class RestaurantDetailRepository {
 
     private final MutableLiveData<Restaurant> currentRestaurantMutableLiveData;
@@ -32,8 +35,6 @@ public class RestaurantDetailRepository {
     public RestaurantDetailRepository( PlacesClient placesClient, GooglePlacesDetailsApi googlePlacesDetailsApi){
         this.placesClient = placesClient;
         this.mGooglePlacesDetailsApi = googlePlacesDetailsApi;
-        //this.mActivity = (Activity)context;
-
 
         currentRestaurantMutableLiveData = mGooglePlacesDetailsApi.getRestaurantDetailMutableLiveData();
     }
@@ -41,8 +42,12 @@ public class RestaurantDetailRepository {
     public MutableLiveData<Restaurant> getCurrentRestaurantMutableLiveData() {
         return currentRestaurantMutableLiveData;
     }
+    /**
+     * Sets the details of the given restaurant using the Places API. Retrieves more ot less details depending on if the currentRestaurant doesn't have any details
+     *
+     * @param currentRestaurant The restaurant for which to fetch and set the details.
+     */
     public void setDetail(Restaurant currentRestaurant){
-        // Define a Place ID.
         final String placeId = currentRestaurant.getId();
 
         if(currentRestaurant.getName()!=null) {
