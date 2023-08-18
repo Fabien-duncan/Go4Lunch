@@ -20,6 +20,7 @@ import java.util.List;
 /**
  * Used for the recyclerView that appears when a search is performed
  */
+
 public class AutocompleteRecyclerViewAdapter extends RecyclerView.Adapter<AutocompleteRecyclerViewAdapter.MyViewHolder>{
     private final RestaurantRecyclerViewInterface mRestaurantRecyclerViewInterface;
     Context mContext;

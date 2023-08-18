@@ -46,6 +46,7 @@ import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
+import com.example.go4lunch.util.AlarmScheduler;
 import com.example.go4lunch.util.ReminderBroadcast;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -144,7 +145,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             notificationChannel();
         }
 
-        setCalendar();
+        AlarmScheduler.scheduleDailyAlarm(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
@@ -159,6 +160,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void setUpBottomMenu(BottomNavigationView menu, Toolbar toolbar) {
         menu.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -199,7 +201,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         mConnectedActivityViewModel.getUserData().observe(this, firebaseUser -> {
             name.setText(firebaseUser.getDisplayName());
             email.setText(firebaseUser.getEmail());
-            Log.d("User data", "id: " + firebaseUser.getUid());
             Glide.with(sideBarView).load(firebaseUser.getPhotoUrl()).circleCrop().into(profilePic);
         });
 
@@ -212,7 +213,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             }
         });
         mConnectedActivityViewModel.getAllWorkmates().observe(this, users -> {
-            Log.d("getAllWorkmates", "updating attending workmates");
             if (users.size() > 0) mConnectedActivityViewModel.updateAttending(users);
         });
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, user -> {
@@ -261,8 +261,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                 currentLocation = locationResult.getLastLocation();
                 mConnectedActivityViewModel.setCurrentLocation(currentLocation);
                 mConnectedActivityViewModel.setGooglePlacesData();
-                Log.d("locationChanged", "onLocationResult " + locationResult);
-
             }
         };
     }
@@ -379,31 +377,6 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
         RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
         restaurantDetailDialogue.setCurrentRestaurant(nearbyRestaurants.get(position));
         restaurantDetailDialogue.show(this.getSupportFragmentManager(),getString(R.string.restaurant_details));
-    }
-
-    public void setCalendar() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
-        if (Calendar.getInstance().after(calendar)) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        Intent intent = new Intent(ConnectedActivity.this, ReminderBroadcast.class);
-        PendingIntent pendingIntent = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
-        }
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }else{
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

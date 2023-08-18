@@ -56,7 +56,6 @@ public class SignInFragment extends DialogFragment {
         window.setLayout((int) (size.x * 0.90), WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
 
-
         super.onResume();
     }
 

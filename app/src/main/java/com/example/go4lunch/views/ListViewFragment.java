@@ -46,7 +46,6 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
         restaurantsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         restaurantsList = new ArrayList<>();
-        //initRestaurants();
 
         mRestaurantsAdapter = new RestaurantsAdapter(getContext(), restaurantsList, this);
         restaurantsRecyclerView.setAdapter(mRestaurantsAdapter);
@@ -73,7 +72,6 @@ public class ListViewFragment extends Fragment implements RestaurantRecyclerView
 
     @Override
     public void onItemClick(int position) {
-        Log.d("List Restaurant click", "position: " + restaurantsList.get(position).getName());
         RestaurantDetailDialogue restaurantDetailDialogue = RestaurantDetailDialogue.newInstance();
         restaurantDetailDialogue.setCurrentRestaurant(restaurantsList.get(position));
         restaurantDetailDialogue.show(requireActivity().getSupportFragmentManager(),getString(R.string.restaurant_details));

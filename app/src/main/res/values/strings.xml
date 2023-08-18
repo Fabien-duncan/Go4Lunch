@@ -57,5 +57,8 @@
     <string name="no_workmates_msg">. There are no workmates attending!</string>
     <string name="password_short_msg">password is not long enough, it needs to be at least 6 characters long</string>
     <string name="email_format_msg">email is not formatted correctly</string>
+    <string name="permissions_needed">Permission Needed</string>
+    <string name="phone_permission_msg">This feature requires permission to make phone calls. Do you want to grant the permission?</string>
+    <string name="grant">Grant</string>
 
 </resources>

@@ -40,7 +40,6 @@ public class SettingsFragment extends DialogFragment {
         assert user != null;
         notification_checkBox.setChecked(sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true"));
         save_btn.setOnClickListener(view1 -> {
-            Log.d("settings", "the value of notifications is: " + notification_checkBox.isChecked());
             SharedPreferences sharedPreferences1 = requireActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences1.edit();
 

@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,10 +79,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         isAttending = false;
         isFavorite = false;
 
-        /*String key = BuildConfig.GMP_key;
-        Places.initialize(getContext(), key);
-        PlacesClient placesClient = Places.createClient(getContext());*/
-
         RestaurantDetailRepository restaurantDetailRepository = Injection.createRestaurantDetailRepository(getContext());
         mRestaurantDetailViewModel = new RestaurantDetailViewModel(authenticationRepository, restaurantDetailRepository);
     }
@@ -103,8 +101,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         FloatingActionButton attend = view.findViewById(R.id.restaurant_detail_attend_fb);
 
         like.setAlpha(0.5f);
-        /*like.setCompoundDrawableTintList(ColorStateList.valueOf(Color.parseColor("#86FB7540")));
-        like.setTextColor(ColorStateList.valueOf(Color.parseColor("#86FB7540")));*/
 
         restaurantName = view.findViewById(R.id.restaurant_detail_name_tv);
         restaurantDetail = view.findViewById(R.id.restaurant_detail_address_tv);
@@ -119,7 +115,66 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
         restaurantDetailWorkmatesAdapter.setWorkmatesList(attendingWorkmatesList);
 
 
+        setObservers(view, like, attend, restaurantDetailWorkmatesAdapter);
 
+        websiteLink.setOnClickListener(view1 -> {
+            if(currentRestaurant.getWebsite()!=null){
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(currentRestaurant.getWebsite().toString()));
+                startActivity(i);
+            }
+            else Log.d("RestaurantURL", "there is no website!");
+
+        });
+        setClickListeners(like, phone, attend);
+
+        return view;
+    }
+
+    private void setClickListeners(Button like, Button phone, FloatingActionButton attend) {
+        phone.setOnClickListener(view12 -> {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.CALL_PHONE) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // You can use the API that requires the permission.
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
+                startActivity(intent);
+
+
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle(R.string.permissions_needed)
+                        .setMessage(R.string.phone_permission_msg)
+                        .setPositiveButton(R.string.grant, (dialog, which) ->
+                                requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE))
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
+
+            } else {
+                requestPermissionLauncher.launch(
+                        Manifest.permission.CALL_PHONE);
+            }
+        });
+        like.setOnClickListener(view13 -> {
+            if(isFavorite){
+                like.setAlpha(0.5f);
+            }else {
+                like.setAlpha(1.0f);
+            }
+            isFavorite = !isFavorite;
+        });
+        attend.setOnClickListener(view14 -> {
+            if(isAttending){
+                attend.setImageResource(R.drawable.baseline_check_circle_transparent_24);
+            }else{
+                attend.setImageResource(R.drawable.baseline_check_circle_24);
+            }
+            isAttending = !isAttending;
+        });
+    }
+
+    private void setObservers(View view, Button like, FloatingActionButton attend, RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter) {
         mRestaurantDetailViewModel.getAllWorkmates().observe(this, users -> {
             restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
         });
@@ -135,8 +190,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
             mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());
 
-            /*String key = BuildConfig.GMP_key;
-            Places.initialize(getContext(), key);*/
             mRestaurantDetailViewModel.setDetail(currentRestaurant);
 
             if(currentRestaurant != null){
@@ -157,81 +210,26 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
             }
 
         });
-        websiteLink.setOnClickListener(view1 -> {
-            if(currentRestaurant.getWebsite()!=null){
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(currentRestaurant.getWebsite().toString()));
-                startActivity(i);
-            }
-            else Log.d("RestaurantURL", "there is no website!");
-
-        });
-        phone.setOnClickListener(view12 -> {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.CALL_PHONE) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                // You can use the API that requires the permission.
-                Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:" + currentRestaurant.getPhoneNumber()));
-                startActivity(intent);
-
-
-            } else if (shouldShowRequestPermissionRationale("")) {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected, and what
-                // features are disabled if it's declined. In this UI, include a
-                // "cancel" or "no thanks" button that lets the user continue
-                // using your app without granting the permission.
-
-            } else {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionLauncher.launch(
-                        Manifest.permission.CALL_PHONE);
-            }
-
-        });
-        like.setOnClickListener(view13 -> {
-            if(isFavorite){
-                like.setAlpha(0.5f);
-            }else {
-                like.setAlpha(1.0f);
-            }
-            isFavorite = !isFavorite;
-        });
-        attend.setOnClickListener(view14 -> {
-            if(isAttending){
-                attend.setImageResource(R.drawable.baseline_check_circle_transparent_24);
-            }else{
-                attend.setImageResource(R.drawable.baseline_check_circle_24);
-            }
-            isAttending = !isAttending;
-        });
-
-        return view;
     }
+
     public void setCurrentRestaurant(Restaurant currentRestaurant) {
         this.currentRestaurant = currentRestaurant;
     }
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
                     Log.d("Call permissions", "Call granted!!");
                 } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // feature requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                    Log.d("Call permission", "not granted to use phone, please change your settings in order to have access to all the features ");
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.fromParts("package", requireActivity().getPackageName(), null));
+                    startActivity(intent);
                 }
             });
 
+    //this is to check if the like status or attending changes when the dialogue is closed.
+    //This is done to avoid making calls to firebase firestore if the user keeps checking and unchecking the
     @Override
     public void onDestroy() {
-
         Calendar timeChoiceStamp = Calendar.getInstance();
         timeChoiceStamp.setTimeInMillis(System.currentTimeMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
@@ -239,12 +237,10 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
         if(isAttending ){
             if(!currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) || (isAttending && currentUser.getLunchChoiceId().equals(currentRestaurant.getId()) && !currentUser.isToday())){
-                Log.d("Restaurant details", "updating choice...");
                 mConnectedActivityViewModel.updateUserRestaurantChoice(currentRestaurant.getId(), currentRestaurant.getName(), formattedDate);
                 saveData();
             }
         }else if(currentUser.getLunchChoiceId().equals(currentRestaurant.getId())&& currentUser.isToday()){
-            Log.d("Restaurant details", "clearing current choice...");
             mConnectedActivityViewModel.updateUserRestaurantChoice("", "", formattedDate);
         }
 
@@ -267,11 +263,9 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     }
 
     private void setRestaurantDetail(View view){
-        Log.d("Restaurant Detail", "name: " + currentRestaurant.getName());
         if(currentRestaurant.getImageUrl()!=null)Glide.with(view).load(currentRestaurant.getImageUrl()).centerCrop().into(restaurantImage);
         else if(currentRestaurant.getImageBitmap()!=null) restaurantImage.setImageBitmap(currentRestaurant.getImageBitmap());
 
-        Log.d("setRestaurantDetails", "currentRestaurant Name " +  currentRestaurant.getName());
         restaurantName.setText(currentRestaurant.getName());
         restaurantDetail.setText(currentRestaurant.getAddress());
 
