@@ -1,7 +1,6 @@
 package com.example.go4lunch.adapter;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 

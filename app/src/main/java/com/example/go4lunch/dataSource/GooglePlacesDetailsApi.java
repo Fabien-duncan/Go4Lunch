@@ -16,7 +16,6 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * GooglePlacesDetailsApi to allow the RestaurantDetailRepository to retrieving detailed information about a restaurant from Google Places API.

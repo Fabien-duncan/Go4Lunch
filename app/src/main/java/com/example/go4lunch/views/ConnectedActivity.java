@@ -2,10 +2,8 @@ package com.example.go4lunch.views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -47,7 +45,6 @@ import com.example.go4lunch.model.User;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
 import com.example.go4lunch.util.AlarmScheduler;
-import com.example.go4lunch.util.ReminderBroadcast;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,7 +63,6 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class ConnectedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RestaurantRecyclerViewInterface {
@@ -156,12 +152,12 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
         setObservers(sideBarView);
 
-        setUpBottomMenu(menu, toolbar);
+        setupBottomMenu(menu, toolbar);
 
     }
 
     @SuppressLint("NonConstantResourceId")
-    private void setUpBottomMenu(BottomNavigationView menu, Toolbar toolbar) {
+    private void setupBottomMenu(BottomNavigationView menu, Toolbar toolbar) {
         menu.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mapView:
@@ -318,7 +314,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
             public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                 if (multiplePermissionsReport.areAllPermissionsGranted()) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mMapViewFragment).commit();
-                    currentFragment = "map";
+                    currentFragment = getString(R.string.map_view);
                     isLocationGranted = true;
                     getLocation();
 
@@ -410,14 +406,13 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     protected void onResume() {
-        //checks if the GPS settings have changed from off to on, if first checks if it is off
+        //checks if the GPS settings have changed from off to on, it first checks if it is off
         if(!isGpsEnabled){
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             boolean tempIsGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 
             if(tempIsGpsEnabled){
-                Log.d("gpsChanged", "the gps settings have changed!");
                 isGpsEnabled = true;
                 getLocationPermission();
             }

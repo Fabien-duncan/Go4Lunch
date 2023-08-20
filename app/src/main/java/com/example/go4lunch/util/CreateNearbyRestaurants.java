@@ -1,7 +1,6 @@
 package com.example.go4lunch.util;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.Restaurant;

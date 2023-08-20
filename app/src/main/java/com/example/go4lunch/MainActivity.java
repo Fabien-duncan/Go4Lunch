@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
         }
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -6,10 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,7 +21,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
@@ -32,11 +28,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
 import com.example.go4lunch.adapter.RestaurantDetailWorkmatesAdapter;
 import com.example.go4lunch.adapter.WorkmatesRecyclerViewInterface;
-import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
 import com.example.go4lunch.di.Injection;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
@@ -44,12 +38,9 @@ import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.RestaurantDetailRepository;
 import com.example.go4lunch.viewmodel.ConnectedActivityViewModel;
 import com.example.go4lunch.viewmodel.RestaurantDetailViewModel;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -175,9 +166,7 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
     }
 
     private void setObservers(View view, Button like, FloatingActionButton attend, RestaurantDetailWorkmatesAdapter restaurantDetailWorkmatesAdapter) {
-        mRestaurantDetailViewModel.getAllWorkmates().observe(this, users -> {
-            restaurantDetailWorkmatesAdapter.setWorkmatesList(users);
-        });
+        mRestaurantDetailViewModel.getAllWorkmates().observe(this, restaurantDetailWorkmatesAdapter::setWorkmatesList);
         mRestaurantDetailViewModel.getCurrentRestaurantMutableLiveDate().observe(this, restaurant -> {
             currentRestaurant = restaurant;
             setRestaurantDetail(view);

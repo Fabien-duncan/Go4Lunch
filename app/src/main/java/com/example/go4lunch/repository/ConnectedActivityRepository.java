@@ -5,12 +5,11 @@ import android.location.Location;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
-import com.example.go4lunch.dataSource.NearbyPlacesApi;
 import com.example.go4lunch.dataSource.AutoCompleteApi;
+import com.example.go4lunch.dataSource.NearbyPlacesApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.AutoCompleteBounds;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 
 import java.util.ArrayList;
@@ -27,10 +26,10 @@ public class ConnectedActivityRepository {
     private RectangularBounds bounds;
     //private Activity mActivity;
     private List<Restaurant> nearbyRestaurants;
-    private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
+    private final MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private final NearbyPlacesApi mGooglePlacesReadTask;
     private final AutoCompleteApi mAutoCompleteApi;
-    private Executor executor;
+    private final Executor executor;
 
     public ConnectedActivityRepository(NearbyPlacesApi nearbyPlacesApi, AutoCompleteApi autoCompleteApi, MutableLiveData<List<Restaurant>> restaurantsMutableLiveData, Executor executor){
         this.executor = executor;

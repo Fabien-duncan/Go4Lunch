@@ -1,9 +1,7 @@
 package com.example.go4lunch.viewmodel;
 
 import android.location.Location;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -13,7 +11,6 @@ import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConnectedActivityViewModel extends ViewModel {

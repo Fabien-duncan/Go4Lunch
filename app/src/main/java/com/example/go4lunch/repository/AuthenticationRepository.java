@@ -1,6 +1,5 @@
 package com.example.go4lunch.repository;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
@@ -8,30 +7,28 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.go4lunch.dataSource.FirebaseApi;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.FormatString;
-import com.example.go4lunch.util.NetworkUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Repository class that deals with Authentication and creation of User accounts both in the FirebaseAuth and the Firestore db
  */
 public class AuthenticationRepository {
-    private GoogleSignInClient mGoogleSignInClient;
+    private final GoogleSignInClient mGoogleSignInClient;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
 
     private final MutableLiveData<User> currentUserMutableLiveData;
     private final MutableLiveData<List<User>> workmatesMutableLiveData;
     private final MutableLiveData<String> authMessageMutableLiveData;
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth;
 
     private final FirebaseFirestore db;
-    private FirebaseApi mFirebaseApi;
+    private final FirebaseApi mFirebaseApi;
 
     public AuthenticationRepository(FirebaseAuth auth, FirebaseFirestore db, FirebaseApi firebaseApi, GoogleSignInClient googleSignInClient){
         this.mAuth = auth;
@@ -54,13 +51,11 @@ public class AuthenticationRepository {
     }
 
     public Intent signIn(){
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        return signInIntent;
+        return mGoogleSignInClient.getSignInIntent();
     }
     public void signOut(){
         mAuth.signOut();
         mGoogleSignInClient.signOut();
-        //isUserSignedIn.postValue(false);
 
     }
     public void firebaseAuthWithGoogle(String idToken){

@@ -6,11 +6,9 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.model.Restaurant;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
@@ -26,7 +24,7 @@ import java.util.List;
  */
 public class AutoCompleteApi {
 
-    private MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
+    private final MutableLiveData<List<Restaurant>> restaurantsMutableLiveData;
     private List<Restaurant> nearbyRestaurants;
     private Context mContext;
     PlacesClient placesClient;

@@ -1,13 +1,10 @@
 package com.example.go4lunch.dataSource;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.R;
 import com.example.go4lunch.model.User;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,13 +18,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * FirebaseApi is a class used to allow the repositories to communicate with Firebase for authentication and
  * access to the firestore db.
  */
 public class FirebaseApi{
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth;
     private final FirebaseFirestore db;
     private final MutableLiveData<FirebaseUser> mFirebaseUserMutableLiveData;
     private final MutableLiveData<User> currentUserMutableLiveData;
@@ -93,7 +91,7 @@ public class FirebaseApi{
                         mFirebaseUserMutableLiveData.postValue(user);
                         authMessageMutableLiveData.postValue("success");
                     }else{
-                        authMessageMutableLiveData.postValue(task.getException().getMessage());
+                        authMessageMutableLiveData.postValue(Objects.requireNonNull(task.getException()).getMessage());
                     }
                 });
     }
@@ -140,7 +138,7 @@ public class FirebaseApi{
                         mFirebaseUserMutableLiveData.postValue(user);
                         authMessageMutableLiveData.postValue("success");
                     } else {
-                        Log.d("createAccount", "message" + task.getException().getMessage());
+                        Log.d("createAccount", "message" + Objects.requireNonNull(task.getException()).getMessage());
                         authMessageMutableLiveData.postValue(task.getException().getMessage());
 
                     }
