@@ -1,4 +1,4 @@
-package com.example.go4lunch.dataSource;
+package com.example.go4lunch.data_source;
 
 import android.graphics.Bitmap;
 import android.util.Log;

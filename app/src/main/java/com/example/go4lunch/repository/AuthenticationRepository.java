@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.dataSource.FirebaseApi;
+import com.example.go4lunch.data_source.FirebaseApi;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.FormatString;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

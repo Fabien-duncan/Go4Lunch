@@ -12,8 +12,8 @@ public class AlarmScheduler {
 
     public static void scheduleDailyAlarm(Context context) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 13);
-        calendar.set(Calendar.MINUTE, 00);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
 
         if (Calendar.getInstance().after(calendar)) {

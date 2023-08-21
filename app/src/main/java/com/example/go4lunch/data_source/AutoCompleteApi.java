@@ -1,4 +1,4 @@
-package com.example.go4lunch.dataSource;
+package com.example.go4lunch.data_source;
 
 import android.content.Context;
 import android.location.Location;

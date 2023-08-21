@@ -5,8 +5,8 @@ import android.location.Location;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
-import com.example.go4lunch.dataSource.AutoCompleteApi;
-import com.example.go4lunch.dataSource.NearbyPlacesApi;
+import com.example.go4lunch.data_source.AutoCompleteApi;
+import com.example.go4lunch.data_source.NearbyPlacesApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.model.User;
 import com.example.go4lunch.util.AutoCompleteBounds;

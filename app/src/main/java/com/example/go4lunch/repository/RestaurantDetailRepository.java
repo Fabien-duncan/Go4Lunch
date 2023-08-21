@@ -2,7 +2,7 @@ package com.example.go4lunch.repository;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
+import com.example.go4lunch.data_source.GooglePlacesDetailsApi;
 import com.example.go4lunch.model.Restaurant;
 import com.google.android.libraries.places.api.net.PlacesClient;
 

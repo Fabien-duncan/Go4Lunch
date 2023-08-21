@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.go4lunch.BuildConfig;
 import com.example.go4lunch.R;
-import com.example.go4lunch.dataSource.NearbyPlacesApi;
-import com.example.go4lunch.dataSource.AutoCompleteApi;
-import com.example.go4lunch.dataSource.FirebaseApi;
-import com.example.go4lunch.dataSource.GooglePlacesDetailsApi;
+import com.example.go4lunch.data_source.NearbyPlacesApi;
+import com.example.go4lunch.data_source.AutoCompleteApi;
+import com.example.go4lunch.data_source.FirebaseApi;
+import com.example.go4lunch.data_source.GooglePlacesDetailsApi;
 import com.example.go4lunch.model.Restaurant;
 import com.example.go4lunch.repository.AuthenticationRepository;
 import com.example.go4lunch.repository.ConnectedActivityRepository;
