@@ -88,12 +88,25 @@ public class AuthenticationRepository {
     public void setCurrentUser(){
         mFirebaseApi.setCurrentUser();
     }
+    /**
+     * Updates the user's chosen restaurant and related information.
+     *
+     * @param newChoiceId     The ID of the newly chosen restaurant.
+     * @param newChoiceName   The name of the newly chosen restaurant.
+     * @param choiceTimeStamp The timestamp indicating the time of the choice.
+     */
     public void updateUserRestaurantChoice(String newChoiceId, String newChoiceName, String choiceTimeStamp){
         FirebaseUser user = mAuth.getCurrentUser();
         assert user != null;
         db.collection("users").document(user.getUid()).update("lunchChoiceId", newChoiceId, "lunchChoiceName", FormatString.capitalizeEveryWord(newChoiceName), "choiceTimeStamp", choiceTimeStamp);
         setCurrentUser();
     }
+    /**
+     * Update the user's favorite restaurants by adding or removing a restaurant ID.
+     *
+     * @param restaurantID The ID of the restaurant to add or remove from favorites.
+     * @param type         "add" to add or "remove" to remove the restaurant.
+     */
     public void updateUserRestaurantFavorite(String restaurantID, String type){
         FirebaseUser user = mAuth.getCurrentUser();
         if(type.equals("add")) {

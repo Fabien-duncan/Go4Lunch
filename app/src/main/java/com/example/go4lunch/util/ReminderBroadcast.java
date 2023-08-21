@@ -45,7 +45,7 @@ public class ReminderBroadcast extends BroadcastReceiver {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         assert user != null;
-        if (sharedPreferences.getString(user.getEmail() + "notification", "true").equals("true")) {
+        if (sharedPreferences.getBoolean(user.getEmail() + "notification",true)) {
 
             CollectionReference collectionReference = db.collection("users");
             collectionReference.get().addOnCompleteListener(task -> {

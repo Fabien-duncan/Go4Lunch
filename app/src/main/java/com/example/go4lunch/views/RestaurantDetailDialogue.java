@@ -174,7 +174,6 @@ public class RestaurantDetailDialogue extends DialogFragment implements Workmate
 
 
         mConnectedActivityViewModel.getCurrentUserMutableLiveData().observe(this, user -> {
-            Log.d("User data Rest detail", "id: " + user.getDisplayName());
             currentUser = user;
 
             mRestaurantDetailViewModel.retrieveFilteredWorkmates(currentRestaurant.getId());

@@ -52,4 +52,10 @@
     <string name="no_workmates_msg">. Il n\'y a pas de collègue présent ce restaurant.</string>
     <string name="password_short_msg">mot de pass trop court, il doit contenir au moins 6 caractères</string>
     <string name="email_format_msg">l\'adress mail n\'est pas formatée correctement</string>
+    <string name="permissions_needed">Nous avons besoin de permissions</string>
+    <string name="phone_permission_msg">Cette fonctionnalité a besoin de permission pour fontionner. Voulez-vous l\'autotiser?</string>
+    <string name="grant">Autoriser</string>
+    <string name="gps_off_warning_msg">"GPS n'est pas activé, si vous souhaitez avoir des resulta, activé le! "</string>
+    <string name="no_internet_msg">pas d\'internet! L\'application ne peut pas fonctinner correctement</string>
+    <string name="no_internet">pas d\'internet!</string>
 </resources>

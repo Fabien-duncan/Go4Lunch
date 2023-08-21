@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
 
         isConnected = NetworkUtils.isNetworkAvailable(this);
         if (!isConnected){
-            Toast.makeText(getApplicationContext(), "no internet! The app can not function", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
         }
 
         setUpObservers();
@@ -110,20 +110,20 @@ public class MainActivity extends AppCompatActivity implements CreateAccountFrag
             if(isConnected){
                 Intent intent = mMainActivityViewModel.signIn();
                 signInLauncher.launch(intent);
-            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
+            }else Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
 
         });
         activityMainBinding.mainCreateAccountBtn.setOnClickListener(view12 -> {
             if (isConnected){
                 DialogFragment createAccountFragment = new CreateAccountFragment();
                 createAccountFragment.show(getSupportFragmentManager(), getString(R.string.create_account));
-            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
+            }else Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
         });
         activityMainBinding.loginSigninBtn.setOnClickListener(view13 -> {
             if (isConnected) {
                 SignInFragment signInFragment = new SignInFragment();
                 signInFragment.show(getSupportFragmentManager(), getString(R.string.sign_in));
-            }else Toast.makeText(getApplicationContext(), "no internet!", Toast.LENGTH_SHORT).show();
+            }else Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
         });
     }
 

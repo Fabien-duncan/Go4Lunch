@@ -44,11 +44,7 @@ public class Injection {
         MutableLiveData<List<Restaurant>> restaurantsMutableLiveData = new MutableLiveData<>(new ArrayList<>());
         NearbyPlacesApi nearbyPlacesApi = new NearbyPlacesApi();
         String key = BuildConfig.GMP_key;
-
-        // Initialize Places.
         Places.initialize(context.getApplicationContext(), key);
-
-        // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(context);
         AutoCompleteApi autoCompleteApi = new AutoCompleteApi(placesClient);
         return new ConnectedActivityRepository(nearbyPlacesApi, autoCompleteApi, restaurantsMutableLiveData, executor);

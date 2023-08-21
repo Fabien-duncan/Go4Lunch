@@ -168,7 +168,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
-                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, "Gps is not activated, if you wish to see results please turn it on!", Toast.LENGTH_LONG).show();
+                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, R.string.gps_off_warning_msg, Toast.LENGTH_LONG).show();
                     break;
                 case R.id.listView:
                     if (isLocationGranted) {
@@ -179,7 +179,7 @@ public class ConnectedActivity extends AppCompatActivity implements NavigationVi
                     } else {
                         Toast.makeText(ConnectedActivity.this, R.string.location_permission_rejected, Toast.LENGTH_SHORT).show();
                     }
-                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, "Gps is not activated, if you wish to see results please turn it on!", Toast.LENGTH_LONG).show();
+                    if(!isGpsEnabled)Toast.makeText(ConnectedActivity.this, R.string.gps_off_warning_msg, Toast.LENGTH_LONG).show();
                     break;
                 case R.id.workmates:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mWorkmatesFragment).commit();
