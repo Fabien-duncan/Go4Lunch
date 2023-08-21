@@ -1,9 +1,9 @@
 package com.example.go4lunch.repository;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,14 +30,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class AuthenticationRepositoryTest {
     private AuthenticationRepository mAuthenticationRepository;
     @Mock
@@ -66,7 +65,7 @@ public class AuthenticationRepositoryTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(mFirebaseUserMutableLiveData.getValue()).thenReturn(firebaseUser);
         when(firebaseUser.getEmail()).thenReturn("testUser@gmail.com");
         when(mFirebaseApi.getFirebaseUserMutableLiveData()).thenReturn(mFirebaseUserMutableLiveData);
@@ -117,6 +116,7 @@ public class AuthenticationRepositoryTest {
         FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
 
         verify(mFirebaseApi).firebaseAuthWithGoogle(anyString());
+        assert resultUser != null;
         assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
@@ -127,6 +127,7 @@ public class AuthenticationRepositoryTest {
         FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
 
         verify(mFirebaseApi).firebaseAuthWithEmailAndPassword(anyString(), anyString());
+        assert resultUser != null;
         assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
@@ -137,6 +138,7 @@ public class AuthenticationRepositoryTest {
         FirebaseUser resultUser = mAuthenticationRepository.getFirebaseUserMutableLiveData().getValue();
 
         verify(mFirebaseApi).firebaseCreateUser(anyString(), anyString(), anyString());
+        assert resultUser != null;
         assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
@@ -182,6 +184,7 @@ public class AuthenticationRepositoryTest {
         resultWorkmates = mAuthenticationRepository.getWorkmatesMutableLiveData().getValue();
 
         verify(mFirebaseApi).retrieveAllWorkmates();
+        assert resultWorkmates != null;
         assertEquals(3, resultWorkmates.size());
         assertEquals("Fabien Duncan", resultWorkmates.get(0).getDisplayName());
         assertEquals("Bob",resultWorkmates.get(2).getDisplayName());
@@ -190,20 +193,17 @@ public class AuthenticationRepositoryTest {
     @Test
     public void retrieveFilteredWorkmates() {
         List<User> resultWorkmates;
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                String id = (String)invocation.getArguments()[0];
-                List<User> filteredWorkmates = new ArrayList<>();
-                for(int i =0; i < workmateList.size(); i++){
-                    if(workmateList.get(i).getLunchChoiceId().equals(id)){
-                        filteredWorkmates.add(workmateList.get(i));
-                    }
+        doAnswer(invocation -> {
+            String id = (String)invocation.getArguments()[0];
+            List<User> filteredWorkmates = new ArrayList<>();
+            for(int i =0; i < workmateList.size(); i++){
+                if(workmateList.get(i).getLunchChoiceId().equals(id)){
+                    filteredWorkmates.add(workmateList.get(i));
                 }
-                workmateList = filteredWorkmates;
-
-                return(null);
             }
+            workmateList = filteredWorkmates;
+
+            return(null);
         }).when(mFirebaseApi).retrieveFilteredWorkmates(anyString());
 
         mAuthenticationRepository.retrieveFilteredWorkmates("2");
@@ -222,6 +222,7 @@ public class AuthenticationRepositoryTest {
         resultUser = mAuthenticationRepository.getCurrentUserMutableLiveData().getValue();
 
         verify(mFirebaseApi).setCurrentUser();
+        assert resultUser != null;
         assertEquals("testUser@gmail.com", resultUser.getEmail());
     }
 
@@ -250,7 +251,7 @@ public class AuthenticationRepositoryTest {
         verify(mockDocumentReference).update(
                 "lunchChoiceId", "newChoiceId",
                 "lunchChoiceName", "Newchoicename",
-                "choiceTimeStamp", choiceTimeStamp.toString()
+                "choiceTimeStamp", choiceTimeStamp
         );
     }
     @Test

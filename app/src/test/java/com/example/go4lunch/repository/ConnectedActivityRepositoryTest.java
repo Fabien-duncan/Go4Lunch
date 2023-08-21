@@ -47,8 +47,8 @@ public class ConnectedActivityRepositoryTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Before
-    public void setUp() throws Exception {
-        Executor mockExecutor = command -> command.run();
+    public void setUp() {
+        Executor mockExecutor = Runnable::run;
         mConnectedActivityRepository = new ConnectedActivityRepository(mGooglePlacesReadTask, mAutoCompleteApi, restaurantsMutableLiveData, mockExecutor);
         setRestaurantList();
         workmateList = new ArrayList<>();
@@ -75,6 +75,7 @@ public class ConnectedActivityRepositoryTest {
         when(restaurantsMutableLiveData.getValue()).thenReturn(mRestaurantList);
         List<Restaurant> resultRestaurants = mConnectedActivityRepository.getRestaurantsMutableLiveData().getValue();
 
+        assert resultRestaurants != null;
         assertEquals(3, resultRestaurants.size());
         assertEquals("Zinc", resultRestaurants.get(0).getName());
         assertEquals("La Taverne", resultRestaurants.get(2).getName());
@@ -90,6 +91,7 @@ public class ConnectedActivityRepositoryTest {
         verify(restaurantsMutableLiveData).postValue(anyList());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void autocomplete() {
         List<Restaurant> restaurants = new ArrayList<>();
@@ -107,6 +109,7 @@ public class ConnectedActivityRepositoryTest {
 
         verify(mAutoCompleteApi).autocomplete(anyString(), anyList(), ArgumentMatchers.any(RectangularBounds.class), ArgumentMatchers.any(Location.class));
         verify(this.restaurantsMutableLiveData).postValue(anyList());
+        assert restaurantsResult != null;
         assertEquals("La Taverne", restaurantsResult.get(0).getName());
     }
 

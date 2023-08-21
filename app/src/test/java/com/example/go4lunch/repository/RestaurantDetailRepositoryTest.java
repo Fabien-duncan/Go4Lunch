@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 
 public class RestaurantDetailRepositoryTest {
 
-    private Restaurant restaurantDetails;
     private Restaurant currentRestaurant;
     private RestaurantDetailRepository mRestaurantDetailRepository;
     @Mock
@@ -36,8 +35,7 @@ public class RestaurantDetailRepositoryTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Before
-    public void setUp() throws Exception {
-        setUpRepositoryMethods();
+    public void setUp() {
         when(mGooglePlacesDetailsApi.getRestaurantDetailMutableLiveData()).thenReturn(mRestaurantMutableLiveData);
 
         generateRestaurantDetails();
@@ -84,25 +82,13 @@ public class RestaurantDetailRepositoryTest {
         currentRestaurant.setId("01");
     }
     private void generateRestaurantDetails(){
-        restaurantDetails = new Restaurant(
+        Restaurant restaurantDetails = new Restaurant(
                 "01",
                 "Zinc",
                 "16 ch du four",
-                45,26,
+                45, 26,
                 4.5,
                 120
         );
-    }
-    private void setUpRepositoryMethods(){
-       /* Task<FetchPlaceResponse> task = Tasks.forResult(null);
-        FetchPlaceResponse fetchPlaceResponse = Mockito.mock(FetchPlaceResponse.class);
-        Place mockPlace = Mockito.mock(Place.class);
-
-        when(fetchPlaceResponse.getPlace()).thenReturn(mockPlace);
-        when(mockPlace.getWebsiteUri()).thenReturn(null);
-        //when(task.getResult()).thenReturn(fetchPlaceResponse);
-        //when(task.isSuccessful()).thenReturn(true);
-        when(placesClient.fetchPlace(any(FetchPlaceRequest.class))).thenReturn(task);*/
-
     }
 }
